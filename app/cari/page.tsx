@@ -73,7 +73,7 @@ export default function CariPage() {
       <Navbar />
 
       {/* ────── HEADER SEARCH BAR (STICKY) ────── */}
-      <div className="fixed top-16 inset-x-0 z-40 bg-white-pure border-b border-border-line/50 md:top-[72px]">
+      <div className="sticky top-0 z-40 bg-white-pure border-b border-border-line/50">
         <div className="container-standard py-3 flex flex-wrap items-center gap-3">
           
           {/* Main Search Input */}
@@ -129,7 +129,7 @@ export default function CariPage() {
       </div>
 
       {/* ────── MAIN SPLIT CONTENT ────── */}
-      <div className="flex-1 flex mt-[120px] md:mt-[135px]">
+      <div className="flex-1 flex min-h-0">
         
         {/* LEFT: LISTING AREA */}
         <div className={`flex-1 overflow-y-auto ${viewMode === 'split' ? 'lg:w-[60%] xl:w-[55%]' : 'w-full'}`}>
@@ -190,7 +190,7 @@ export default function CariPage() {
 
         {/* RIGHT: MAP AREA (STICKY) */}
         {viewMode === 'split' && (
-          <div className="hidden lg:block lg:w-[40%] xl:w-[45%] h-[calc(100vh-135px)] sticky top-[135px] border-l border-border-line/40 bg-surface-dim">
+          <div className="hidden lg:block lg:w-[40%] xl:w-[45%] h-[calc(100vh-64px)] sticky top-[64px] border-l border-border-line/40 bg-surface-dim">
             <div className="relative w-full h-full">
                {/* Map Background/Iframe Mockup */}
                <div className="absolute inset-0 bg-[#e5e3df] overflow-hidden">
