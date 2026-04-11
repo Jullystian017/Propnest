@@ -104,36 +104,36 @@ export default function CariPage() {
           {/* More Filters Toggle */}
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center gap-2 px-4 py-2.5 border border-border-line rounded-full text-sm font-semibold hover:border-brand-blue transition-colors group"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white-pure border border-border-line rounded-full text-sm font-semibold hover:border-brand-blue hover:text-brand-blue hover:shadow-soft transition-all active:scale-95 group"
           >
-            <Filter size={16} className="group-hover:text-brand-blue" /> 
+            <Filter size={16} className="text-text-gray group-hover:text-brand-blue transition-colors" /> 
             <span className="hidden sm:inline">Filter</span>
           </button>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-surface-gray p-1 rounded-full border border-border-line/50">
+          <div className="flex bg-surface-gray p-1 rounded-full border border-border-line/50 shadow-inner">
             <button 
                onClick={() => setViewMode('split')}
-               className={`p-1.5 rounded-full transition-all ${viewMode === 'split' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray'}`}
+               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'split' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}
             >
-              <MapIcon size={18} />
+              <MapIcon size={14} /> <span>Peta</span>
             </button>
             <button 
                onClick={() => setViewMode('list')}
-               className={`p-1.5 rounded-full transition-all ${viewMode === 'list' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray'}`}
+               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'list' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}
             >
-              <List size={18} />
+              <List size={14} /> <span>Daftar</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* ────── MAIN SPLIT CONTENT ────── */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex min-h-0 container-standard">
         
         {/* LEFT: LISTING AREA */}
-        <div className={`flex-1 overflow-y-auto ${viewMode === 'split' ? 'lg:w-[60%] xl:w-[55%]' : 'w-full'}`}>
-          <div className="p-4 md:p-6 lg:p-10 max-w-[1200px] mx-auto">
+        <div className={`flex-1 overflow-y-auto ${viewMode === 'split' ? 'lg:w-[50%] xl:w-[55%]' : 'w-full'}`}>
+          <div className="py-8 px-0 max-w-full">
             
             {/* Results Info */}
             <div className="flex items-center justify-between mb-8">
@@ -146,34 +146,40 @@ export default function CariPage() {
                </div>
             </div>
 
-            {/* PRODUCT GRID - 3 Columns on Large screens */}
-            <div className={`grid gap-6 ${viewMode === 'split' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+            {/* PRODUCT GRID - 1 Column when split, 3 Columns when list */}
+            <div className={`grid gap-6 ${viewMode === 'split' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
               {MOCK_PROPERTIES.map((item) => (
-                <Link key={item.id} href={`/properti/${item.id}`} className="flex flex-col group cursor-pointer">
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-surface-dim mb-3 shadow-sm group-hover:shadow-md transition-shadow">
-                     <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${item.image})` }}></div>
+                <Link 
+                  key={item.id} 
+                  href={`/properti/${item.id}`} 
+                  className={`flex group cursor-pointer border-b border-border-line/40 pb-6 last:border-0 hover:bg-surface-gray/30 -mx-4 px-4 rounded-xl transition-all duration-300 ${viewMode === 'split' ? 'flex-row gap-5 items-start' : 'flex-col gap-3'}`}
+                >
+                  <div className={`relative overflow-hidden bg-surface-dim shadow-sm group-hover:shadow-md transition-all duration-500 shrink-0 ${viewMode === 'split' ? 'w-[180px] sm:w-[240px] aspect-[4/3] rounded-xl' : 'w-full aspect-[4/3] rounded-2xl'}`}>
+                     <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-1000" style={{ backgroundImage: `url(${item.image})` }}></div>
                      
-                     <div className="absolute top-3 left-3 bg-white-pure/95 backdrop-blur-sm text-[10px] font-bold text-text-dark px-2.5 py-1 rounded-md shadow-sm border border-white/20">
+                     <div className="absolute top-2 left-2 bg-white-pure/95 backdrop-blur-sm text-[9px] font-bold text-text-dark px-2 py-0.5 rounded shadow-sm border border-white/20">
                        {item.badge}
                      </div>
-                     <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white-pure/90 flex items-center justify-center text-text-gray hover:text-red-500 transition-colors shadow-sm focus:outline-none">
-                       <Heart size={16} />
-                     </button>
                   </div>
                   
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-semibold text-text-dark group-hover:text-brand-blue transition-colors truncate pr-2">{item.name}</h3>
-                      <span className="text-xs font-medium text-brand-orange whitespace-nowrap">{item.price}</span>
+                  <div className="flex-1 min-w-0 space-y-1.5 pt-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <h3 className="text-[15px] font-semibold text-text-dark group-hover:text-brand-blue transition-colors truncate pr-2">{item.name}</h3>
+                      <span className="text-sm font-bold text-brand-orange whitespace-nowrap">{item.price}</span>
                     </div>
                     <p className="text-xs text-text-gray flex items-center gap-1">
                       <MapIcon size={12} className="shrink-0" /> {item.location}
                     </p>
-                    <div className="pt-2 flex items-center gap-3 text-[11px] font-medium text-text-gray">
-                       <span className="flex items-center gap-1"><BedDouble size={14} className="text-brand-blue/70" /> {item.specs.beds}</span>
-                       <span className="flex items-center gap-1"><Bath size={14} className="text-brand-blue/70" /> {item.specs.baths}</span>
-                       <span className="flex items-center gap-1"><Scaling size={14} className="text-brand-blue/70" /> {item.specs.size}m²</span>
+                    <div className="pt-2 flex items-center gap-4 text-[11px] font-medium text-text-gray">
+                       <span className="flex items-center gap-1"><BedDouble size={15} className="text-brand-blue/70" /> {item.specs.beds} Bed</span>
+                       <span className="flex items-center gap-1"><Bath size={15} className="text-brand-blue/70" /> {item.specs.baths} Bath</span>
+                       <span className="flex items-center gap-1"><Scaling size={15} className="text-brand-blue/70" /> {item.specs.size}m²</span>
                     </div>
+                    {viewMode === 'split' && (
+                      <p className="hidden sm:block text-[11px] text-text-gray leading-relaxed pt-2 line-clamp-2">
+                        Properti premium dengan desain modern yang terletak di lokasi strategis. Fasilitas lengkap dengan keamanan 24 jam...
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -190,8 +196,8 @@ export default function CariPage() {
 
         {/* RIGHT: MAP AREA (STICKY) */}
         {viewMode === 'split' && (
-          <div className="hidden lg:block lg:w-[40%] xl:w-[45%] h-[calc(100vh-64px)] sticky top-[64px] border-l border-border-line/40 bg-surface-dim">
-            <div className="relative w-full h-full">
+          <div className="hidden lg:block lg:w-[50%] xl:w-[45%] h-[calc(100vh-64px)] sticky top-[64px] p-4 lg:pr-0">
+            <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-border-line/50 shadow-premium bg-surface-dim">
                {/* Map Background/Iframe Mockup */}
                <div className="absolute inset-0 bg-[#e5e3df] overflow-hidden">
                   {/* Decorative Elements for Map look */}
@@ -207,10 +213,12 @@ export default function CariPage() {
                     {t: '70%', l: '40%', p: '350Jt'},
                     {t: '65%', l: '15%', p: '420Jt'},
                   ].map((m, i) => (
-                    <div key={i} className="absolute transition-all hover:scale-110 cursor-pointer shadow-md" style={{ top: m.t, left: m.l }}>
-                       <div className="bg-white-pure px-2 py-1 rounded-full text-[10px] font-bold text-text-dark border-2 border-brand-blue">
+                    <div key={i} className="absolute transition-all duration-300 hover:scale-125 z-10 hover:z-20 cursor-pointer group/marker" style={{ top: m.t, left: m.l }}>
+                       <div className="bg-white-pure px-3 py-1 rounded-full text-[11px] font-bold text-text-dark border-2 border-brand-blue shadow-md group-hover/marker:bg-brand-blue group-hover/marker:text-white-pure transition-colors">
                          {m.p}
                        </div>
+                       {/* Subtle pulse effect */}
+                       <div className="absolute -inset-1 bg-brand-blue/20 rounded-full animate-pulse group-hover/marker:bg-brand-blue/40"></div>
                     </div>
                   ))}
                </div>
@@ -229,7 +237,6 @@ export default function CariPage() {
             </div>
           </div>
         )}
-
       </div>
 
       {/* ────── ADVANCED FILTER OVERLAY ────── */}
