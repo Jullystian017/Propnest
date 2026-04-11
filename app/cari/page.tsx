@@ -347,7 +347,7 @@ export default function CariPage() {
 
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <p className="text-lg font-extrabold text-text-dark">
+                          <p className="text-lg font-semibold text-text-dark">
                             Rp{item.price.replace('Rp ', '').replace(' Juta', 'jt').replace(' Miliar', 'M')}
                           </p>
                         </div>
@@ -373,7 +373,7 @@ export default function CariPage() {
               {[1, 2, 3, '...', 12].map((page, i) => (
                 <button
                   key={i}
-                  className={`min-w-[42px] h-[42px] flex items-center justify-center rounded-full text-sm font-bold transition-all ${page === 1 ? 'bg-brand-blue text-white-pure shadow-soft' : 'text-text-dark hover:bg-surface-gray'}`}
+                  className={`min-w-[42px] h-[42px] flex items-center justify-center rounded-full text-sm font-medium transition-all ${page === 1 ? 'bg-brand-blue text-white-pure shadow-soft' : 'text-text-dark hover:bg-surface-gray'}`}
                 >
                   {page}
                 </button>
@@ -392,7 +392,7 @@ export default function CariPage() {
               <MapContainer properties={MOCK_PROPERTIES} />
 
               {/* Map Info Overlay */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[400] bg-white-pure/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/20 text-xs font-semibold text-brand-blue flex items-center gap-2 pointer-events-none">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[400] bg-white-pure/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/20 text-xs font-medium text-brand-blue flex items-center gap-2 pointer-events-none">
                 <MapIcon size={14} /> Peta Interaktif Leaflet
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function CariPage() {
             <div className="flex-1 overflow-y-auto p-8 space-y-10">
               {/* Section: Fasilitas */}
               <div>
-                <h3 className="text-sm font-bold text-text-dark mb-4 uppercase tracking-wider">Fasilitas Properti</h3>
+                <h3 className="text-sm font-medium text-text-dark mb-4 uppercase tracking-wider">Fasilitas Properti</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {[
                     { n: 'WiFi', i: <Wifi size={18} /> },
@@ -430,7 +430,7 @@ export default function CariPage() {
                       <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-brand-blue focus:ring-brand-blue" />
                       <div className="flex flex-col">
                         <span className="text-xs text-text-gray group-hover:text-brand-blue">{f.i}</span>
-                        <span className="text-xs font-semibold text-text-dark pt-1">{f.n}</span>
+                        <span className="text-xs font-medium text-text-dark pt-1">{f.n}</span>
                       </div>
                     </label>
                   ))}
@@ -439,10 +439,10 @@ export default function CariPage() {
 
               {/* Section: Sertifikat */}
               <div>
-                <h3 className="text-sm font-bold text-text-dark mb-4 uppercase tracking-wider">Tipe Sertifikat</h3>
+                <h3 className="text-sm font-medium text-text-dark mb-4 uppercase tracking-wider">Tipe Sertifikat</h3>
                 <div className="flex flex-wrap gap-2">
                   {['SHM', 'HGB', 'Lainnya'].map((s, i) => (
-                    <button key={i} className={`px-5 py-2 rounded-full text-xs font-semibold border ${i === 0 ? 'bg-brand-blue text-white-pure border-brand-blue' : 'bg-white-pure text-text-gray border-border-line'}`}>
+                    <button key={i} className={`px-5 py-2 rounded-full text-xs font-medium border ${i === 0 ? 'bg-brand-blue text-white-pure border-brand-blue' : 'bg-white-pure text-text-gray border-border-line'}`}>
                       {s}
                     </button>
                   ))}
@@ -451,8 +451,8 @@ export default function CariPage() {
             </div>
 
             <div className="px-8 py-5 border-t border-border-line bg-surface-gray flex items-center justify-between">
-              <button onClick={() => setShowFilters(false)} className="text-sm font-bold text-brand-blue hover:underline">Hapus Semua</button>
-              <button onClick={() => setShowFilters(false)} className="bg-brand-blue hover:bg-brand-blue-deep text-white-pure font-bold px-8 py-3 rounded-xl transition-all shadow-soft active:scale-95">
+              <button onClick={() => setShowFilters(false)} className="text-sm font-medium text-brand-blue hover:underline">Hapus Semua</button>
+              <button onClick={() => setShowFilters(false)} className="bg-brand-blue hover:bg-brand-blue-deep text-white-pure font-medium px-8 py-3 rounded-xl transition-all shadow-soft active:scale-95">
                 Tampilkan 145 Properti
               </button>
             </div>
