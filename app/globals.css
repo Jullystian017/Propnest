@@ -25,6 +25,7 @@
   /* Shadows - Much softer and more modern */
   --shadow-floating-search: 0 6px 20px rgba(0, 0, 0, 0.08);
   --shadow-feature-card: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.05);
   --shadow-premium: 0 12px 24px rgba(0, 0, 0, 0.06);
 }
 
@@ -51,7 +52,7 @@
   
   /* Alias for backward compatibility if needed, but styled blue */
   .btn-orange {
-    @apply btn-primary;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-blue text-white-pure font-bold rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 hover:bg-brand-blue-hover shadow-soft hover:shadow-md;
   }
   
   .btn-white {
@@ -63,7 +64,7 @@
   }
 
   .container-standard {
-    @apply max-w-[1200px] mx-auto px-4 lg:px-8 w-full;
+    @apply max-w-[1440px] mx-auto px-6 md:px-10 w-full;
   }
 }
 
@@ -93,7 +94,7 @@
 }
 
 .price-marker-outer:hover .price-marker-inner {
-  @apply bg-brand-black-pure scale-110 -translate-y-1;
+  @apply bg-black-pure scale-110 -translate-y-1;
 }
 
 /* Subtle pulse animation for emphasis */

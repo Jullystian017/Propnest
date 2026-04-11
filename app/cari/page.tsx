@@ -87,7 +87,7 @@ export default function CariPage() {
   const closePopovers = () => setActivePopover(null);
 
   return (
-    <div className="bg-white-pure min-h-screen flex flex-col font-sans pt-20">
+    <div className="bg-white-pure min-h-screen flex flex-col font-sans pt-20" suppressHydrationWarning>
       <Navbar />
 
       {/* ────── HEADER SEARCH BAR (STICKY TOP-0) ────── */}
@@ -103,8 +103,9 @@ export default function CariPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
                 placeholder="Cari lokasi, perumahan, atau area..." 
-                className={`w-full pl-14 pr-12 py-3.5 bg-[#F1F1F3] border-none rounded-full text-sm font-medium outline-none transition-all shadow-inner ${isSearchFocused ? 'bg-white-pure shadow-premium ring-4 ring-brand-blue/5' : 'hover:bg-gray-200'}`}
+                className={`w-full pl-14 pr-12 py-2.5 bg-white border border-border-line/60 rounded-full text-sm font-medium text-text-dark placeholder:text-text-gray focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/5 transition-all duration-300`}
               />
               {searchQuery && (
                 <button 
@@ -177,9 +178,9 @@ export default function CariPage() {
             <div className="relative">
               <button 
                 onClick={() => togglePopover('harga')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'harga' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all duration-300 ${activePopover === 'harga' ? 'bg-brand-blue text-white-pure shadow-md ring-2 ring-brand-blue/20' : 'bg-white border border-border-line/60 text-text-dark hover:bg-surface-dim'}`}
               >
-                Harga <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'harga' ? 'rotate-180' : ''}`} />
+                <span>Harga</span> <ChevronDown size={14} className={activePopover === 'harga' ? 'text-white-pure' : 'text-text-gray'} />
               </button>
               
               {activePopover === 'harga' && (
@@ -202,9 +203,9 @@ export default function CariPage() {
             <div className="relative">
               <button 
                 onClick={() => togglePopover('tipe')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'tipe' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all duration-300 ${activePopover === 'tipe' ? 'bg-brand-blue text-white-pure shadow-md ring-2 ring-brand-blue/20' : 'bg-white border border-border-line/60 text-text-dark hover:bg-surface-dim'}`}
               >
-                Tipe <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'tipe' ? 'rotate-180' : ''}`} />
+                <span>Tipe</span> <ChevronDown size={14} className={activePopover === 'tipe' ? 'text-white-pure' : 'text-text-gray'} />
               </button>
 
               {activePopover === 'tipe' && (
@@ -227,9 +228,9 @@ export default function CariPage() {
             <div className="relative">
               <button 
                 onClick={() => togglePopover('kamar')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'kamar' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all duration-300 ${activePopover === 'kamar' ? 'bg-brand-blue text-white-pure shadow-md ring-2 ring-brand-blue/20' : 'bg-white border border-border-line/60 text-text-dark hover:bg-surface-dim'}`}
               >
-                Kamar <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'kamar' ? 'rotate-180' : ''}`} />
+                <span>Kamar</span> <ChevronDown size={14} className={activePopover === 'kamar' ? 'text-white-pure' : 'text-text-gray'} />
               </button>
 
               {activePopover === 'kamar' && (
@@ -254,14 +255,14 @@ export default function CariPage() {
           {/* More Filters Toggle */}
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center gap-2.5 px-6 py-2.5 bg-[#F1F1F3] rounded-full text-[13px] font-bold text-text-dark hover:bg-gray-200 transition-all active:scale-95 group"
+            className="flex items-center gap-2 px-5 py-1.5 bg-white border border-border-line/60 rounded-full text-[13px] font-semibold text-text-dark hover:bg-surface-dim transition-all active:scale-95 group"
           >
-            <Filter size={16} className="text-text-gray/70 group-hover:text-brand-blue transition-colors" /> 
+            <Filter size={15} className="text-text-gray/70 group-hover:text-brand-blue transition-colors" /> 
             <span className="hidden sm:inline">Filter Lengkap</span>
           </button>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-[#F1F1F3] p-1.5 rounded-full">
+          <div className="flex bg-white border border-border-line/60 p-1 rounded-full">
             <button 
                onClick={() => setViewMode('split')}
                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'split' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray/60 hover:text-text-dark'}`}
@@ -507,13 +508,6 @@ export default function CariPage() {
         </div>
       )}
 
-      {/* Background Dim Overlay when searching */}
-      {isSearchFocused && (
-        <div 
-          onClick={() => setIsSearchFocused(false)}
-          className="fixed inset-0 z-[55] bg-black-pure/10 animate-in fade-in"
-        ></div>
-      )}
 
     </div>
   );
