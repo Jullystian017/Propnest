@@ -63,3 +63,56 @@
     @apply max-w-[1280px] mx-auto px-4 lg:px-8 w-full;
   }
 }
+
+/* ────── LEAFLET PREMIUM CUSTOMIZATION ────── */
+
+/* Hide default marker shadow and icon if they leak */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-sans);
+}
+
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Custom Price Bubble Marker */
+.price-marker-outer {
+  @apply relative cursor-pointer transition-transform duration-300;
+  will-change: transform;
+}
+
+.price-marker-inner {
+  @apply bg-brand-blue text-white-pure px-3 py-1.5 rounded-full text-xs font-bold shadow-premium border-2 border-white-pure flex items-center justify-center whitespace-nowrap transition-all duration-300;
+  min-width: 50px;
+}
+
+.price-marker-outer:hover .price-marker-inner {
+  @apply bg-brand-orange scale-110 -translate-y-1;
+}
+
+/* Subtle pulse animation for emphasis */
+.price-marker-pulse {
+  @apply absolute -inset-1 bg-brand-blue/20 rounded-full -z-10 animate-pulse;
+}
+
+.price-marker-outer:hover .price-marker-pulse {
+  @apply bg-brand-orange/30;
+}
+
+/* Premium Popup Styling */
+.premium-popup .leaflet-popup-content-wrapper {
+  @apply rounded-2xl p-0 overflow-hidden shadow-premium border-none;
+}
+
+.premium-popup .leaflet-popup-content {
+  @apply m-0 w-auto;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.premium-popup .leaflet-popup-tip {
+  @apply bg-white-pure;
+}

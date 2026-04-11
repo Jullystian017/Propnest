@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
+import MapContainer from '@/components/maps/MapContainer';
 import { 
   Heart, Search, Filter, BedDouble, Bath, Scaling, 
   Map as MapIcon, ChevronDown, List, X, House, Wifi, Car 
@@ -16,6 +17,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 4, baths: 3, size: 180 },
     badge: 'Baru',
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.025, lng: 110.320 },
   },
   {
     id: '2',
@@ -25,6 +27,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 3, baths: 2, size: 120 },
     badge: 'Populer',
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.535, lng: 110.780 },
   },
   {
     id: '3',
@@ -34,6 +37,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 5, baths: 4, size: 350 },
     badge: 'Eksklusif',
     image: 'https://images.unsplash.com/photo-1600607687931-cebf10c2c31e?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.140, lng: 110.400 },
   },
   {
     id: '4',
@@ -43,6 +47,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 3, baths: 2, size: 90 },
     badge: 'Promo',
     image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.400, lng: 109.240 },
   },
   {
     id: '5',
@@ -52,6 +57,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 2, baths: 1, size: 70 },
     badge: 'Baru',
     image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.710, lng: 109.020 },
   },
   {
     id: '6',
@@ -61,6 +67,7 @@ const MOCK_PROPERTIES = [
     specs: { beds: 3, baths: 2, size: 140 },
     badge: 'Hot Deal',
     image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=600&h=400',
+    coords: { lat: -7.595, lng: 110.815 },
   },
 ];
 
@@ -198,41 +205,11 @@ export default function CariPage() {
         {viewMode === 'split' && (
           <div className="hidden lg:block lg:w-[50%] xl:w-[45%] h-[calc(100vh-64px)] sticky top-[64px] p-4 lg:pr-0">
             <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-border-line/50 shadow-premium bg-surface-dim">
-               {/* Map Background/Iframe Mockup */}
-               <div className="absolute inset-0 bg-[#e5e3df] overflow-hidden">
-                  {/* Decorative Elements for Map look */}
-                  <div className="absolute top-1/4 left-1/3 w-full h-1 bg-white-pure/50 rotate-12"></div>
-                  <div className="absolute top-1/2 left-0 w-full h-1 bg-white-pure/50 -rotate-6"></div>
-                  <div className="absolute top-0 left-1/2 w-1 h-full bg-white-pure/50 rotate-3"></div>
-                  
-                  {/* Markers Mockup */}
-                  {[
-                    {t: '40%', l: '30%', p: '1.25M'},
-                    {t: '55%', l: '60%', p: '875Jt'},
-                    {t: '30%', l: '70%', p: '2.1M'},
-                    {t: '70%', l: '40%', p: '350Jt'},
-                    {t: '65%', l: '15%', p: '420Jt'},
-                  ].map((m, i) => (
-                    <div key={i} className="absolute transition-all duration-300 hover:scale-125 z-10 hover:z-20 cursor-pointer group/marker" style={{ top: m.t, left: m.l }}>
-                       <div className="bg-white-pure px-3 py-1 rounded-full text-[11px] font-bold text-text-dark border-2 border-brand-blue shadow-md group-hover/marker:bg-brand-blue group-hover/marker:text-white-pure transition-colors">
-                         {m.p}
-                       </div>
-                       {/* Subtle pulse effect */}
-                       <div className="absolute -inset-1 bg-brand-blue/20 rounded-full animate-pulse group-hover/marker:bg-brand-blue/40"></div>
-                    </div>
-                  ))}
-               </div>
+               <MapContainer properties={MOCK_PROPERTIES} />
                
-               {/* Map Controls */}
-               <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <div className="flex flex-col bg-white-pure rounded-lg shadow-md border border-border-line overflow-hidden">
-                    <button className="p-2 hover:bg-surface-gray border-b border-border-line text-lg font-bold">+</button>
-                    <button className="p-2 hover:bg-surface-gray text-lg font-bold">−</button>
-                  </div>
-               </div>
-
-               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white-pure/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/20 text-xs font-semibold text-brand-blue flex items-center gap-2">
-                 <MapIcon size={14} /> Sinkronisasi dengan daftar
+               {/* Map Info Overlay */}
+               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[400] bg-white-pure/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/20 text-xs font-semibold text-brand-blue flex items-center gap-2 pointer-events-none">
+                 <MapIcon size={14} /> Peta Interaktif Leaflet
                </div>
             </div>
           </div>
