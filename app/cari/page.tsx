@@ -87,31 +87,31 @@ export default function CariPage() {
   const closePopovers = () => setActivePopover(null);
 
   return (
-    <div className="bg-white-pure min-h-screen flex flex-col font-sans">
+    <div className="bg-white-pure min-h-screen flex flex-col font-sans pt-20">
       <Navbar />
 
-      {/* ────── HEADER SEARCH BAR (STICKY) ────── */}
-      <div className="sticky top-0 z-40 bg-white-pure border-b border-border-line/50">
-        <div className="container-standard py-3 flex flex-wrap items-center gap-3">
+      {/* ────── HEADER SEARCH BAR (STICKY TOP-0) ────── */}
+      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-border-line/50 transition-all duration-300">
+        <div className="container-standard py-4 flex flex-wrap items-center gap-4">
           
           {/* Main Search Input */}
-          <div className="flex-1 min-w-[200px] relative z-[60]">
+          <div className="flex-1 min-w-[300px] relative z-[60]">
             <div className={`relative group transition-all duration-300 ${isSearchFocused ? 'scale-[1.01]' : ''}`}>
-              <Search className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? 'text-brand-blue' : 'text-text-gray'}`} size={18} />
+              <Search className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? 'text-brand-blue' : 'text-text-gray/50'}`} size={20} />
               <input 
                 type="text" 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
-                placeholder="Cari lokasi, perumahan..." 
-                className={`w-full pl-11 pr-10 py-2 bg-surface-gray border border-border-line/50 rounded-full text-sm outline-none transition-all shadow-inner ${isSearchFocused ? 'bg-white-pure border-brand-blue shadow-premium ring-4 ring-brand-blue/5' : 'hover:bg-surface-dim hover:border-border-line'}`}
+                placeholder="Cari lokasi, perumahan, atau area..." 
+                className={`w-full pl-14 pr-12 py-3.5 bg-[#F1F1F3] border-none rounded-full text-sm font-medium outline-none transition-all shadow-inner ${isSearchFocused ? 'bg-white-pure shadow-premium ring-4 ring-brand-blue/5' : 'hover:bg-gray-200'}`}
               />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-surface-gray rounded-full text-text-gray transition-colors"
+                  className="absolute right-5 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-300 rounded-full text-text-gray transition-colors"
                 >
-                  <X size={14} />
+                  <X size={16} />
                 </button>
               )}
             </div>
@@ -171,29 +171,29 @@ export default function CariPage() {
           </div>
 
           {/* Quick Filters - Desktop Only */}
-          <div className="hidden lg:flex items-center gap-2 relative">
+          <div className="hidden lg:flex items-center gap-2.5 relative">
             
             {/* Harga Filter */}
             <div className="relative">
               <button 
                 onClick={() => togglePopover('harga')}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-xs font-bold transition-all ${activePopover === 'harga' ? 'bg-brand-blue text-white-pure border-brand-blue shadow-soft' : 'bg-surface-gray border-border-line/50 text-text-gray hover:text-text-dark hover:border-border-line shadow-inner'}`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'harga' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
               >
                 Harga <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'harga' ? 'rotate-180' : ''}`} />
               </button>
               
               {activePopover === 'harga' && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white-pure rounded-2xl shadow-premium border border-border-line p-4 z-50 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="text-xs font-bold text-text-dark mb-3 uppercase tracking-wider">Rentang Harga</h4>
-                  <div className="space-y-2">
+                <div className="absolute top-full left-0 mt-3 w-64 bg-white-pure rounded-[2rem] shadow-premium border border-border-line/50 p-5 z-50 animate-in fade-in slide-in-from-top-2">
+                  <h4 className="text-[10px] font-bold text-text-gray mb-4 uppercase tracking-widest">Rentang Harga</h4>
+                  <div className="space-y-1">
                     {['< 500 Juta', '500jt - 1M', '1M - 2M', '> 2 Miliar'].map((p) => (
-                      <label key={p} className="flex items-center gap-2 p-2 hover:bg-surface-gray rounded-lg cursor-pointer transition-colors group">
+                      <label key={p} className="flex items-center gap-3 p-2.5 hover:bg-surface-gray rounded-xl cursor-pointer transition-colors group">
                         <input type="radio" name="harga" className="w-4 h-4 text-brand-blue border-gray-300 focus:ring-brand-blue" />
-                        <span className="text-sm text-text-gray group-hover:text-text-dark">{p}</span>
+                        <span className="text-sm font-medium text-text-gray group-hover:text-text-dark">{p}</span>
                       </label>
                     ))}
                   </div>
-                  <button onClick={closePopovers} className="w-full mt-3 py-2 bg-brand-blue text-white-pure text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors">Terapkan</button>
+                  <button onClick={closePopovers} className="w-full mt-4 py-2.5 bg-brand-blue text-white-pure text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-soft">Terapkan</button>
                 </div>
               )}
             </div>
@@ -202,23 +202,23 @@ export default function CariPage() {
             <div className="relative">
               <button 
                 onClick={() => togglePopover('tipe')}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-xs font-bold transition-all ${activePopover === 'tipe' ? 'bg-brand-blue text-white-pure border-brand-blue shadow-soft' : 'bg-surface-gray border-border-line/50 text-text-gray hover:text-text-dark hover:border-border-line shadow-inner'}`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'tipe' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
               >
                 Tipe <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'tipe' ? 'rotate-180' : ''}`} />
               </button>
 
               {activePopover === 'tipe' && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white-pure rounded-2xl shadow-premium border border-border-line p-4 z-50 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="text-xs font-bold text-text-dark mb-3 uppercase tracking-wider">Tipe Properti</h4>
-                  <div className="space-y-2">
+                <div className="absolute top-full left-0 mt-3 w-60 bg-white-pure rounded-[2rem] shadow-premium border border-border-line/50 p-5 z-50 animate-in fade-in slide-in-from-top-2">
+                  <h4 className="text-[10px] font-bold text-text-gray mb-4 uppercase tracking-widest">Tipe Properti</h4>
+                  <div className="space-y-1">
                     {['Rumah', 'Apartemen', 'Ruko', 'Vila'].map((t) => (
-                      <label key={t} className="flex items-center gap-2 p-2 hover:bg-surface-gray rounded-lg cursor-pointer transition-colors group">
+                      <label key={t} className="flex items-center gap-3 p-2.5 hover:bg-surface-gray rounded-xl cursor-pointer transition-colors group">
                         <input type="checkbox" className="w-4 h-4 rounded text-brand-blue border-gray-300 focus:ring-brand-blue" />
-                        <span className="text-sm text-text-gray group-hover:text-text-dark">{t}</span>
+                        <span className="text-sm font-medium text-text-gray group-hover:text-text-dark">{t}</span>
                       </label>
                     ))}
                   </div>
-                  <button onClick={closePopovers} className="w-full mt-3 py-2 bg-brand-blue text-white-pure text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors">Terapkan</button>
+                  <button onClick={closePopovers} className="w-full mt-4 py-2.5 bg-brand-blue text-white-pure text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-soft">Terapkan</button>
                 </div>
               )}
             </div>
@@ -227,52 +227,52 @@ export default function CariPage() {
             <div className="relative">
               <button 
                 onClick={() => togglePopover('kamar')}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-xs font-bold transition-all ${activePopover === 'kamar' ? 'bg-brand-blue text-white-pure border-brand-blue shadow-soft' : 'bg-surface-gray border-border-line/50 text-text-gray hover:text-text-dark hover:border-border-line shadow-inner'}`}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-all ${activePopover === 'kamar' ? 'bg-brand-blue text-white-pure shadow-soft ring-4 ring-brand-blue/10' : 'bg-[#F1F1F3] text-text-dark/70 hover:bg-gray-200 hover:text-text-dark'}`}
               >
                 Kamar <ChevronDown size={14} className={`transition-transform duration-300 ${activePopover === 'kamar' ? 'rotate-180' : ''}`} />
               </button>
 
               {activePopover === 'kamar' && (
-                <div className="absolute top-full right-0 lg:left-0 mt-2 w-56 bg-white-pure rounded-2xl shadow-premium border border-border-line p-4 z-50 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="text-xs font-bold text-text-dark mb-3 uppercase tracking-wider">Kamar Tidur</h4>
-                  <div className="flex items-center justify-between gap-1 p-1 bg-surface-gray rounded-xl mb-3">
+                <div className="absolute top-full right-0 lg:left-0 mt-3 w-60 bg-white-pure rounded-[2rem] shadow-premium border border-border-line/50 p-5 z-50 animate-in fade-in slide-in-from-top-2">
+                  <h4 className="text-[10px] font-bold text-text-gray mb-4 uppercase tracking-widest">Kamar Tidur</h4>
+                  <div className="flex items-center justify-between gap-1 p-1 bg-surface-gray rounded-xl mb-4">
                     {['Semua', '1+', '2+', '3+', '4+'].map((k) => (
-                      <button key={k} className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all ${k === 'Semua' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}>
+                      <button key={k} className={`flex-1 py-2 text-[11px] font-bold rounded-lg transition-all ${k === 'Semua' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}>
                         {k}
                       </button>
                     ))}
                   </div>
-                  <button onClick={closePopovers} className="w-full py-2 bg-brand-blue text-white-pure text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors">Terapkan</button>
+                  <button onClick={closePopovers} className="w-full py-2.5 bg-brand-blue text-white-pure text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-soft">Terapkan</button>
                 </div>
               )}
             </div>
 
           </div>
 
-          <div className="h-6 w-px bg-border-line/60 hidden lg:block"></div>
+          <div className="h-6 w-px bg-border-line/40 hidden lg:block mx-1"></div>
 
           {/* More Filters Toggle */}
           <button 
             onClick={() => setShowFilters(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-surface-gray border border-border-line/50 rounded-full text-xs font-bold text-text-dark hover:border-brand-blue hover:text-brand-blue hover:shadow-soft transition-all active:scale-95 group shadow-inner"
+            className="flex items-center gap-2.5 px-6 py-2.5 bg-[#F1F1F3] rounded-full text-[13px] font-bold text-text-dark hover:bg-gray-200 transition-all active:scale-95 group"
           >
-            <Filter size={16} className="text-text-gray group-hover:text-brand-blue transition-colors" /> 
+            <Filter size={16} className="text-text-gray/70 group-hover:text-brand-blue transition-colors" /> 
             <span className="hidden sm:inline">Filter Lengkap</span>
           </button>
 
           {/* View Mode Toggle */}
-          <div className="flex bg-surface-gray p-1 rounded-full border border-border-line/50 shadow-inner">
+          <div className="flex bg-[#F1F1F3] p-1.5 rounded-full">
             <button 
                onClick={() => setViewMode('split')}
-               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'split' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}
+               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'split' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray/60 hover:text-text-dark'}`}
             >
-              <MapIcon size={14} /> <span>Peta</span>
+              <MapIcon size={14} /> <span className="hidden xl:inline">Peta</span>
             </button>
             <button 
                onClick={() => setViewMode('list')}
-               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'list' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray hover:text-text-dark'}`}
+               className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${viewMode === 'list' ? 'bg-white-pure shadow-sm text-brand-blue' : 'text-text-gray/60 hover:text-text-dark'}`}
             >
-              <List size={14} /> <span>Daftar</span>
+              <List size={14} /> <span className="hidden xl:inline">Daftar</span>
             </button>
           </div>
         </div>

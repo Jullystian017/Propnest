@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import {
-  MapPin, Home, DollarSign, Search, 
+  MapPin, Home, DollarSign, Search,
   BrainCircuit, Calculator, Map, FileCheck, Zap, TrendingUp,
   Heart, BedDouble, Bath, Scaling, ArrowUpRight
 } from 'lucide-react';
@@ -81,7 +81,7 @@ export default function HomePage() {
       {/* ── HERO SECTION (HEARTHAVEN STYLE) ── */}
       <section className="relative h-screen flex flex-col justify-end pb-64 overflow-hidden">
         {/* Full Image Background */}
-        <div 
+        <div
           className="absolute inset-0 z-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=1920')" }}
         >
@@ -89,9 +89,9 @@ export default function HomePage() {
         </div>
 
         <div className="container-standard relative z-10">
-          
-           {/* Big Heading & Search */}
-           <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] items-end gap-12 mb-20">
+
+          {/* Big Heading & Search */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] items-end gap-12 mb-20">
             {/* Big Heading */}
             <div className="max-w-3xl">
               <h1 className="font-display font-light text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white-pure drop-shadow-md">
@@ -113,17 +113,16 @@ export default function HomePage() {
           <div className="bg-white-pure rounded-[2.5rem] py-5 lg:py-7 px-6 lg:px-10 shadow-xl max-w-6xl mx-auto -mb-48 relative z-30 border border-gray-100">
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-5">
               <h2 className="text-xl md:text-2xl font-display font-medium text-text-dark max-w-xl">Find The Perfect Place To Call Home</h2>
-              
+
               {/* Buy/Sell/Rent Toggle */}
               <div className="flex bg-[#F1F1F3] p-1 rounded-full self-start xl:self-center">
                 {['Buy', 'Sell', 'Rent'].map((tab, idx) => (
-                  <button 
+                  <button
                     key={tab}
-                    className={`px-7 py-2 rounded-full text-xs font-bold transition-all ${
-                      idx === 0 
-                      ? 'bg-brand-blue text-white-pure shadow-md' 
-                      : 'text-text-gray/70 hover:text-text-dark'
-                    }`}
+                    className={`px-7 py-2 rounded-full text-xs font-bold transition-all ${idx === 0
+                        ? 'bg-brand-blue text-white-pure shadow-md'
+                        : 'text-text-gray/70 hover:text-text-dark'
+                      }`}
                   >
                     {tab}
                   </button>
@@ -188,7 +187,7 @@ export default function HomePage() {
         <div className="text-center mb-16">
           <p className="text-brand-blue text-xs font-bold tracking-widest uppercase mb-3 text-center">Fitur Unggulan</p>
           <h2 className="text-3xl md:text-4xl font-display font-bold text-text-dark mb-4">
-            Teknologi Modern untuk Pencarian<br/> Properti
+            Teknologi Modern untuk Pencarian<br /> Properti
           </h2>
           <p className="text-text-gray max-w-2xl mx-auto">
             Kami memadukan AI dan data real-time untuk pengalaman pencarian properti terbaik di Jawa Tengah.
@@ -197,13 +196,13 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((feat, i) => {
-             const isBlue = i < 2; 
-             return (
-              <div 
-                key={i} 
+            const isBlue = i < 2;
+            return (
+              <div
+                key={i}
                 className={`p-8 rounded-3xl shadow-feature-card ${isBlue ? 'bg-brand-blue text-white-pure' : 'bg-white-pure text-text-dark'} flex flex-col transition-transform hover:-translate-y-2 duration-300`}
               >
-                <div 
+                <div
                   className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 
                     ${isBlue ? 'bg-white-pure/10 text-white-pure' : 'bg-blue-50 text-brand-blue'}`}
                 >
@@ -214,7 +213,7 @@ export default function HomePage() {
                   {feat.desc}
                 </p>
               </div>
-             )
+            )
           })}
         </div>
       </section>
@@ -222,49 +221,49 @@ export default function HomePage() {
       {/* ── REKOMENDASI PROPERTI ── */}
       <section className="py-24 container-standard border-t border-border-line/50">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-           <div>
-             <p className="text-brand-blue text-xs font-bold tracking-widest uppercase mb-2">Rekomendasi</p>
-             <h2 className="text-4xl font-display font-bold text-text-dark">Properti Pilihan</h2>
-           </div>
-           <Link href="/cari" className="group flex items-center gap-2 text-sm font-bold text-brand-blue">
-             Lihat Semua Properti 
-             <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-           </Link>
+          <div>
+            <p className="text-brand-blue text-xs font-bold tracking-widest uppercase mb-2">Rekomendasi</p>
+            <h2 className="text-4xl font-display font-bold text-text-dark">Properti Pilihan</h2>
+          </div>
+          <Link href="/cari" className="group flex items-center gap-2 text-sm font-bold text-brand-blue">
+            Lihat Semua Properti
+            <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-           {RECOMMENDATIONS.map((item) => (
-             <div key={item.id} className="bg-white-pure rounded-3xl overflow-hidden shadow-feature-card border border-border-line group cursor-pointer transition-all hover:shadow-premium">
-               <div className="relative aspect-[16/11] bg-surface-dim overflow-hidden">
-                 <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${item.image})` }}></div>
-                 
-                 <div className="absolute top-5 left-5">
-                   <div className={`${item.badgeColor} text-white-pure text-[10px] font-extrabold px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md bg-opacity-90`}>
-                     {item.badge}
-                   </div>
-                 </div>
-                 <div className="absolute top-5 right-5">
-                   <div className="w-10 h-10 rounded-full bg-white-pure/90 flex items-center justify-center shadow-lg text-gray-400 hover:text-red-500 hover:bg-white transition-all transform hover:scale-110 active:scale-90">
-                     <Heart size={18} />
-                   </div>
-                 </div>
-               </div>
+          {RECOMMENDATIONS.map((item) => (
+            <div key={item.id} className="bg-white-pure rounded-3xl overflow-hidden shadow-feature-card border border-border-line group cursor-pointer transition-all hover:shadow-premium">
+              <div className="relative aspect-[16/11] bg-surface-dim overflow-hidden">
+                <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${item.image})` }}></div>
 
-               <div className="p-7">
-                 <h3 className="text-brand-blue-deep font-extrabold text-2xl mb-2">{item.price}</h3>
-                 <div className="font-bold text-text-dark text-lg mb-1 truncate">{item.name}</div>
-                 <div className="text-sm text-text-gray mb-6 flex items-center gap-1.5 opacity-80">
-                   <MapPin size={14} /> {item.location}
-                 </div>
-                 
-                 <div className="flex items-center gap-6 text-[13px] font-bold text-text-dark/70 pt-6 border-t border-border-line/50">
-                   <span className="flex items-center gap-2"><BedDouble size={18} className="text-brand-blue" /> {item.specs.beds}</span>
-                   <span className="flex items-center gap-2"><Bath size={18} className="text-brand-blue" /> {item.specs.baths}</span>
-                   <span className="flex items-center gap-2"><Scaling size={18} className="text-brand-blue" /> {item.specs.size} m²</span>
-                 </div>
-               </div>
-             </div>
-           ))}
+                <div className="absolute top-5 left-5">
+                  <div className={`${item.badgeColor} text-white-pure text-[10px] font-extrabold px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md bg-opacity-90`}>
+                    {item.badge}
+                  </div>
+                </div>
+                <div className="absolute top-5 right-5">
+                  <div className="w-10 h-10 rounded-full bg-white-pure/90 flex items-center justify-center shadow-lg text-gray-400 hover:text-red-500 hover:bg-white transition-all transform hover:scale-110 active:scale-90">
+                    <Heart size={18} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-7">
+                <h3 className="text-brand-blue-deep font-extrabold text-2xl mb-2">{item.price}</h3>
+                <div className="font-bold text-text-dark text-lg mb-1 truncate">{item.name}</div>
+                <div className="text-sm text-text-gray mb-6 flex items-center gap-1.5 opacity-80">
+                  <MapPin size={14} /> {item.location}
+                </div>
+
+                <div className="flex items-center gap-6 text-[13px] font-bold text-text-dark/70 pt-6 border-t border-border-line/50">
+                  <span className="flex items-center gap-2"><BedDouble size={18} className="text-brand-blue" /> {item.specs.beds}</span>
+                  <span className="flex items-center gap-2"><Bath size={18} className="text-brand-blue" /> {item.specs.baths}</span>
+                  <span className="flex items-center gap-2"><Scaling size={18} className="text-brand-blue" /> {item.specs.size} m²</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -272,9 +271,9 @@ export default function HomePage() {
       <section className="container-standard py-12">
         <div className="bg-brand-blue rounded-[3rem] p-12 lg:p-20 overflow-hidden relative shadow-premium">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-          
+
           <div className="max-w-2xl relative z-10 text-white-pure">
-            <h2 className="text-4xl md:text-5xl font-display font-medium mb-6">Siap Menemukan <br/>Rumah Impian?</h2>
+            <h2 className="text-4xl md:text-5xl font-display font-medium mb-6">Siap Menemukan <br />Rumah Impian?</h2>
             <p className="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
               Daftarkan diri Anda sekarang dan dapatkan rekomendasi properti terbaik langsung ke inbox Anda secara otomatis.
             </p>
@@ -297,19 +296,19 @@ export default function HomePage() {
 
 function ChevronDown({ size, className }: { size: number, className?: string }) {
   return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
     >
-      <path d="m6 9 6 6 6-6"/>
+      <path d="m6 9 6 6 6-6" />
     </svg>
   );
 }

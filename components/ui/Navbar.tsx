@@ -30,7 +30,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
+        className={`${pathname === '/cari' ? 'absolute' : 'fixed'} top-0 inset-x-0 z-50 transition-all duration-500 ${
           isScrolled || pathname !== '/'
             ? 'py-3 bg-white/80 backdrop-blur-md border-b border-black/5 shadow-sm'
             : 'py-6 bg-transparent'
