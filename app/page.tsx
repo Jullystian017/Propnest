@@ -4,41 +4,10 @@ import Footer from '@/components/ui/Footer';
 import {
   MapPin, Home, DollarSign, Search,
   BrainCircuit, Calculator, Map, FileCheck, Zap, TrendingUp,
-  Heart, BedDouble, Bath, Scaling, ArrowUpRight
+  Heart, BedDouble, Bath, Scaling, ArrowUpRight, Bookmark
 } from 'lucide-react';
 
-const RECOMMENDATIONS = [
-  {
-    id: '1',
-    name: 'Rumah Modern Minimalis',
-    location: 'BSB City, Semarang',
-    price: 'Rp 1,25 Miliar',
-    specs: { beds: 4, baths: 3, size: 180 },
-    badge: 'Baru',
-    badgeColor: 'bg-brand-blue',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=600&h=400',
-  },
-  {
-    id: '2',
-    name: 'Cluster Premium Colomadu',
-    location: 'Colomadu, Solo',
-    price: 'Rp 875 Juta',
-    specs: { beds: 3, baths: 2, size: 120 },
-    badge: 'Populer',
-    badgeColor: 'bg-text-dark',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600&h=400',
-  },
-  {
-    id: '3',
-    name: 'Vila Tropis Ungaran',
-    location: 'Ungaran, Semarang',
-    price: 'Rp 2,1 Miliar',
-    specs: { beds: 5, baths: 4, size: 350 },
-    badge: 'Eksklusif',
-    badgeColor: 'bg-brand-blue-deep',
-    image: 'https://images.unsplash.com/photo-1600607687931-cebf10c2c31e?auto=format&fit=crop&q=80&w=600&h=400',
-  },
-];
+import { MOCK_PROPERTIES as RECOMMENDATIONS } from '@/lib/mock-data';
 
 const FEATURES = [
   {
@@ -96,7 +65,7 @@ export default function HomePage() {
             <div className="max-w-3xl">
               <h1 className="font-display font-light text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white-pure drop-shadow-md">
                 Find Your Dream Home <br className="hidden md:block" />
-                With <span className="text-brand-blue font-bold">PropNest</span>
+                With <span className="text-brand-blue font-medium">PropNest</span>
               </h1>
             </div>
 
@@ -119,9 +88,9 @@ export default function HomePage() {
                 {['Buy', 'Sell', 'Rent'].map((tab, idx) => (
                   <button
                     key={tab}
-                    className={`px-7 py-2 rounded-full text-xs font-bold transition-all ${idx === 0
-                        ? 'bg-brand-blue text-white-pure shadow-md'
-                        : 'text-text-gray/70 hover:text-text-dark'
+                    className={`px-7 py-2 rounded-full text-xs font-semibold transition-all ${idx === 0
+                      ? 'bg-brand-blue text-white-pure shadow-md'
+                      : 'text-text-gray/70 hover:text-text-dark'
                       }`}
                   >
                     {tab}
@@ -133,7 +102,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_180px] gap-4 items-end">
               {/* Looking For */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-gray uppercase tracking-widest block ml-1 opacity-60">Property Type</label>
+                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Property Type</label>
                 <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
                   <div className="flex items-center gap-3">
                     <Home size={18} className="text-brand-blue" />
@@ -145,7 +114,7 @@ export default function HomePage() {
 
               {/* Price */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-gray uppercase tracking-widest block ml-1 opacity-60">Budget Range</label>
+                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Budget Range</label>
                 <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
                   <div className="flex items-center gap-3">
                     <DollarSign size={18} className="text-brand-blue" />
@@ -157,7 +126,7 @@ export default function HomePage() {
 
               {/* Locations */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-text-gray uppercase tracking-widest block ml-1 opacity-60">Location</label>
+                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Location</label>
                 <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
                   <div className="flex items-center gap-3">
                     <MapPin size={18} className="text-brand-blue" />
@@ -168,7 +137,7 @@ export default function HomePage() {
               </div>
 
               {/* Search Button Integrated */}
-              <button className="h-[64px] bg-black-pure hover:bg-gray-800 text-white-pure font-bold rounded-[2rem] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg group">
+              <button className="h-[64px] bg-black-pure hover:bg-gray-800 text-white-pure font-medium rounded-[2rem] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg group">
                 <Search size={18} className="group-hover:scale-110 transition-transform" />
                 <span className="text-sm">Search</span>
               </button>
@@ -179,14 +148,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Spacing for the overlapping search bar */}
-      <div className="h-64 md:h-80"></div>
 
       {/* ── FITUR UNGGULAN ── */}
       <section className="py-24 container-standard">
         <div className="text-center mb-16">
-          <p className="text-brand-blue text-xs font-bold tracking-widest uppercase mb-3 text-center">Fitur Unggulan</p>
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-text-dark mb-4">
+          <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3 text-center">Fitur Unggulan</p>
+          <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark mb-4">
             Teknologi Modern untuk Pencarian<br /> Properti
           </h2>
           <p className="text-text-gray max-w-2xl mx-auto">
@@ -208,7 +175,7 @@ export default function HomePage() {
                 >
                   <feat.icon size={24} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-lg font-bold font-display mb-3">{feat.title}</h3>
+                <h3 className="text-lg font-medium font-display mb-3">{feat.title}</h3>
                 <p className={`text-sm leading-relaxed ${isBlue ? 'text-blue-100' : 'text-text-gray'}`}>
                   {feat.desc}
                 </p>
@@ -222,10 +189,10 @@ export default function HomePage() {
       <section className="py-24 container-standard border-t border-border-line/50">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div>
-            <p className="text-brand-blue text-xs font-bold tracking-widest uppercase mb-2">Rekomendasi</p>
-            <h2 className="text-4xl font-display font-bold text-text-dark">Properti Pilihan</h2>
+            <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-2">Rekomendasi</p>
+            <h2 className="text-4xl font-display font-medium text-text-dark">Properti Pilihan</h2>
           </div>
-          <Link href="/cari" className="group flex items-center gap-2 text-sm font-bold text-brand-blue">
+          <Link href="/cari" className="group flex items-center gap-2 text-sm font-medium text-brand-blue">
             Lihat Semua Properti
             <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
@@ -233,36 +200,58 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {RECOMMENDATIONS.map((item) => (
-            <div key={item.id} className="bg-white-pure rounded-3xl overflow-hidden shadow-feature-card border border-border-line group cursor-pointer transition-all hover:shadow-premium">
-              <div className="relative aspect-[16/11] bg-surface-dim overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${item.image})` }}></div>
+            <Link
+              key={item.id}
+              href={`/properti/${item.id}`}
+              className="group relative flex flex-col transition-all duration-500 hover:-translate-y-2"
+            >
+              {/* Image Area */}
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft group-hover:shadow-md transition-all duration-700">
+                <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[3s]" style={{ backgroundImage: `url(${item.image})` }}></div>
 
-                <div className="absolute top-5 left-5">
-                  <div className={`${item.badgeColor} text-white-pure text-[10px] font-extrabold px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md bg-opacity-90`}>
+                {/* Premium White Badge */}
+                <div className="absolute top-4 left-4 backdrop-blur-md bg-white-pure/90 px-3 py-1.5 rounded-full shadow-premium border border-white/20 text-[10px] font-semibold flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${item.badge === 'Baru' ? 'bg-brand-blue' : 'bg-brand-blue-light'}`}></span>
+                  <span className={item.badge === 'Baru' ? 'text-brand-blue' : 'text-brand-blue-deep'}>
                     {item.badge}
-                  </div>
-                </div>
-                <div className="absolute top-5 right-5">
-                  <div className="w-10 h-10 rounded-full bg-white-pure/90 flex items-center justify-center shadow-lg text-gray-400 hover:text-red-500 hover:bg-white transition-all transform hover:scale-110 active:scale-90">
-                    <Heart size={18} />
-                  </div>
+                  </span>
                 </div>
               </div>
 
-              <div className="p-7">
-                <h3 className="text-brand-blue-deep font-extrabold text-2xl mb-2">{item.price}</h3>
-                <div className="font-bold text-text-dark text-lg mb-1 truncate">{item.name}</div>
-                <div className="text-sm text-text-gray mb-6 flex items-center gap-1.5 opacity-80">
-                  <MapPin size={14} /> {item.location}
+              {/* Floating Content Box */}
+              <div className="relative -mt-14 mx-3 bg-white-pure rounded-xl p-4 shadow-premium border border-border-line/20 group-hover:border-brand-blue/30 transition-all duration-500 z-10">
+                <div className="flex justify-between items-start mb-1">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-medium text-text-dark group-hover:text-brand-blue transition-colors truncate">
+                      {item.name}
+                    </h3>
+                    <p className="flex items-center gap-1.5 text-[11px] text-text-gray font-medium mt-0.5">
+                      <MapPin size={12} className="text-brand-blue" />
+                      <span className="truncate">{item.location}</span>
+                    </p>
+                  </div>
+
+                  <button className="p-2.5 bg-blue-50/80 text-brand-blue rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 shadow-sm overflow-hidden active:scale-95 group-hover:shadow-soft">
+                    <Bookmark size={16} fill="currentColor" className="fill-transparent hover:fill-current" />
+                  </button>
                 </div>
 
-                <div className="flex items-center gap-6 text-[13px] font-bold text-text-dark/70 pt-6 border-t border-border-line/50">
-                  <span className="flex items-center gap-2"><BedDouble size={18} className="text-brand-blue" /> {item.specs.beds}</span>
-                  <span className="flex items-center gap-2"><Bath size={18} className="text-brand-blue" /> {item.specs.baths}</span>
-                  <span className="flex items-center gap-2"><Scaling size={18} className="text-brand-blue" /> {item.specs.size} m²</span>
+                <div className="my-2.5 border-t border-border-line/30 w-full"></div>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-semibold text-text-dark">
+                    {item.price.replace('Rp ', 'Rp').replace(' Juta', 'jt').replace(' Miliar', 'M')}
+                  </p>
+                </div>
+
+                {/* Quick Specs (Compact) */}
+                <div className="mt-3 pt-3 border-t border-border-line/30 flex items-center gap-4 text-[10px] font-medium text-text-gray/80">
+                  <span className="flex items-center gap-1.5"><BedDouble size={14} className="text-brand-blue/60" /> {item.specs.beds} Bed</span>
+                  <span className="flex items-center gap-1.5"><Bath size={14} className="text-brand-blue/60" /> {item.specs.baths} Bath</span>
+                  <span className="flex items-center gap-1.5"><Scaling size={14} className="text-brand-blue/60" /> {item.specs.size}m²</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -278,10 +267,10 @@ export default function HomePage() {
               Daftarkan diri Anda sekarang dan dapatkan rekomendasi properti terbaik langsung ke inbox Anda secara otomatis.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/daftar" className="bg-white-pure text-brand-blue px-10 py-4 rounded-full font-bold hover:bg-gray-50 transition-all shadow-lg active:scale-95 text-center">
+              <Link href="/daftar" className="bg-white-pure text-brand-blue px-10 py-4 rounded-full font-medium hover:bg-gray-50 transition-all shadow-lg active:scale-95 text-center">
                 Mulai Sekarang
               </Link>
-              <Link href="/about" className="border border-white/30 text-white-pure px-10 py-4 rounded-full font-bold hover:bg-white/10 transition-colors text-center">
+              <Link href="/about" className="border border-white/30 text-white-pure px-10 py-4 rounded-full font-medium hover:bg-white/10 transition-colors text-center">
                 Pelajari Lebih Lanjut
               </Link>
             </div>

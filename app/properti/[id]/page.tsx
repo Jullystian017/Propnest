@@ -1,180 +1,230 @@
 import React from 'react';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { MapPin, BedDouble, Bath, Scaling, CheckCircle2, Phone, CalendarHeart, Share2, Heart, Award } from 'lucide-react';
+import { 
+  MapPin, BedDouble, Bath, Scaling, CheckCircle2, 
+  Phone, CalendarHeart, Share2, Heart, Award,
+  Zap, MessageSquare, ChevronRight, Star, Shield, TrendingUp
+} from 'lucide-react';
 import Link from 'next/link';
+import { MOCK_PROPERTIES } from '@/lib/mock-data';
+import { notFound } from 'next/navigation';
 
-export default function DetailPropertiPage() {
+export default async function DetailPropertiPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
+  const { id } = await params;
+  const property = MOCK_PROPERTIES.find(p => p.id === id);
+
+  if (!property) {
+    notFound();
+  }
+
   return (
-    <div className="bg-surface-gray min-h-screen pt-24 font-sans">
+    <div className="bg-white-pure min-h-screen pt-24 font-sans selection:bg-brand-blue/10">
       <Navbar />
 
-      <main className="container-standard py-6 border-b border-border-line/40">
+      <main className="container-standard py-6">
         {/* Breadcrumb & Top Layout */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="flex gap-2 text-sm text-text-gray mb-3 border-b border-border-line pb-2 inline-flex">
-              <Link href="/" className="hover:text-brand-blue">Home</Link>
-              <span>/</span>
-              <Link href="/cari" className="hover:text-brand-blue">Jawa Tengah</Link>
-              <span>/</span>
-              <span className="text-text-dark font-medium">Banyumas</span>
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-text-gray/60 mb-4 font-medium">
+              <Link href="/" className="hover:text-brand-blue transition-colors">Home</Link>
+              <ChevronRight size={12} />
+              <Link href="/cari" className="hover:text-brand-blue transition-colors">Properties</Link>
+              <ChevronRight size={12} />
+              <span className="text-text-dark">{property.location.split(',')[0]}</span>
             </div>
             
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="bg-blue-50 text-brand-blue text-xs font-bold px-3 py-1 rounded-full border border-brand-blue/20">Siap Huni</span>
-              <span className="bg-surface-dim text-text-gray text-xs font-bold px-3 py-1 rounded-full border border-border-line">SHM/HGB</span>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <div className="backdrop-blur-md bg-white-pure/90 px-3 py-1 rounded-full shadow-premium border border-border-line/50 text-[10px] font-semibold flex items-center gap-2 text-brand-blue">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse"></span>
+                {property.badge}
+              </div>
+              <span className="bg-surface-dim/50 text-text-gray/80 text-[10px] font-medium px-3 py-1 rounded-full border border-border-line/30">SHM Sertifikat</span>
             </div>
             
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-text-dark mt-2">
-              Griya Asri Premiere Purwokerto
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-medium text-text-dark tracking-tight">
+              {property.name}
             </h1>
-            <div className="flex items-center gap-2 text-text-gray mt-2">
-              <MapPin size={16} className="text-brand-blue" />
-              <span className="text-sm md:text-base">Jl. Raden Patah, Purwokerto Utara, Banyumas</span>
+            <div className="flex items-center gap-2 text-text-gray mt-3">
+              <MapPin size={18} className="text-brand-blue" />
+              <span className="text-sm md:text-lg font-medium">{property.location}</span>
             </div>
           </div>
 
-          <div className="flex gap-3">
-             <button className="flex items-center gap-2 px-4 py-2 bg-white-pure border border-border-line rounded-lg text-sm font-semibold hover:bg-surface-gray transition-colors">
-               <Share2 size={16} /> Bagikan
+          <div className="flex gap-2">
+             <button className="flex items-center gap-2 px-5 py-2.5 bg-white-pure border border-border-line/60 rounded-xl text-sm font-medium text-text-dark hover:bg-surface-gray transition-all shadow-sm active:scale-95">
+               <Share2 size={16} className="text-brand-blue" /> Bagikan
              </button>
-             <button className="flex items-center gap-2 px-4 py-2 bg-white-pure border border-border-line rounded-lg text-sm font-semibold hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors">
+             <button className="flex items-center gap-2 px-5 py-2.5 bg-white-pure border border-border-line/60 rounded-xl text-sm font-bold text-text-dark hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shadow-sm active:scale-95">
                <Heart size={16} /> Simpan
              </button>
           </div>
         </div>
 
-        {/* Bento Gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 h-[300px] md:h-[450px]">
-           <div className="md:col-span-2 relative rounded-2xl overflow-hidden group h-full">
-             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-500" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800&h=600')` }}></div>
+        {/* Bento Gallery - Dynamic */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12 h-[350px] md:h-[550px]">
+           <div className="md:col-span-2 relative rounded-3xl overflow-hidden group h-full shadow-premium">
+             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('${property.image}')` }}></div>
            </div>
-           <div className="hidden md:block col-span-1 relative rounded-2xl overflow-hidden group h-full">
-             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-500" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400&h=600')` }}></div>
+           <div className="hidden md:block col-span-1 space-y-4 h-full">
+             <div className="relative rounded-3xl overflow-hidden group h-[calc(50%-8px)] shadow-soft">
+               <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-700" style={{ backgroundImage: `url('${property.gallery?.[0] || property.image}')` }}></div>
+             </div>
+             <div className="relative rounded-3xl overflow-hidden group h-[calc(50%-8px)] shadow-soft">
+               <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-700" style={{ backgroundImage: `url('${property.gallery?.[1] || property.image}')` }}></div>
+             </div>
            </div>
-           <div className="hidden md:block col-span-1 relative rounded-2xl overflow-hidden group h-full">
-             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-500" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1628624747186-a941c476b7ef?auto=format&fit=crop&q=80&w=400&h=600')` }}></div>
-             <div className="absolute inset-0 bg-black-pure/40 flex items-center justify-center cursor-pointer hover:bg-black-pure/50 transition-colors">
-               <span className="text-white-pure font-bold text-lg">+12 Foto</span>
+           <div className="hidden md:block col-span-1 relative rounded-3xl overflow-hidden group h-full shadow-soft">
+             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('${property.gallery?.[2] || property.image}')` }}></div>
+             <div className="absolute inset-0 bg-black-pure/30 backdrop-blur-[2px] flex items-center justify-center cursor-pointer hover:bg-black-pure/50 transition-all">
+               <div className="text-center">
+                 <div className="text-white-pure font-semibold text-2xl tracking-tighter">+12</div>
+                 <div className="text-white-pure/80 text-[10px] font-bold uppercase tracking-widest">More Photos</div>
+               </div>
              </div>
            </div>
         </div>
 
         {/* Two Column Content */}
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row gap-16">
           
-          {/* Sisi Kiri (Main) */}
-          <div className="flex-1 space-y-10">
-            {/* Keunggulan Spec */}
-            <div className="bg-white-pure p-6 rounded-2xl shadow-sm border border-border-line flex justify-between items-center text-text-dark font-medium">
-               <div className="text-center flex-1 border-r border-border-line/60">
-                 <div className="text-text-gray text-xs mb-1">Kamar Tidur</div>
-                 <div className="flex justify-center items-center gap-2"><BedDouble size={20} className="text-brand-blue" /> 3 Ruangan</div>
+          {/* Left Column (Main) */}
+          <div className="flex-1 space-y-12">
+            
+            {/* Specs Highlight Dashboard */}
+            <div className="bg-white-pure p-8 rounded-[32px] shadow-premium border border-border-line/40 flex flex-wrap justify-between items-center text-text-dark relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+               
+               <div className="flex flex-col items-center gap-1 flex-1 min-w-[120px] border-r border-border-line/40 last:border-0 py-2">
+                 <BedDouble size={24} className="text-brand-blue mb-2" />
+                 <div className="text-[10px] text-text-gray font-semibold uppercase tracking-widest">Bedrooms</div>
+                 <div className="text-xl font-medium">{property.specs.beds} Rooms</div>
                </div>
-               <div className="text-center flex-1 border-r border-border-line/60">
-                 <div className="text-text-gray text-xs mb-1">Kamar Mandi</div>
-                 <div className="flex justify-center items-center gap-2"><Bath size={20} className="text-brand-blue" /> 2 Ruangan</div>
+               
+               <div className="flex flex-col items-center gap-1 flex-1 min-w-[120px] border-r border-border-line/40 last:border-0 py-2">
+                 <Bath size={24} className="text-brand-blue mb-2" />
+                 <div className="text-[10px] text-text-gray font-bold uppercase tracking-widest">Bathrooms</div>
+                 <div className="text-xl font-bold">{property.specs.baths} Rooms</div>
                </div>
-               <div className="text-center flex-1 border-r border-border-line/60">
-                 <div className="text-text-gray text-xs mb-1">Luas Tanah</div>
-                 <div className="flex justify-center items-center gap-2"><Scaling size={20} className="text-brand-blue" /> 90 m²</div>
-               </div>
-               <div className="text-center flex-1">
-                 <div className="text-text-gray text-xs mb-1">Luas Bangunan</div>
-                 <div className="flex justify-center items-center gap-2"><Scaling size={20} className="text-brand-blue" /> 60 m²</div>
+               
+               <div className="flex flex-col items-center gap-1 flex-1 min-w-[120px] py-2">
+                 <Scaling size={24} className="text-brand-blue mb-2" />
+                 <div className="text-[10px] text-text-gray font-bold uppercase tracking-widest">Land Area</div>
+                 <div className="text-xl font-bold">{property.specs.size} m²</div>
                </div>
             </div>
 
-            {/* Deskripsi */}
+            {/* Description Section */}
             <div>
-              <h2 className="text-xl font-display font-bold text-text-dark mb-4">Deskripsi Properti</h2>
-              <div className="prose prose-sm text-text-gray leading-relaxed pr-6">
-                <p>Griya Asri Premiere adalah perumahan cluster eksklusif di jantung kota Purwokerto Utara. Dirancang khusus untuk keluarga modern yang mendambakan keseimbangan antara gaya hidup perkotaan dan ketenangan alam.</p>
-                <p className="mt-4">Setiap unit dibangun menggunakan material premium berkualitas. Lokasinya sangat strategis, hanya 5 menit ke Universitas Jenderal Soedirman (UNSOED) dan 10 menit ke stasiun kereta api.</p>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1.5 h-10 bg-brand-blue rounded-full"></div>
+                <h2 className="text-3xl font-display font-medium text-text-dark">About this Property</h2>
+              </div>
+              <div className="text-text-gray leading-relaxed text-lg font-light max-w-3xl">
+                {property.description || 'Properti eksklusif yang dirancang untuk kenyamanan keluarga Anda. Terletak di lokasi yang sangat strategis dengan akses mudah ke fasilitas publik utama.'}
               </div>
             </div>
 
-            {/* Fasilitas */}
+            {/* Features Section */}
             <div>
-              <h2 className="text-xl font-display font-bold text-text-dark mb-4">Fasilitas Utama</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {['Keamanan 24 Jam', 'Area Taman Playful', 'Dekat Pintu Tol', 'Bebas Banjir'].map((feat) => (
-                    <div key={feat} className="flex items-center gap-3 text-sm text-text-dark font-medium">
-                      <CheckCircle2 size={16} className="text-brand-blue shrink-0" />
-                      {feat}
+              <h2 className="text-xl font-display font-bold text-text-dark mb-6 flex items-center gap-3">
+                <Shield size={20} className="text-brand-blue" /> Premium Facilities
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(property.features || ['Keamanan 24 Jam', 'Area Taman', 'Smart Gateway', 'Internet Dedicated']).map((feat) => (
+                    <div key={feat} className="flex flex-col gap-3 bg-surface-dim/30 p-5 rounded-2xl border border-border-line/20 hover:border-brand-blue/30 transition-all group">
+                      <CheckCircle2 size={24} className="text-brand-blue/40 group-hover:text-brand-blue transition-colors" />
+                      <span className="text-sm text-text-dark font-medium leading-tight">{feat}</span>
                     </div>
                   ))}
               </div>
             </div>
 
-            {/* Mini KPR */}
-            <div className="bg-gradient-to-br from-blue-50 to-white-pure p-8 rounded-2xl border border-blue-100">
-               <h2 className="text-xl font-display font-bold text-text-dark mb-2">Hitung Cicilan KPR</h2>
-               <p className="text-sm text-text-gray mb-6">Simulasi cicilan bulanan untuk menyiapkan anggaran keluarga Anda.</p>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                 <div>
-                   <label className="block text-xs font-semibold text-text-dark mb-1">Uang Muka (DP)</label>
-                   <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-gray font-medium text-sm">Rp</span>
-                      <input type="text" className="w-full border border-border-line rounded-lg py-2 pl-10 pr-3 focus:outline-none focus:border-brand-blue" defaultValue="50.000.000" />
+            {/* Mini Mortgage Calculator */}
+            <div className="bg-gradient-to-br from-brand-blue/5 via-white-pure to-transparent p-10 rounded-[40px] border border-brand-blue/10 relative overflow-hidden">
+               <div className="relative z-10">
+                 <h2 className="text-2xl font-display font-bold text-text-dark mb-2">Simulasi Cicilan KPR</h2>
+                 <p className="text-text-gray mb-8 text-sm">Wujudkan hunian impian Anda dengan skema pembayaran yang fleksibel.</p>
+                 
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-text-gray">Uang Muka (DP)</label>
+                     <div className="relative group">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-dark font-bold text-sm">Rp</span>
+                        <input type="text" className="w-full bg-white-pure border-2 border-border-line/40 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-blue shadow-sm group-hover:border-border-line transition-all" defaultValue="150.000.000" />
+                     </div>
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-text-gray">Tenor (Tahun)</label>
+                     <select className="w-full bg-white-pure border-2 border-border-line/40 rounded-2xl py-4 px-4 focus:outline-none focus:border-brand-blue shadow-sm appearance-none font-bold text-text-dark" defaultValue="15">
+                       <option value="10">10 Tahun</option>
+                       <option value="15">15 Tahun</option>
+                       <option value="20">20 Tahun</option>
+                     </select>
                    </div>
                  </div>
-                 <div>
-                   <label className="block text-xs font-semibold text-text-dark mb-1">Tenor Jangka Waktu</label>
-                   <select className="w-full border border-border-line rounded-lg py-2 px-3 focus:outline-none focus:border-brand-blue" defaultValue="15 Tahun">
-                     <option>10 Tahun</option>
-                     <option>15 Tahun</option>
-                     <option>20 Tahun</option>
-                   </select>
+                 
+                 <div className="flex items-center justify-between bg-white-pure/60 backdrop-blur-md p-6 rounded-3xl border border-white/40 shadow-premium">
+                    <div>
+                      <div className="text-[10px] text-text-gray font-black uppercase tracking-widest mb-1">Estimasi Cicilan Ke-1</div>
+                      <div className="text-3xl font-black text-brand-blue font-display">{property.price.includes('Miliar') ? 'Rp 8.450.000' : 'Rp 3.120.000'}<span className="text-sm font-bold text-text-gray/50 ml-1">/ bulan</span></div>
+                    </div>
+                    <Link href="#" className="bg-brand-blue text-white-pure font-bold text-xs px-6 py-3 rounded-xl hover:bg-brand-blue-deep transition-all shadow-md hover:shadow-lg active:scale-95">
+                      Lihat Detail
+                    </Link>
                  </div>
-               </div>
-               
-               <div className="flex items-center justify-between bg-white-pure p-4 rounded-xl border border-border-line shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                  <div>
-                    <div className="text-xs text-text-gray font-medium mb-1">Estimasi Cicilan per Bulan</div>
-                    <div className="text-2xl font-bold text-text-dark">Rp 3.450.000</div>
-                  </div>
-                  <Link href="/kpr-calculator" className="text-brand-blue font-bold text-sm bg-blue-50 px-4 py-2 rounded-lg hover:bg-brand-blue hover:text-white-pure transition-colors">
-                    Lihat Detail
-                  </Link>
                </div>
             </div>
 
           </div>
 
-          {/* Sisi Kanan (Sticky Sidebar) */}
-          <aside className="w-full lg:w-[380px] shrink-0">
-             <div className="bg-white-pure rounded-2xl border border-border-line p-6 shadow-floating sticky top-28">
+          {/* Right Column (Sticky Sidebar) */}
+          <aside className="w-full lg:w-[420px] shrink-0">
+             <div className="bg-white-pure rounded-[40px] border border-border-line/40 p-8 shadow-premium sticky top-28 ring-1 ring-border-line/20">
                
-               <div className="mb-6 pb-6 border-b border-border-line/60">
-                 <div className="text-sm font-semibold text-text-gray mb-1">Cicilan Mulai</div>
-                 <div className="text-2xl font-bold text-text-dark">Rp 3.450.000</div>
-                 <div className="text-[10px] text-text-gray tracking-wide mt-0.5">ESTIMASI KPR</div>
+               <div className="mb-8 p-6 bg-surface-dim/30 rounded-3xl border border-border-line/20">
+                 <div className="text-[10px] font-black uppercase tracking-widest text-text-gray/60 mb-1">Selling Price</div>
+                 <div className="text-4xl font-semibold text-text-dark font-display tracking-tight">{property.price}</div>
+                 <div className="flex items-center gap-2 mt-3 text-brand-blue font-semibold text-xs">
+                   <TrendingUp size={14} /> <span>Price reflects current market value</span>
+                 </div>
                </div>
 
-               {/* Tips Container */}
-               <div className="bg-blue-50 border border-blue-100 text-brand-blue text-sm font-semibold p-3 rounded-lg flex items-start gap-2 mb-6">
-                 <Zap size={16} className="shrink-0 mt-0.5" />
-                 Rumah di area ini sangat populer, kemungkinan besar akan terjual dalam 30 hari.
-               </div>
-
-               <div className="space-y-3 mb-6">
-                 <button className="w-full btn-primary py-4 rounded-xl shadow-soft hover:shadow-floating flex items-center justify-center gap-2">
-                   <MessageSquare size={18} /> Hubungi Agen Sekarang
-                 </button>
-                 <button className="w-full bg-white-pure border-2 border-brand-blue text-brand-blue hover:bg-blue-50 font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-                   <CalendarHeart size={18} /> Jadwalkan Kunjungan
-                 </button>
-               </div>
-
-               {/* Agen Info */}
-               <div className="bg-surface-gray p-4 rounded-xl flex items-center gap-4">
-                 <div className="w-12 h-12 bg-gray-200 rounded-full bg-cover" style={{ backgroundImage: `url('https://ui-avatars.com/api/?name=PT+Properti+Jaya&background=0D8ABC&color=fff')`}}></div>
+               {/* Smart Reminder Widget */}
+               <div className="bg-brand-blue/5 border border-brand-blue/10 text-brand-blue p-5 rounded-2xl flex items-start gap-3 mb-8">
+                 <div className="bg-white-pure p-2 rounded-lg shadow-sm">
+                   <Zap size={18} fill="currentColor" />
+                 </div>
                  <div>
-                   <div className="font-bold text-text-dark text-sm">PT Alam Tropis Jaya</div>
-                   <div className="text-xs text-text-gray font-medium">Developer Resmi PropNest</div>
+                   <div className="text-sm font-semibold leading-tight">High Demand Area!</div>
+                   <div className="text-xs text-brand-blue/70 mt-1">Rumah di area ini populer, terjual dalam rata-rata 25 hari.</div>
+                 </div>
+               </div>
+
+               <div className="space-y-4 mb-10">
+                 <button className="w-full bg-brand-blue text-white-pure py-5 rounded-2xl font-semibold text-base shadow-xl hover:bg-brand-blue-deep hover:shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95">
+                   <MessageSquare size={20} /> Hubungi Agen
+                 </button>
+                 <button className="w-full bg-white-pure border-2 border-brand-blue text-brand-blue hover:bg-blue-50 py-5 rounded-2xl font-semibold text-base transition-all flex items-center justify-center gap-3 active:scale-95">
+                   <CalendarHeart size={20} /> Jadwalkan Kunjungan
+                 </button>
+               </div>
+
+               {/* Verified Agent Badge */}
+               <div className="bg-white-pure border border-border-line/40 p-5 rounded-3xl flex items-center gap-5 hover:bg-surface-gray transition-colors group">
+                 <div className="relative">
+                   <div className="w-14 h-14 rounded-2xl bg-cover bg-center shadow-md grow-0 shrink-0 border border-white-pure group-hover:scale-110 transition-transform duration-300" style={{ backgroundImage: `url('${property.agent?.avatar || 'https://ui-avatars.com/api/?name=Agent+PropNest&background=random'}')`}}></div>
+                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white-pure p-1 rounded-full border-2 border-white-pure">
+                     <Shield size={10} fill="currentColor" />
+                   </div>
+                 </div>
+                 <div>
+                   <div className="font-semibold text-text-dark text-base tracking-tight">{property.agent?.name || 'Agen PropNest Resmi'}</div>
+                   <div className="text-[10px] text-text-gray font-black uppercase tracking-widest mt-0.5">{property.agent?.type || 'Senior Consultant'}</div>
                  </div>
                </div>
 
@@ -184,7 +234,9 @@ export default function DetailPropertiPage() {
         </div>
       </main>
       
-      <Footer />
+      <div className="mt-20">
+        <Footer />
+      </div>
     </div>
   );
 }

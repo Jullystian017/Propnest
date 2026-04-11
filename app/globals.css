@@ -4,24 +4,26 @@
 @theme {
   --font-sans: "Inter", sans-serif;
   --font-display: "Outfit", sans-serif;
-  
+
   /* Clean & Elegant Refinements */
   --color-brand-blue: #1d4ed8;
   --color-brand-blue-hover: #1e40af;
   --color-brand-blue-light: #2563eb;
   --color-brand-blue-deep: #1e3a8a;
-  
+
   /* Neutral / Accents - Lightened */
   --color-surface-gray: #fcfcfd;
   --color-surface-dim: #f3f4f6;
-  --color-text-dark: #111827; /* Deep Black/Blue */
-  --color-text-gray: #6b7280; /* Neutral gray */
-  --color-border-line: #e5e7eb; 
+  --color-text-dark: #111827;
+  /* Deep Black/Blue */
+  --color-text-gray: #6b7280;
+  /* Neutral gray */
+  --color-border-line: #e5e7eb;
 
   /* Basic Setup */
   --color-white-pure: #ffffff;
   --color-black-pure: #000000;
-  
+
   /* Shadows - Much softer and more modern */
   --shadow-floating-search: 0 6px 20px rgba(0, 0, 0, 0.08);
   --shadow-feature-card: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -49,12 +51,12 @@
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-blue text-white-pure font-bold rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 hover:bg-brand-blue-hover shadow-soft hover:shadow-md;
   }
-  
+
   /* Alias for backward compatibility if needed, but styled blue */
   .btn-orange {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-brand-blue text-white-pure font-bold rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 hover:bg-brand-blue-hover shadow-soft hover:shadow-md;
   }
-  
+
   .btn-white {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 bg-white-pure text-brand-blue font-semibold rounded-lg transition-transform duration-200 active:scale-95 disabled:opacity-50 hover:bg-gray-50 border border-border-line;
   }
@@ -138,13 +140,23 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideInFromTop {
-  from { transform: translateY(-8px); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(-8px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Scrollbar customization for popovers */
