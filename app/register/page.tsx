@@ -3,14 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight } from 'lucide-react';
-import Navbar from '@/components/ui/Navbar';
-import Footer from '@/components/ui/Footer';
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { createClient } from '@/lib/supabase/client';
 
-// Custom SVG Icons for stability
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -27,6 +24,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -75,7 +73,6 @@ export default function RegisterPage() {
   if (isSuccess) {
     return (
       <div className="bg-white-pure min-h-screen flex flex-col font-sans">
-        <Navbar />
         <main className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-[440px] bg-white-pure p-10 rounded-[2.5rem] shadow-premium border border-border-line/40 text-center animate-in fade-in zoom-in-95 duration-500">
             <div className="w-20 h-20 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center mx-auto mb-6">
@@ -91,35 +88,60 @@ export default function RegisterPage() {
             </Button>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="bg-white-pure min-h-screen flex flex-col font-sans">
-      <Navbar />
-      
-      <main className="flex-1 flex items-center justify-center p-6 pt-32 pb-20 relative overflow-hidden">
-        {/* Subtle Background Elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50/30 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4 md:p-8 font-sans">
+      <div className="w-full max-w-[1200px] bg-white-pure rounded-[2.5rem] shadow-premium overflow-hidden flex flex-col md:flex-row h-full md:min-h-[820px] border border-white">
+        
+        {/* Left Side: Visual Hero */}
+        <div className="relative w-full md:w-[45%] h-[300px] md:h-auto overflow-hidden">
+          <img 
+            src="/images/auth-hero.png" 
+            alt="Luxury Property" 
+            className="absolute inset-0 w-full h-full object-cover p-3 rounded-[3rem]"
+          />
+          <div className="absolute inset-0 p-3">
+             <div className="w-full h-full rounded-[2.5rem] bg-black-pure/30 flex flex-col justify-end p-10">
+                <div className="mb-6 flex items-center gap-2 bg-white/10 backdrop-blur-md w-fit px-4 py-2 rounded-full border border-white/20">
+                    <div className="w-6 h-6 bg-brand-blue rounded-lg flex items-center justify-center">
+                        <span className="text-white-pure text-[10px] font-bold">P</span>
+                    </div>
+                    <span className="text-white-pure text-xs font-medium tracking-wide">PropNest AI</span>
+                </div>
+                <h2 className="text-3xl lg:text-4xl font-display font-semibold text-white-pure leading-tight mb-4">
+                  Join PropNest <br /> Today
+                </h2>
+                <p className="text-white-pure/80 text-sm font-medium max-w-sm leading-relaxed">
+                  Start your journey to find the perfect property matching with our AI technology. Join thousands of happy homeowners.
+                </p>
+                <div className="flex gap-2 mt-8">
+                    <div className="w-4 h-1 bg-white/30 rounded-full"></div>
+                    <div className="w-8 h-1 bg-white-pure rounded-full opacity-100"></div>
+                    <div className="w-4 h-1 bg-white/30 rounded-full"></div>
+                </div>
+             </div>
+          </div>
+        </div>
 
-        <div className="w-full max-w-[440px] z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white-pure p-8 md:p-10 rounded-[2.5rem] shadow-premium border border-border-line/40">
-            
-            <div className="mb-10 text-center">
-              <h1 className="text-3xl font-display font-medium text-text-dark mb-3">
-                Prop<span className="text-brand-blue">Nest</span>
+        {/* Right Side: Form Area */}
+        <div className="flex-1 flex flex-col p-8 md:p-12 lg:p-16 relative">
+          
+          <div className="flex-1 flex flex-col justify-center max-w-[420px] mx-auto w-full">
+            <div className="mb-10 pt-8 md:pt-0">
+              <h1 className="text-3xl font-display font-semibold text-text-dark mb-3 tracking-tight">
+                Create Account
               </h1>
               <p className="text-text-gray font-medium text-sm">
-                Mulai perjalanan properti pintar Anda hari ini.
+                Join the most advanced AI property platform
               </p>
             </div>
 
-            <form onSubmit={handleRegister} className="space-y-5">
+            <form onSubmit={handleRegister} className="space-y-4">
               <Input
-                label="Nama Lengkap"
+                label="Full Name"
                 type="text"
                 placeholder="John Doe"
                 icon={User}
@@ -129,24 +151,33 @@ export default function RegisterPage() {
               />
 
               <Input
-                label="Alamat Email"
+                label="Email Address"
                 type="email"
-                placeholder="nama@email.com"
+                placeholder="name@email.com"
                 icon={Mail}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              <Input
-                label="Kata Sandi"
-                type="password"
-                placeholder="Min. 8 karakter"
-                icon={Lock}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative group">
+                <Input
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 8 characters"
+                  icon={Lock}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-[38px] text-text-gray/50 hover:text-brand-blue transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
 
               {error && (
                 <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-500 text-xs font-medium animate-in fade-in">
@@ -156,50 +187,42 @@ export default function RegisterPage() {
 
               <Button 
                 type="submit" 
-                className="w-full mt-2" 
+                className="w-full py-4 text-sm mt-4 shadow-xl shadow-brand-blue/10" 
                 isLoading={isLoading}
-                rightIcon={<ArrowRight size={18} />}
               >
-                Daftar Sekarang
+                Create Account
               </Button>
             </form>
 
             <div className="mt-8 relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border-line/40"></div>
+                <div className="w-full border-t border-border-line/20"></div>
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-text-gray bg-white-pure px-4 font-medium">
-                Atau daftar dengan
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-text-gray/50 bg-white-pure px-4 font-medium">
+                Instant Registration
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-8">
               <Button 
                 variant="outline" 
-                className="w-full rounded-2xl" 
+                className="w-full py-3.5 rounded-2xl border-border-line/40 hover:bg-surface-gray transition-colors" 
                 onClick={handleGoogleLogin}
                 leftIcon={<GoogleIcon />}
               >
-                Google
+                Sign up with Google
               </Button>
             </div>
 
-            <p className="mt-10 text-center text-sm text-text-gray font-medium">
-              Sudah punya akun?{' '}
-              <Link href="/login" className="text-brand-blue hover:underline">
+            <p className="mt-10 text-center text-xs text-text-gray font-medium">
+              Already have an account?{' '}
+              <Link href="/login" className="text-brand-blue hover:underline font-semibold">
                 Masuk Here
               </Link>
             </p>
           </div>
-          
-          <p className="mt-8 text-center text-[11px] text-text-gray/60 font-medium">
-            &copy; 2026 PropNest AI. Dengan mendaftar, Anda setuju dengan <br />
-            Ketentuan Layanan dan Kebijakan Privasi kami.
-          </p>
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }
