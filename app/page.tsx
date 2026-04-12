@@ -1,46 +1,19 @@
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import {
   MapPin, Home, DollarSign, Search,
   BrainCircuit, Calculator, Map, FileCheck, Zap, TrendingUp,
-  Heart, BedDouble, Bath, Scaling, ArrowUpRight, Bookmark
+  Heart, BedDouble, Bath, Scaling, ArrowUpRight, Bookmark,
+  ChevronDown
 } from 'lucide-react';
+import SearchBar from '@/components/home/SearchBar';
 
 import { MOCK_PROPERTIES as RECOMMENDATIONS } from '@/lib/mock-data';
 
-const FEATURES = [
-  {
-    icon: BrainCircuit,
-    title: 'AI-Powered Property Matching',
-    desc: 'Algoritma cerdas mencocokkan preferensi Anda dengan properti ideal secara otomatis.',
-  },
-  {
-    icon: Calculator,
-    title: 'Instant KPR Calculator',
-    desc: 'Hitung simulasi cicilan KPR dari berbagai bank dalam hitungan detik.',
-  },
-  {
-    icon: Map,
-    title: 'Peta Interaktif',
-    desc: 'Jelajahi properti langsung di peta dengan info lingkungan sekitar.',
-  },
-  {
-    icon: FileCheck,
-    title: 'Verifikasi Legalitas',
-    desc: 'Berbagai properti terverifikasi SHM/HGB untuk keamanan transaksi Anda.',
-  },
-  {
-    icon: Zap,
-    title: 'Proses Cepat',
-    desc: 'Dari pencarian hingga akad, selesaikan semuanya dalam satu platform.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Analisis Harga Pasar',
-    desc: 'Data tren harga terkini untuk membantu keputusan investasi yang tepat.',
-  },
-];
 
 export default function HomePage() {
   return (
@@ -48,7 +21,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* ── HERO SECTION (HEARTHAVEN STYLE) ── */}
-      <section className="relative h-screen flex flex-col justify-end pb-64 overflow-hidden">
+      <section className="relative h-screen flex flex-col justify-end pb-64">
         {/* Full Image Background */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"
@@ -78,112 +51,11 @@ export default function HomePage() {
           </div>
 
 
-          {/* ── SEARCH CONTAINER (THE WHITE BOX) ── */}
-          <div className="bg-white-pure rounded-[2.5rem] py-5 lg:py-7 px-6 lg:px-10 shadow-xl max-w-full mx-auto -mb-48 relative z-30 border border-gray-100">
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-5">
-              <h2 className="text-xl md:text-2xl font-display font-medium text-text-dark max-w-xl">Temukan Tempat Sempurna untuk Menetap</h2>
-
-              {/* Buy/Sell/Rent Toggle */}
-              <div className="flex bg-[#F1F1F3] p-1 rounded-full self-start xl:self-center">
-                {['Beli', 'Jual', 'Sewa'].map((tab, idx) => (
-                  <button
-                    key={tab}
-                    className={`px-7 py-2 rounded-full text-xs font-semibold transition-all ${idx === 0
-                      ? 'bg-brand-blue text-white-pure shadow-md'
-                      : 'text-text-gray/70 hover:text-text-dark'
-                      }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_180px] gap-4 items-end">
-              {/* Looking For */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Tipe Properti</label>
-                <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
-                  <div className="flex items-center gap-3">
-                    <Home size={18} className="text-brand-blue" />
-                    <span className="text-sm font-semibold text-text-dark">Rumah Modern</span>
-                  </div>
-                  <ChevronDown size={14} className="text-text-gray" />
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Rentang Harga</label>
-                <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
-                  <div className="flex items-center gap-3">
-                    <DollarSign size={18} className="text-brand-blue" />
-                    <span className="text-sm font-semibold text-text-dark">$250k - $500k</span>
-                  </div>
-                  <ChevronDown size={14} className="text-text-gray" />
-                </div>
-              </div>
-
-              {/* Locations */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-medium text-text-gray uppercase tracking-widest block ml-1 opacity-60">Lokasi</label>
-                <div className="flex items-center justify-between p-5 bg-[#F1F1F3] rounded-[2rem] cursor-pointer group hover:bg-gray-200 transition-all">
-                  <div className="flex items-center gap-3">
-                    <MapPin size={18} className="text-brand-blue" />
-                    <span className="text-sm font-semibold text-text-dark">Semarang, ID</span>
-                  </div>
-                  <ChevronDown size={14} className="text-text-gray" />
-                </div>
-              </div>
-
-              {/* Search Button Integrated */}
-              <button className="h-[64px] bg-black-pure hover:bg-gray-800 text-white-pure font-medium rounded-[2rem] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg group">
-                <Search size={18} className="group-hover:scale-110 transition-transform" />
-                <span className="text-sm">Cari</span>
-              </button>
-            </div>
-
-            {/* Trending / Quick Links to fill space and look premium */}
-          </div>
+          <SearchBar />
         </div>
       </section>
 
 
-      {/* ── FITUR UNGGULAN ── */}
-      <section className="py-24 container-standard">
-        <div className="text-center mb-16">
-          <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3 text-center">Fitur Unggulan</p>
-          <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark mb-4">
-            Teknologi Modern untuk Pencarian<br /> Properti
-          </h2>
-          <p className="text-text-gray max-w-2xl mx-auto">
-            Kami memadukan AI dan data real-time untuk pengalaman pencarian properti terbaik di Jawa Tengah.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map((feat, i) => {
-            const isBlue = i < 2;
-            return (
-              <div
-                key={i}
-                className={`p-8 rounded-3xl shadow-feature-card ${isBlue ? 'bg-brand-blue text-white-pure' : 'bg-white-pure text-text-dark'} flex flex-col transition-transform hover:-translate-y-2 duration-300`}
-              >
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 
-                    ${isBlue ? 'bg-white-pure/10 text-white-pure' : 'bg-blue-50 text-brand-blue'}`}
-                >
-                  <feat.icon size={24} strokeWidth={1.5} />
-                </div>
-                <h3 className="text-lg font-medium font-display mb-3">{feat.title}</h3>
-                <p className={`text-sm leading-relaxed ${isBlue ? 'text-blue-100' : 'text-text-gray'}`}>
-                  {feat.desc}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
 
       {/* ── REKOMENDASI PROPERTI ── */}
       <section className="py-24 container-standard border-t border-border-line/50">
@@ -256,48 +128,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ── */}
-      <section className="container-standard py-12">
-        <div className="bg-brand-blue rounded-[3rem] p-12 lg:p-20 overflow-hidden relative shadow-premium">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-
-          <div className="max-w-2xl relative z-10 text-white-pure">
-            <h2 className="text-4xl md:text-5xl font-display font-medium mb-6">Siap Menemukan <br />Rumah Impian?</h2>
-            <p className="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
-              Daftarkan diri Anda sekarang dan dapatkan rekomendasi properti terbaik langsung ke inbox Anda secara otomatis.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/daftar" className="bg-white-pure text-brand-blue px-10 py-4 rounded-full font-medium hover:bg-gray-50 transition-all shadow-lg active:scale-95 text-center">
-                Mulai Sekarang
-              </Link>
-              <Link href="/about" className="border border-white/30 text-white-pure px-10 py-4 rounded-full font-medium hover:bg-white/10 transition-colors text-center">
-                Pelajari Lebih Lanjut
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>
   );
 }
 
-function ChevronDown({ size, className }: { size: number, className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
