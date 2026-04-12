@@ -37,12 +37,9 @@ export default function Navbar() {
   }, []);
 
   const NAV_LINKS = [
-    { label: 'Beli', href: '/cari' },
-    { label: 'Properti', href: '/cari', hasDropdown: true },
-    { label: 'Layanan', href: '/services' },
-    { label: 'Agen', href: '/agents' },
-    { label: 'Tentang Kami', href: '/about' },
-    { label: 'Blog', href: '/blog' },
+    { label: 'Properti', href: '/cari' },
+    { label: 'Kalkulator KPR', href: '/kpr-calculator' },
+    { label: 'Tentang', href: '/tentang' },
   ];
 
   return (
@@ -83,7 +80,7 @@ export default function Navbar() {
             >
               Beranda
             </Link>
-            {NAV_LINKS.slice(1, 2).map((link) => ( 
+            {NAV_LINKS.map((link) => ( 
               <Link
                 key={link.label}
                 href={link.href}
@@ -96,29 +93,10 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {NAV_LINKS.slice(2).map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`px-5 py-2 text-sm font-medium transition-colors flex items-center gap-1 ${
-                  pathname === link.href
-                    ? 'text-brand-blue font-semibold'
-                    : (isScrolled || pathname !== '/' ? 'text-text-gray hover:text-text-dark' : 'text-white-pure/80 hover:text-white-pure')
-                }`}
-              >
-                {link.label}
-                {link.hasDropdown && <ChevronDown size={14} className="opacity-50" />}
-              </Link>
-            ))}
           </nav>
 
           {/* Actions - Fixed width for symmetry */}
           <div className="flex-1 flex items-center justify-end gap-3">
-             <Link href="/contact" className={`hidden sm:block text-sm font-medium transition-colors px-4 ${
-               isScrolled || pathname !== '/' ? 'text-text-gray hover:text-text-dark' : 'text-white-pure/90 hover:text-white-pure'
-             }`}>
-               Hubungi Kami
-             </Link>
              {user ? (
                <Link href="/dashboard" className="bg-brand-blue hover:bg-brand-blue-hover text-white-pure text-sm font-medium px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
                  Dashboard

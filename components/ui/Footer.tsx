@@ -28,10 +28,9 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-semibold text-white-pure mb-5">Jelajahi</h4>
             <ul className="space-y-3">
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Beli Rumah</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Sewa Properti</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Tanah Dijual</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Properti Baru</Link></li>
+              <li><Link href="/cari" className="hover:text-white-pure transition-colors">Beli Rumah</Link></li>
+              <li><Link href="/cari" className="hover:text-white-pure transition-colors">Properti Baru</Link></li>
+              <li><Link href="/cari" className="hover:text-white-pure transition-colors">Listing Populer</Link></li>
             </ul>
           </div>
 
@@ -39,10 +38,9 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-semibold text-white-pure mb-5">Layanan</h4>
             <ul className="space-y-3">
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Kalkulator KPR</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">AI Matching</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Verifikasi</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Konsultasi</Link></li>
+              <li><Link href="/kpr-calculator" className="hover:text-white-pure transition-colors">Kalkulator KPR</Link></li>
+              <li><Link href="/cari" className="hover:text-white-pure transition-colors">AI Property Matcher</Link></li>
+              <li><Link href="/dashboard" className="hover:text-white-pure transition-colors">Dasbor Developer</Link></li>
             </ul>
           </div>
 
@@ -50,10 +48,9 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h4 className="font-semibold text-white-pure mb-5">Perusahaan</h4>
             <ul className="space-y-3">
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Tentang Kami</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Karir</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Blog</Link></li>
-              <li><Link href="/" className="hover:text-white-pure transition-colors">Kontak</Link></li>
+              <li><Link href="/tentang" className="hover:text-white-pure transition-colors">Tentang Kami</Link></li>
+              <li><Link href="/tentang" className="hover:text-white-pure transition-colors">Kebijakan Privasi</Link></li>
+              <li><Link href="/tentang" className="hover:text-white-pure transition-colors">Syarat & Ketentuan</Link></li>
             </ul>
           </div>
 
