@@ -111,8 +111,7 @@ const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
               
               <div className="flex gap-4 overflow-x-auto pb-8 pt-2 scrollbar-hide no-scrollbar -mx-4 px-6 snap-x snap-mandatory">
                 {banks.map((bank) => (
-                  <button
-                    key={bank.id}
+                  <button suppressHydrationWarning key={bank.id}
                     onClick={() => setSelectedBank(bank.id)}
                     className={`flex-none flex flex-col items-center justify-center w-32 h-24 rounded-2xl border transition-all duration-300 snap-start ${
                       selectedBank === bank.id 
@@ -196,7 +195,7 @@ const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
                 <span className="text-brand-blue">{currentRate}% Efektif</span>
               </div>
               
-              <button className="w-full bg-brand-blue text-white-pure py-4 rounded-xl font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all mt-4 flex items-center justify-center gap-3 active:scale-95 group/cta">
+              <button suppressHydrationWarning className="w-full bg-brand-blue text-white-pure py-4 rounded-xl font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all mt-4 flex items-center justify-center gap-3 active:scale-95 group/cta">
                 <MessageSquare size={18} />
                 Ajukan KPR via PropNest
                 <ArrowUpRight size={16} className="group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1 transition-transform" />
@@ -303,7 +302,7 @@ const InquiryModal = ({ isOpen, onClose, propertyName, propertyId }: { isOpen: b
                   <h3 className="text-xl font-display font-medium text-text-dark mb-1">Dapatkan Info Detail</h3>
                   <p className="text-xs text-text-gray">Lengkapi form di bawah untuk kami kirimkan brosur & pricelist terbaru.</p>
                 </div>
-                <button onClick={onClose} className="p-2 hover:bg-surface-gray rounded-full transition-colors text-text-gray/40">
+                <button suppressHydrationWarning onClick={onClose} className="p-2 hover:bg-surface-gray rounded-full transition-colors text-text-gray/40">
                   <Box size={20} className="rotate-45" />
                 </button>
               </div>
@@ -344,8 +343,7 @@ const InquiryModal = ({ isOpen, onClose, propertyName, propertyId }: { isOpen: b
                   />
                 </div>
 
-                <button 
-                  disabled={loading}
+                <button suppressHydrationWarning disabled={loading}
                   className="w-full bg-brand-blue text-white-pure py-4 rounded-xl font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all mt-6 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70"
                 >
                   {loading ? (
@@ -367,32 +365,119 @@ const InquiryModal = ({ isOpen, onClose, propertyName, propertyId }: { isOpen: b
 };
 
 // --- CHATBOT COMPONENT ---
-const AIChatbot = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: boolean) => void }) => {
-  const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Halo! Saya PropNest AI. Ada yang bisa saya bantu tentang properti ini?' }
+type Message = {
+  role: 'ai' | 'user';
+  text: string;
+  buttons?: { label: string; action: string }[];
+  type?: 'loading' | 'text';
+};
+
+const AIChatbot = ({ isOpen, setIsOpen, onFilter }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onFilter?: (budget?: number) => void }) => {
+  const [messages, setMessages] = useState<Message[]>([
+    { 
+      role: 'ai', 
+      text: 'Halo! Saya PropNest AI. Apa yang bisa saya bantu hari ini?',
+      buttons: [
+        { label: '🏠 Cari Properti', action: 'intent_cari' },
+        { label: '💰 Simulasi KPR', action: 'intent_kpr' },
+        { label: '📅 Jadwal Survei', action: 'intent_jadwal' },
+      ]
+    }
   ]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [flowStep, setFlowStep] = useState<'welcome' | 'cari_budget' | 'lead_name' | 'lead_phone' | 'done'>('welcome');
+  const [leadData, setLeadData] = useState({ name: '', phone: '', intent: '' });
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const userMsg = input;
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setInput('');
-    
-    // Simple mock response logic
+  const addMessage = (msg: Message) => setMessages(prev => [...prev, msg]);
+
+  const handleAction = (action: string, label: string) => {
+    addMessage({ role: 'user', text: label });
+    setLoading(true);
+
     setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: 'ai', 
-        text: 'Terima kasih atas pertanyaannya! Berdasarkan data kami, unit ini memiliki prospek investasi yang sangat baik karena lokasinya yang strategis.' 
-      }]);
+      setLoading(false);
+      if (action === 'intent_cari') {
+        addMessage({ 
+          role: 'ai', 
+          text: 'Siap! Kamu cari properti dengan budget sekitar berapa?',
+          buttons: [
+            { label: '< 1 Miliar', action: 'filter_1m' },
+            { label: '1 - 2 Miliar', action: 'filter_2m' },
+            { label: '> 2 Miliar', action: 'filter_high' },
+          ]
+        });
+        setFlowStep('cari_budget');
+      } else if (action === 'intent_kpr') {
+        addMessage({ role: 'ai', text: 'Tentu. Berdasarkan harga unit ini, cicilan estimasi kamu adalah sekitar Rp 6-8 Juta/bulan dengan DP 20%. Mau simulasi lebih detail?' });
+      } else if (action === 'intent_jadwal') {
+        addMessage({ role: 'ai', text: 'Boleh banget! Siapa nama lengkap kamu biar agen kami bisa catat di jadwal?' });
+        setFlowStep('lead_name');
+        setLeadData(prev => ({ ...prev, intent: 'Jadwal Survei' }));
+      } else if (action.startsWith('filter_')) {
+        let budget = 0;
+        if (action === 'filter_1m') budget = 1000000000;
+        if (action === 'filter_2m') budget = 2000000000;
+        if (action === 'filter_high') budget = 5000000000;
+        
+        if (onFilter) onFilter(budget);
+        
+        addMessage({ 
+          role: 'ai', 
+          text: `Oke, list "Properti Serupa" di bawah sudah saya sesuaikan ya! Boleh minta nomor WhatsApp kamu biar saya kirimkan daftar unit lainnya?` 
+        });
+        setFlowStep('lead_phone');
+      }
+    }, 800);
+  };
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    const userText = input;
+    addMessage({ role: 'user', text: userText });
+    setInput('');
+    setLoading(true);
+
+    setTimeout(async () => {
+      setLoading(false);
+      if (flowStep === 'lead_name') {
+        setLeadData(prev => ({ ...prev, name: userText }));
+        addMessage({ role: 'ai', text: `Salam kenal, ${userText}! Sekarang boleh minta nomor HP/WhatsApp aktif kamu?` });
+        setFlowStep('lead_phone');
+      } else if (flowStep === 'lead_phone') {
+        const phone = userText;
+        addMessage({ role: 'ai', text: 'Terima kasih! Data sudah saya simpan di CRM. Tim kami akan segera menghubungi kamu ya. 🙏' });
+        
+        // Save to CRM
+        try {
+          await supabase.from('leads').insert([{
+            name: leadData.name || 'User AI Chat',
+            phone: phone,
+            intent: leadData.intent || 'Chat Query',
+            message: `User sedang cari properti via AI: ${userText}`,
+            status: 'new'
+          }]);
+        } catch (e) { console.error(e); }
+        
+        setFlowStep('done');
+      } else {
+        addMessage({ 
+          role: 'ai', 
+          text: 'Maaf, saya sedang belajar. Tapi saya bisa bantu simulasi KPR atau cari properti lho! Coba pilih menu di bawah ya.' ,
+          buttons: [
+            { label: '🏠 Cari Properti', action: 'intent_cari' },
+            { label: '💰 Simulasi KPR', action: 'intent_kpr' },
+            { label: '📅 Jadwal Survei', action: 'intent_jadwal' },
+          ]
+        });
+      }
     }, 1000);
   };
 
   return (
     <>
       {/* FAB */}
-      <button 
-        onClick={() => setIsOpen(true)}
+      <button suppressHydrationWarning onClick={() => setIsOpen(true)}
         className="fixed bottom-8 right-8 z-[900] w-16 h-16 bg-brand-blue text-white-pure rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group overflow-hidden"
       >
         <div className="absolute inset-0 bg-brand-blue-deep scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full"></div>
@@ -412,11 +497,11 @@ const AIChatbot = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: bool
                 <div className="font-bold text-sm tracking-tight">PropNest AI</div>
                 <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-widest opacity-70">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                  Online Assistant
+                  Assistant Concept
                 </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white-pure/10 rounded-lg">
+            <button suppressHydrationWarning onClick={() => setIsOpen(false)} className="p-1 hover:bg-white-pure/10 rounded-lg">
               <Box size={18} className="rotate-45" />
             </button>
           </div>
@@ -424,7 +509,7 @@ const AIChatbot = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: bool
 
         <div className="h-96 overflow-y-auto p-4 space-y-4 bg-surface-gray/30">
           {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs font-medium leading-relaxed ${
                 m.role === 'user' 
                   ? 'bg-brand-blue text-white-pure rounded-tr-none' 
@@ -432,21 +517,44 @@ const AIChatbot = ({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: bool
               }`}>
                 {m.text}
               </div>
+              
+              {m.buttons && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {m.buttons.map((btn, bi) => (
+                    <button 
+                      key={bi}
+                      onClick={() => handleAction(btn.action, btn.label)}
+                      className="bg-white-pure border border-brand-blue/30 text-brand-blue px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-brand-blue hover:text-white-pure transition-all shadow-sm active:scale-95"
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="bg-white-pure px-4 py-3 rounded-2xl rounded-tl-none border border-border-line/20 shadow-sm flex gap-1">
+                <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-1.5 h-1.5 bg-brand-blue/40 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="p-4 bg-white-pure rounded-b-[2rem]">
           <div className="relative">
             <input 
               type="text" 
-              placeholder="Tanya info properti..."
+              placeholder={flowStep === 'lead_phone' ? 'Ketik nomor WA kamu...' : 'Tanya info properti...'}
               className="w-full bg-surface-gray/50 border border-border-line/30 rounded-xl pl-4 pr-12 py-3 text-xs outline-none focus:border-brand-blue/50 transition-all font-medium"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
             />
-            <button onClick={handleSend} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-blue text-white-pure rounded-lg hover:bg-brand-blue-deep transition-all">
+            <button suppressHydrationWarning onClick={handleSend} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-blue text-white-pure rounded-lg hover:bg-brand-blue-deep transition-all">
               <ArrowUpRight size={16} />
             </button>
           </div>
@@ -467,12 +575,23 @@ export default function DetailPropertiPage({
   const [activeTab, setActiveTab] = useState<'transport' | 'school' | 'shopping' | 'health' | 'tourism' | 'worship'>('transport');
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [budgetFilter, setBudgetFilter] = useState<number | null>(null);
 
   if (!property) {
     notFound();
   }
 
-  const relatedProperties = MOCK_PROPERTIES.filter(p => p.id !== id).slice(0, 3);
+  const parseNumPrice = (p: string) => {
+    let clean = p.replace('Rp', '').trim();
+    if (clean.includes('Miliar')) return parseFloat(clean) * 1000000000;
+    if (clean.includes('Juta')) return parseFloat(clean) * 1000000;
+    return parseFloat(clean.replace(/\./g, ''));
+  };
+
+  const relatedProperties = MOCK_PROPERTIES
+    .filter(p => p.id !== id)
+    .filter(p => !budgetFilter || parseNumPrice(p.price) <= budgetFilter)
+    .slice(0, 3);
 
   const tabs = [
     { id: 'transport', label: 'Transportation', icon: <TrainFront size={18} /> },
@@ -507,7 +626,7 @@ export default function DetailPropertiPage({
           <div className="relative rounded-[2.5rem] overflow-hidden group h-full shadow-2xl border border-white-pure/20">
             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.image}')` }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/30 to-transparent"></div>
-            <button className="absolute bottom-8 left-8 flex items-center gap-3 bg-white-pure/10 backdrop-blur-xl border border-white-pure/30 px-6 py-3 rounded-2xl text-white-pure text-sm font-semibold hover:bg-white-pure/20 transition-all shadow-xl group/btn">
+            <button suppressHydrationWarning className="absolute bottom-8 left-8 flex items-center gap-3 bg-white-pure/10 backdrop-blur-xl border border-white-pure/30 px-6 py-3 rounded-2xl text-white-pure text-sm font-semibold hover:bg-white-pure/20 transition-all shadow-xl group/btn">
               <div className="p-1.5 bg-brand-blue rounded-lg shadow-blue-glow group-hover/btn:scale-110 transition-transform">
                 <Box size={16} />
               </div>
@@ -562,10 +681,10 @@ export default function DetailPropertiPage({
             </div>
 
             <div className="flex gap-2.5 relative z-10">
-              <button className="flex items-center gap-2 px-5 py-3 bg-white-pure border border-border-line/60 rounded-xl text-xs font-medium text-text-dark hover:bg-blue-50 hover:text-brand-blue hover:border-brand-blue/30 transition-all shadow-sm active:scale-95 ring-1 ring-border-line/5">
+              <button suppressHydrationWarning className="flex items-center gap-2 px-5 py-3 bg-white-pure border border-border-line/60 rounded-xl text-xs font-medium text-text-dark hover:bg-blue-50 hover:text-brand-blue hover:border-brand-blue/30 transition-all shadow-sm active:scale-95 ring-1 ring-border-line/5">
                 <Share2 size={16} className="text-brand-blue" /> Bagikan
               </button>
-              <button className="flex items-center gap-2 px-5 py-3 bg-white-pure border border-border-line/60 rounded-xl text-xs font-semibold text-text-dark hover:bg-blue-50 hover:text-brand-blue hover:border-brand-blue/30 transition-all shadow-sm active:scale-95 ring-1 ring-border-line/5">
+              <button suppressHydrationWarning className="flex items-center gap-2 px-5 py-3 bg-white-pure border border-border-line/60 rounded-xl text-xs font-semibold text-text-dark hover:bg-blue-50 hover:text-brand-blue hover:border-brand-blue/30 transition-all shadow-sm active:scale-95 ring-1 ring-border-line/5">
                 <Bookmark size={16} className="text-brand-blue" /> Simpan
               </button>
             </div>
@@ -659,8 +778,7 @@ export default function DetailPropertiPage({
 
               <div className="flex items-center gap-3 overflow-x-auto py-4 -mx-4 px-4 scrollbar-hide no-scrollbar">
                 {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
+                  <button suppressHydrationWarning key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full border-2 whitespace-nowrap transition-all duration-300 ${activeTab === tab.id
                         ? 'border-brand-blue bg-white-pure text-brand-blue font-semibold scale-105 shadow-md shadow-brand-blue/5'
@@ -713,9 +831,6 @@ export default function DetailPropertiPage({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-700"></div>
                 <div className="text-[9px] font-black uppercase tracking-[0.2em] text-text-gray/50 mb-2">Harga Jual Properti</div>
                 <div className="text-3xl font-display font-medium text-text-dark tracking-tight">{property.price}</div>
-                <div className="flex items-center gap-2 mt-4 text-brand-blue font-semibold text-[9px] uppercase tracking-wider bg-brand-blue/5 py-1 px-2.5 rounded-lg w-fit">
-                  <TrendingUp size={10} /> <span>Value Trend +2.4%</span>
-                </div>
               </div>
 
               <div className="bg-brand-blue/5 border border-brand-blue/10 text-brand-blue p-4 rounded-xl flex items-start gap-3 mb-6">
@@ -729,15 +844,13 @@ export default function DetailPropertiPage({
               </div>
 
               <div className="space-y-3 mb-8">
-                <button 
-                  onClick={() => setIsInquiryOpen(true)}
+                <button suppressHydrationWarning onClick={() => setIsInquiryOpen(true)}
                   className="w-full bg-brand-blue text-white-pure py-4 rounded-xl font-semibold text-sm shadow-xl hover:bg-brand-blue-deep hover:shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95 group/cta"
                 >
                   <MessageSquare size={18} className="group-hover/cta:scale-110 transition-transform" /> 
                   Hubungi Agen
                 </button>
-                <button 
-                  onClick={() => setIsInquiryOpen(true)}
+                <button suppressHydrationWarning onClick={() => setIsInquiryOpen(true)}
                   className="w-full bg-white-pure border-2 border-brand-blue text-brand-blue hover:bg-blue-50 py-4 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-3 active:scale-95 group/cta"
                 >
                   <CalendarHeart size={18} className="group-hover/cta:scale-110 transition-transform" /> 
@@ -794,7 +907,7 @@ export default function DetailPropertiPage({
                   </div>
                   <h3 className="text-sm font-bold mb-2">Punya pertanyaan?</h3>
                   <p className="text-[10px] opacity-80 mb-4 leading-relaxed">Tanyakan langsung ke PropNest AI untuk info detail properti ini.</p>
-                  <button onClick={() => setIsChatOpen(true)} className="w-full bg-white-pure text-brand-blue py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-opacity-90 transition-all">
+                  <button suppressHydrationWarning onClick={() => setIsChatOpen(true)} className="w-full bg-white-pure text-brand-blue py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-opacity-90 transition-all">
                     Mulai Chat AI
                   </button>
                 </div>
@@ -864,7 +977,11 @@ export default function DetailPropertiPage({
         propertyName={property.name}
         propertyId={property.id}
       />
-      <AIChatbot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+      <AIChatbot 
+        isOpen={isChatOpen} 
+        setIsOpen={setIsChatOpen} 
+        onFilter={(budget) => setBudgetFilter(budget || null)}
+      />
     </div>
   );
 }
