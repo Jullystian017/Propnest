@@ -9,12 +9,169 @@ import {
   Zap, MessageSquare, ChevronRight, Star, Shield, TrendingUp,
   Box, Eye, Info, FileText, Layout, Navigation, HelpCircle,
   Home, TrainFront, School, Hospital, ShoppingBag, ArrowUpRight,
-  Car, Map as MapIcon, Church, GraduationCap
+  Car, Map as MapIcon, Church, GraduationCap, Calculator, Percent, Wallet, Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import { MOCK_PROPERTIES } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
 import MapContainer from '@/components/maps/MapContainer';
+
+// --- KPR CALCULATOR COMPONENT ---
+const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
+  const numericPrice = parseInt(propertyPrice.replace(/[^0-9]/g, ''), 10);
+  
+  const [dpPercent, setDpPercent] = useState(20);
+  const [tenor, setTenor] = useState(15);
+  const [selectedBank, setSelectedBank] = useState('bca');
+  
+  const banks = [
+    { id: 'bca', name: 'BCA', rate: 3.85, logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg' },
+    { id: 'mandiri', name: 'Mandiri', rate: 4.25, logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg' },
+    { id: 'bni', name: 'BNI', rate: 4.5, color: '#F15A24' },
+    { id: 'custom', name: 'Manual', rate: 5.0, icon: <Calculator size={16} /> },
+  ];
+
+  const currentRate = banks.find(b => b.id === selectedBank)?.rate || 5.0;
+  
+  const calculateInstallment = () => {
+    const loanAmount = numericPrice * (1 - dpPercent / 100);
+    const monthlyRate = currentRate / 100 / 12;
+    const totalMonths = tenor * 12;
+    
+    if (monthlyRate === 0) return loanAmount / totalMonths;
+    
+    const installment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
+                        (Math.pow(1 + monthlyRate, totalMonths) - 1);
+    return installment;
+  };
+
+  const installment = calculateInstallment();
+
+  const formatCurrency = (num: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0,
+    }).format(num);
+  };
+
+  return (
+    <div className="bg-white-pure border border-border-line/30 rounded-[2.5rem] p-8 md:p-10 shadow-premium relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+      
+      <div className="relative z-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div>
+            <h2 className="text-2xl font-display font-medium text-text-dark mb-2">Simulasi Cicilan KPR</h2>
+            <p className="text-xs text-text-gray font-medium opacity-70">Sesuaikan simulasi sesuai budget dan pilih bank favorit Anda.</p>
+          </div>
+          <div className="bg-brand-blue/5 border border-brand-blue/10 px-5 py-3 rounded-2xl">
+            <div className="text-[10px] font-black uppercase tracking-wider text-brand-blue/50 mb-1">Harga Properti</div>
+            <div className="text-lg font-bold text-brand-blue">{propertyPrice}</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Controls */}
+          <div className="space-y-10">
+            {/* Bank Select */}
+            <div>
+              <label className="text-xs font-bold uppercase tracking-widest text-text-gray/60 mb-5 block">Pilih Bank</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {banks.map((bank) => (
+                  <button
+                    key={bank.id}
+                    onClick={() => setSelectedBank(bank.id)}
+                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 ${
+                      selectedBank === bank.id 
+                        ? 'border-brand-blue bg-white-pure shadow-blue-glow ring-2 ring-brand-blue/5' 
+                        : 'border-border-line/40 bg-surface-gray/30 hover:border-brand-blue/30'
+                    }`}
+                  >
+                    <div className="w-10 h-6 flex items-center justify-center mb-2 overflow-hidden">
+                      {bank.logo ? (
+                        <img src={bank.logo} alt={bank.name} className="max-w-full max-h-full grayscale group-hover:grayscale-0" />
+                      ) : (
+                        <div className="text-brand-blue">{bank.icon}</div>
+                      )}
+                    </div>
+                    <span className={`text-[10px] font-bold ${selectedBank === bank.id ? 'text-brand-blue' : 'text-text-gray/50'}`}>
+                      {bank.rate}%
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sliders */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <div className="flex items-center gap-2 text-text-dark font-semibold text-sm">
+                    <Wallet size={16} className="text-brand-blue" /> Uang Muka (DP)
+                  </div>
+                  <div className="text-lg font-bold text-brand-blue">{dpPercent}% <span className="text-[10px] text-text-gray/40 font-medium ml-1">({formatCurrency(numericPrice * (dpPercent/100))})</span></div>
+                </div>
+                <input 
+                  type="range" min="5" max="90" step="5" value={dpPercent}
+                  onChange={(e) => setDpPercent(parseInt(e.target.value))}
+                  className="w-full h-2 bg-border-line/30 rounded-lg appearance-none cursor-pointer accent-brand-blue"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <div className="flex items-center gap-2 text-text-dark font-semibold text-sm">
+                    <Clock size={16} className="text-brand-blue" /> Jangka Waktu (Tenor)
+                  </div>
+                  <div className="text-lg font-bold text-brand-blue">{tenor} Tahun</div>
+                </div>
+                <input 
+                  type="range" min="1" max="30" step="1" value={tenor}
+                  onChange={(e) => setTenor(parseInt(e.target.value))}
+                  className="w-full h-2 bg-border-line/30 rounded-lg appearance-none cursor-pointer accent-brand-blue"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Results Display */}
+          <div className="bg-[#F8F9FD] rounded-[2rem] p-8 border border-brand-blue/10 flex flex-col justify-between relative overflow-hidden">
+            <div className="relative z-10 text-center py-6">
+              <div className="inline-flex items-center gap-2 bg-white-pure px-4 py-1.5 rounded-full shadow-sm border border-brand-blue/5 text-[9px] font-black uppercase tracking-widest text-brand-blue mb-6">
+                Estimasi Cicilan Bulanan
+              </div>
+              <div className="text-4xl md:text-5xl font-display font-medium text-text-dark tracking-tighter mb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                {formatCurrency(installment)}
+              </div>
+              <p className="text-xs text-text-gray/60 font-medium">Berdasarkan bunga tetap 3-5 tahun pertama.</p>
+            </div>
+
+            <div className="space-y-4 pt-8 border-t border-brand-blue/5 relative z-10">
+              <div className="flex justify-between text-xs font-semibold">
+                <span className="text-text-gray/50">Pinjaman Pokok</span>
+                <span className="text-text-dark">{formatCurrency(numericPrice * (1 - dpPercent/100))}</span>
+              </div>
+              <div className="flex justify-between text-xs font-semibold">
+                <span className="text-text-gray/50">Suku Bunga</span>
+                <span className="text-brand-blue">{currentRate}% Efektif</span>
+              </div>
+              
+              <button className="w-full bg-brand-blue text-white-pure py-4 rounded-xl font-bold text-sm shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all mt-4 flex items-center justify-center gap-3 active:scale-95 group/cta">
+                <MessageSquare size={18} />
+                Ajukan KPR via PropNest
+                <ArrowUpRight size={16} className="group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1 transition-transform" />
+              </button>
+            </div>
+            
+            {/* Background Accent */}
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-blue/5 rounded-full blur-2xl"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- DATA UNTUK NEAREST FACILITIES ---
 const NEAREST_DATA = {
@@ -318,6 +475,9 @@ export default function DetailPropertiPage({
                 </div>
               </div>
             </div>
+
+            {/* 7. KPR Calculator (Simulasi Cicilan) */}
+            <KPRCalculator propertyPrice={property.price} />
           </div>
 
           <aside className="w-full lg:w-[380px] shrink-0">
