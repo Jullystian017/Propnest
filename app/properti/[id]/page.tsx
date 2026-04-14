@@ -18,7 +18,26 @@ import MapContainer from '@/components/maps/MapContainer';
 
 // --- KPR CALCULATOR COMPONENT ---
 const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
-  const numericPrice = parseInt(propertyPrice.replace(/[^0-9]/g, ''), 10);
+  const parsePrice = (priceStr: string) => {
+    let clean = priceStr.toLowerCase().replace('rp', '').trim();
+    let multiplier = 1;
+
+    if (clean.includes('miliar')) {
+      multiplier = 1000000000;
+      clean = clean.replace('miliar', '').replace(',', '.').trim();
+    } else if (clean.includes('juta')) {
+      multiplier = 1000000;
+      clean = clean.replace('juta', '').replace(',', '.').trim();
+    } else {
+      // Handle full numbers like Rp 2.500.000.000
+      clean = clean.replace(/\./g, '').replace(',', '.').replace(/[^0-9.]/g, '');
+    }
+
+    const val = parseFloat(clean);
+    return isNaN(val) ? 0 : val * multiplier;
+  };
+
+  const numericPrice = parsePrice(propertyPrice);
   
   const [dpPercent, setDpPercent] = useState(20);
   const [tenor, setTenor] = useState(15);
@@ -27,13 +46,19 @@ const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
   const banks = [
     { id: 'bca', name: 'BCA', rate: 3.85, logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg' },
     { id: 'mandiri', name: 'Mandiri', rate: 4.25, logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg' },
-    { id: 'bni', name: 'BNI', rate: 4.5, color: '#F15A24' },
+    { id: 'btn', name: 'BTN', rate: 3.99, logo: 'https://asset.kompas.com/crops/-ZknGfO22Go2aOGjJRUfnoL7RIw=/0x0:0x0/1200x800/data/photo/2024/03/03/65e4402c20cbf.jpeg' },
+    { id: 'cimb', name: 'CIMB Niaga', rate: 4.10, logo: 'https://pinterpoin.com/wp-content/uploads/2020/10/1355px-CIMB_Niaga_logo.svg_.png' },
+    { id: 'bri', name: 'BRI', rate: 4.40, logo: 'https://cdn.freelogovectors.net/wp-content/uploads/2023/02/bri-logo-freelogovectors.net_.png' },
+    { id: 'bni', name: 'BNI', rate: 4.50, logo: 'https://i.pinimg.com/originals/36/38/43/36384348ef9d7bfff66da6da9e975d56.png' },
+    { id: 'ocbc', name: 'OCBC', rate: 4.30, logo: 'https://uxconsulting.com.sg/wp-content/uploads/2017/09/ocbc-logo-1125x654.png' },
+    { id: 'panin', name: 'Panin', rate: 4.60, logo: 'http://3.bp.blogspot.com/-05SbvsauCaE/UNk15orRHII/AAAAAAAAEVU/pC38Ga3Jza0/s1600/Logo+Bank+Panin.jpg' },
     { id: 'custom', name: 'Manual', rate: 5.0, icon: <Calculator size={16} /> },
   ];
 
   const currentRate = banks.find(b => b.id === selectedBank)?.rate || 5.0;
   
   const calculateInstallment = () => {
+    if (numericPrice <= 0) return 0;
     const loanAmount = numericPrice * (1 - dpPercent / 100);
     const monthlyRate = currentRate / 100 / 12;
     const totalMonths = tenor * 12;
@@ -65,10 +90,6 @@ const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
             <h2 className="text-2xl font-display font-medium text-text-dark mb-2">Simulasi Cicilan KPR</h2>
             <p className="text-xs text-text-gray font-medium opacity-70">Sesuaikan simulasi sesuai budget dan pilih bank favorit Anda.</p>
           </div>
-          <div className="bg-brand-blue/5 border border-brand-blue/10 px-5 py-3 rounded-2xl">
-            <div className="text-[10px] font-black uppercase tracking-wider text-brand-blue/50 mb-1">Harga Properti</div>
-            <div className="text-lg font-bold text-brand-blue">{propertyPrice}</div>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -76,27 +97,38 @@ const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
           <div className="space-y-10">
             {/* Bank Select */}
             <div>
-              <label className="text-xs font-bold uppercase tracking-widest text-text-gray/60 mb-5 block">Pilih Bank</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="flex items-center justify-between mb-5">
+                <label className="text-xs font-bold uppercase tracking-widest text-text-gray/60 block">Pilih Bank</label>
+                <div className="text-[10px] font-semibold text-brand-blue animate-pulse">Geser untuk lainnya &rarr;</div>
+              </div>
+              
+              <div className="flex gap-4 overflow-x-auto pb-8 pt-2 scrollbar-hide no-scrollbar -mx-4 px-6 snap-x snap-mandatory">
                 {banks.map((bank) => (
                   <button
                     key={bank.id}
                     onClick={() => setSelectedBank(bank.id)}
-                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 ${
+                    className={`flex-none flex flex-col items-center justify-center w-32 h-24 rounded-2xl border transition-all duration-300 snap-start ${
                       selectedBank === bank.id 
                         ? 'border-brand-blue bg-white-pure shadow-blue-glow ring-2 ring-brand-blue/5' 
-                        : 'border-border-line/40 bg-surface-gray/30 hover:border-brand-blue/30'
+                        : 'border-border-line/40 bg-white-pure hover:border-brand-blue/30'
                     }`}
                   >
-                    <div className="w-10 h-6 flex items-center justify-center mb-2 overflow-hidden">
+                    <div className="w-16 h-8 flex items-center justify-center mb-2">
                       {bank.logo ? (
-                        <img src={bank.logo} alt={bank.name} className="max-w-full max-h-full grayscale group-hover:grayscale-0" />
+                        <img 
+                          src={bank.logo} 
+                          alt={bank.name} 
+                          className={`max-w-full max-h-full object-contain transition-all duration-500 ${selectedBank === bank.id ? 'grayscale-0 opacity-100 scale-110' : 'grayscale opacity-60'}`} 
+                        />
                       ) : (
                         <div className="text-brand-blue">{bank.icon}</div>
                       )}
                     </div>
                     <span className={`text-[10px] font-bold ${selectedBank === bank.id ? 'text-brand-blue' : 'text-text-gray/50'}`}>
                       {bank.rate}%
+                    </span>
+                    <span className={`text-[8px] font-medium uppercase tracking-tighter mt-1 ${selectedBank === bank.id ? 'opacity-100' : 'opacity-0'}`}>
+                      {bank.name}
                     </span>
                   </button>
                 ))}
