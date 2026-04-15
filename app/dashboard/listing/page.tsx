@@ -16,8 +16,10 @@ import {
   Building2,
   CheckCircle2,
   Clock,
-  ArrowUpDown
+  ArrowUpDown,
+  ExternalLink
 } from 'lucide-react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ListingPage() {
@@ -179,8 +181,9 @@ export default function ListingPage() {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayProperties.map((prop) => (
-            <div
+            <Link
               key={prop.id}
+              href={`/properti/${prop.id}`}
               className="group relative flex flex-col transition-all duration-500 hover:-translate-y-2"
             >
               {/* Image Area */}
@@ -218,9 +221,9 @@ export default function ListingPage() {
                     </p>
                   </div>
 
-                  <button className="p-2.5 bg-surface-gray/50 text-text-gray/40 rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 active:scale-95">
+                  <div className="p-2.5 bg-surface-gray/50 text-text-gray/40 rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 active:scale-95">
                     <MoreVertical size={16} strokeWidth={1.5} />
-                  </button>
+                  </div>
                 </div>
 
                 <div className="my-3 border-t border-border-line/5 w-full"></div>
@@ -238,12 +241,12 @@ export default function ListingPage() {
                     <span className="flex items-center gap-1.5"><Bath size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bathrooms} KM</span>
                     <span className="flex items-center gap-1.5"><Maximize size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.land_area}m²</span>
                   </div>
-                  <button className="text-[9px] uppercase tracking-widest text-brand-blue hover:text-brand-blue-deep transition-colors">
-                    Detail Unit
-                  </button>
+                  <div className="text-[9px] uppercase tracking-widest text-brand-blue hover:text-brand-blue-deep transition-colors flex items-center gap-1.5">
+                    Lihat Detail <ExternalLink size={10} />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -265,12 +268,12 @@ export default function ListingPage() {
                     {displayProperties.map((prop) => (
                         <tr key={prop.id} className="hover:bg-surface-gray/10 transition-all group">
                             <td className="p-6 pl-10">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-12 rounded-xl overflow-hidden border border-border-line/10 flex-none">
+                                <Link href={`/properti/${prop.id}`} className="flex items-center gap-4 hover:translate-x-1 transition-all group/cell">
+                                    <div className="w-16 h-12 rounded-xl overflow-hidden border border-border-line/10 flex-none group-hover/cell:border-brand-blue/30">
                                         <img src={prop.images?.[0]} className="w-full h-full object-cover" alt="" />
                                     </div>
-                                    <div className="font-medium text-text-dark">{prop.title}</div>
-                                </div>
+                                    <div className="font-medium text-text-dark group-hover/cell:text-brand-blue transition-colors">{prop.title}</div>
+                                </Link>
                             </td>
                             <td className="p-6">
                                 <div className="text-xs text-text-dark/80">{prop.location}</div>

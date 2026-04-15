@@ -9,11 +9,11 @@ import {
   Zap, MessageSquare, ChevronRight, Star, Shield, TrendingUp,
   Box, Eye, Info, FileText, Layout, Navigation, HelpCircle,
   Home, TrainFront, School, Hospital, ShoppingBag, ArrowUpRight,
-  Car, Map as MapIcon, Church, GraduationCap, Calculator, Percent, Wallet, Clock
+  Car, Map as MapIcon, Church, GraduationCap, Calculator, Percent, Wallet, Clock, ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
 import { MOCK_PROPERTIES } from '@/lib/mock-data';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import MapContainer from '@/components/maps/MapContainer';
 import { createClient } from '@supabase/supabase-js';
 
@@ -569,6 +569,7 @@ export default function DetailPropertiPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const router = useRouter();
   const { id } = use(params);
   const property = MOCK_PROPERTIES.find(p => p.id === id);
 
@@ -612,20 +613,33 @@ export default function DetailPropertiPage({
       <Navbar />
 
       <main className="container-standard py-6 relative z-10">
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text-gray/60 font-medium">
-            <Link href="/" className="hover:text-brand-blue transition-colors">Beranda</Link>
-            <ChevronRight size={10} />
-            <Link href="/cari" className="hover:text-brand-blue transition-colors">Properti</Link>
-            <ChevronRight size={10} />
-            <span className="text-text-dark font-semibold">{property.location.split(',')[0]}</span>
-          </div>
+        <div className="mb-6 flex items-center justify-between">
+          <button 
+            suppressHydrationWarning
+            onClick={() => router.back()}
+            className="group flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] text-text-gray/60 font-medium hover:text-brand-blue transition-all"
+          >
+            <div className="w-8 h-8 rounded-full bg-surface-gray/50 flex items-center justify-center group-hover:bg-brand-blue/10 group-hover:text-brand-blue transition-all">
+              <ArrowLeft size={14} />
+            </div>
+            Kembali
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 h-[500px] md:h-[650px] relative z-10">
           <div className="relative rounded-[2.5rem] overflow-hidden group h-full shadow-2xl border border-white-pure/20">
             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.image}')` }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/30 to-transparent"></div>
+            
+            {/* Floating Back Button on Image */}
+            <button 
+              suppressHydrationWarning
+              onClick={() => router.back()}
+              className="absolute top-8 left-8 z-20 flex items-center gap-2 bg-white-pure/10 backdrop-blur-xl border border-white-pure/20 px-4 py-2 rounded-xl text-white-pure text-[10px] uppercase tracking-widest font-medium hover:bg-white-pure/20 transition-all shadow-xl group/back"
+            >
+              <ArrowLeft size={14} />
+              Kembali
+            </button>
             <button suppressHydrationWarning className="absolute bottom-8 left-8 flex items-center gap-3 bg-white-pure/10 backdrop-blur-xl border border-white-pure/30 px-6 py-3 rounded-2xl text-white-pure text-sm font-semibold hover:bg-white-pure/20 transition-all shadow-xl group/btn">
               <div className="p-1.5 bg-brand-blue rounded-lg shadow-blue-glow group-hover/btn:scale-110 transition-transform">
                 <Box size={16} />
