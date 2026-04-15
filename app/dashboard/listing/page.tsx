@@ -179,71 +179,74 @@ export default function ListingPage() {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayProperties.map((prop) => (
-            <div key={prop.id} className="bg-white-pure rounded-[2.5rem] border border-border-line/20 shadow-sm overflow-hidden group hover:shadow-xl transition-all duration-500">
-               {/* Image Thumbnail */}
-               <div className="relative h-60 overflow-hidden">
-                  <img 
-                    src={prop.images?.[0] || 'https://via.placeholder.com/400x300'} 
-                    alt={prop.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute top-4 left-4">
-                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-medium backdrop-blur-md border ${
-                          prop.status === 'Aktif' 
-                            ? 'bg-emerald-500/80 text-white-pure border-white/20' 
-                            : 'bg-brand-blue/80 text-white-pure border-white/20'
-                      }`}>
-                          {prop.status}
-                      </span>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                      <button className="w-8 h-8 rounded-full bg-white-pure/80 backdrop-blur-md flex items-center justify-center text-text-dark hover:bg-white-pure transition-all shadow-sm">
-                          <MoreVertical size={16} strokeWidth={1.5} />
-                      </button>
-                  </div>
-               </div>
-               
-               {/* Content Info */}
-               <div className="p-8 space-y-6">
-                  <div className="space-y-1">
-                      <div className="flex items-center gap-1.5 text-brand-blue text-[10px] font-medium uppercase tracking-widest mb-1">
-                          <Building2 size={12} strokeWidth={1.5} />
-                          {prop.type}
-                      </div>
-                      <h3 className="text-lg font-medium text-text-dark line-clamp-1">{prop.title}</h3>
-                      <p className="text-xs font-normal text-text-gray/50 flex items-center gap-1">
-                          <MapPin size={12} strokeWidth={1.5} />
-                          {prop.location}
-                      </p>
+            <div
+              key={prop.id}
+              className="group relative flex flex-col transition-all duration-500 hover:-translate-y-2"
+            >
+              {/* Image Area */}
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft group-hover:shadow-md transition-all duration-700">
+                <img 
+                  src={prop.images?.[0] || 'https://via.placeholder.com/400x300'} 
+                  alt={prop.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3s]"
+                />
+
+                {/* Status Badge (Top Left) */}
+                <div className="absolute top-4 left-4 backdrop-blur-md bg-white-pure/90 px-3 py-1.5 rounded-full shadow-premium border border-white/20 text-[10px] font-medium flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${prop.status === 'Aktif' ? 'bg-emerald-500' : 'bg-brand-blue'}`}></span>
+                  <span className={prop.status === 'Aktif' ? 'text-emerald-600' : 'text-brand-blue'}>
+                    {prop.status}
+                  </span>
+                </div>
+
+                {/* Type Badge (Top Right) */}
+                <div className="absolute top-4 right-4 backdrop-blur-md bg-white-pure/90 px-3 py-1.5 rounded-full shadow-premium border border-white/20 text-[9px] font-medium text-text-gray/60 uppercase tracking-widest">
+                  {prop.type}
+                </div>
+              </div>
+
+              {/* Floating Content Box */}
+              <div className="relative -mt-14 mx-3 bg-white-pure rounded-[1.5rem] p-5 shadow-premium border border-border-line/20 group-hover:border-brand-blue/30 transition-all duration-500 z-10">
+                <div className="flex justify-between items-start mb-1">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base font-medium text-text-dark group-hover:text-brand-blue transition-colors truncate">
+                      {prop.title}
+                    </h3>
+                    <p className="flex items-center gap-1.5 text-[11px] text-text-gray/50 font-normal mt-0.5">
+                      <MapPin size={12} className="text-brand-blue" strokeWidth={1.5} />
+                      <span className="truncate">{prop.location}</span>
+                    </p>
                   </div>
 
-                  <div className="flex items-center justify-between border-y border-border-line/5 py-5">
-                      <div className="flex items-center gap-1 text-text-dark/70">
-                          <Bed size={16} strokeWidth={1.5} />
-                          <span className="text-xs font-medium">{prop.bedrooms}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-text-dark/70">
-                          <Bath size={16} strokeWidth={1.5} />
-                          <span className="text-xs font-medium">{prop.bathrooms}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-text-dark/70">
-                          <Maximize size={16} strokeWidth={1.5} />
-                          <span className="text-xs font-medium">{prop.land_area}m²</span>
-                      </div>
-                  </div>
+                  <button className="p-2.5 bg-surface-gray/50 text-text-gray/40 rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 active:scale-95">
+                    <MoreVertical size={16} strokeWidth={1.5} />
+                  </button>
+                </div>
 
-                  <div className="flex items-center justify-between pt-2">
-                      <div className="text-xl font-medium text-brand-blue">
-                          {formatPrice(prop.price)}
-                      </div>
-                      <button className="text-[10px] font-medium text-text-gray/40 uppercase tracking-widest hover:text-brand-blue transition-colors">
-                          Detail Unit
-                      </button>
+                <div className="my-3 border-t border-border-line/5 w-full"></div>
+
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-medium text-text-dark tracking-tight">
+                    {formatPrice(prop.price).replace('Rp', 'Rp ')}
+                  </p>
+                </div>
+
+                {/* Quick Specs (Compact) */}
+                <div className="mt-4 pt-4 border-t border-border-line/5 flex items-center justify-between text-[10px] font-medium text-text-gray/40">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1.5"><Bed size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bedrooms} KT</span>
+                    <span className="flex items-center gap-1.5"><Bath size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bathrooms} KM</span>
+                    <span className="flex items-center gap-1.5"><Maximize size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.land_area}m²</span>
                   </div>
-               </div>
+                  <button className="text-[9px] uppercase tracking-widest text-brand-blue hover:text-brand-blue-deep transition-colors">
+                    Detail Unit
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
+
       ) : (
         /* List View Mode */
         <div className="bg-white-pure rounded-[2rem] border border-border-line/20 shadow-sm overflow-hidden">
