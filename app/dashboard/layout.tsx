@@ -12,8 +12,8 @@ import {
   LogOut,
   Bell,
   Menu,
-  ChevronLeft,
-  ChevronRight
+  PanelRightOpen,
+  PanelRightClose
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -57,36 +57,42 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-[#F8F9FA] font-sans flex transition-all duration-300">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 bg-white-pure border-r border-border-line/30 z-50 flex flex-col hidden lg:flex transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-60'}`}>
-        {/* Logo Section */}
-        <div className={`h-20 flex items-center border-b border-border-line/5 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
-          <Link href="/" className="flex items-center gap-2.5 group overflow-hidden">
-            <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/10 group-hover:scale-105 transition-all shrink-0">
-              <span className="text-white-pure font-medium text-sm">P</span>
-            </div>
-            {!isCollapsed && (
-              <span className="font-display font-medium text-base text-text-dark tracking-tight animate-in fade-in slide-in-from-left-2 duration-300">PropNest</span>
-            )}
-          </Link>
-          {!isCollapsed && (
+        {/* Logo & Toggle Section */}
+        <div className={`h-20 flex items-center border-b border-border-line/5 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
+          {isCollapsed ? (
             <button 
-              onClick={() => setIsCollapsed(true)}
-              className="p-2 text-text-gray/40 hover:text-brand-blue hover:bg-surface-gray rounded-xl transition-all"
+                onClick={() => setIsCollapsed(false)}
+                className="group relative flex items-center justify-center w-12 h-12 hover:bg-surface-gray rounded-2xl transition-all"
+                title="Expand Sidebar"
             >
-              <ChevronLeft size={18} strokeWidth={1.5} />
+                {/* Logo Icon - Hidden on Hover */}
+                <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/10 group-hover:opacity-0 group-hover:scale-75 transition-all duration-200 shrink-0">
+                  <span className="text-white-pure font-medium text-sm">P</span>
+                </div>
+                
+                {/* PanelRightOpen Icon - Visible on Hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-200">
+                    <PanelRightOpen size={20} strokeWidth={1.5} className="text-brand-blue" />
+                </div>
             </button>
+          ) : (
+            <>
+              <Link href="/" className="flex items-center gap-2.5 group overflow-hidden">
+                <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/10 group-hover:scale-105 transition-all shrink-0">
+                  <span className="text-white-pure font-medium text-sm">P</span>
+                </div>
+                <span className="font-display font-medium text-base text-text-dark tracking-tight animate-in fade-in slide-in-from-left-2 duration-300">PropNest</span>
+              </Link>
+              <button 
+                onClick={() => setIsCollapsed(true)}
+                className="p-2 text-text-gray/40 hover:text-brand-blue hover:bg-surface-gray rounded-xl transition-all group"
+                title="Collapse Sidebar"
+              >
+                <PanelRightClose size={18} strokeWidth={1.5} className="transition-transform" />
+              </button>
+            </>
           )}
         </div>
-
-        {isCollapsed && (
-            <div className="flex justify-center py-4 border-b border-border-line/5">
-                <button 
-                    onClick={() => setIsCollapsed(false)}
-                    className="p-2 text-text-gray/40 hover:text-brand-blue hover:bg-surface-gray rounded-xl transition-all"
-                >
-                    <ChevronRight size={18} strokeWidth={1.5} />
-                </button>
-            </div>
-        )}
 
         {/* Navigation - Pill Style */}
         <div className={`flex-1 overflow-y-auto py-8 ${isCollapsed ? 'px-3' : 'px-5'}`}>
