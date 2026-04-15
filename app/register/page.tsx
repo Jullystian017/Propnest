@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ArrowLeft, Building2 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { createClient } from '@/lib/supabase/client';
@@ -112,10 +112,10 @@ export default function RegisterPage() {
           <div className="flex-1 flex flex-col justify-center max-w-[420px] mx-auto w-full">
             <div className="mb-10 pt-16 md:pt-0">
               <h1 className="text-3xl font-display font-semibold text-text-dark mb-3 tracking-tight">
-                Buat Akun Baru
+                Daftar PropNest AI
               </h1>
               <p className="text-text-gray font-medium text-sm">
-                Bergabunglah dengan platform properti AI tercanggih
+                Bergabunglah dengan platform pemasaran properti masa depan
               </p>
             </div>
 

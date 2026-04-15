@@ -33,10 +33,25 @@ export async function updateSession(request: NextRequest) {
   // Protect dashboard routes
   if (
     !user &&
-    request.nextUrl.pathname.startsWith('/dashboard')
+    (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/onboarding'))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
+
+  // Enforce onboarding
+  const isOnboardingCompleted = user?.user_metadata?.company_name;
+  
+  if (user && !isOnboardingCompleted && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/onboarding';
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isOnboardingCompleted && request.nextUrl.pathname === '/onboarding') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 
@@ -47,7 +62,7 @@ export async function updateSession(request: NextRequest) {
       request.nextUrl.pathname === '/register')
   ) {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = isOnboardingCompleted ? '/dashboard' : '/onboarding';
     return NextResponse.redirect(url);
   }
 

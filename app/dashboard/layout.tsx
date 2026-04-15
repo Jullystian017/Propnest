@@ -38,6 +38,8 @@ export default function DashboardLayout({
     { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
   ];
 
+  const companyName = user?.user_metadata?.company_name || 'Developer';
+
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans flex">
       {/* Sidebar */}
@@ -49,6 +51,18 @@ export default function DashboardLayout({
             </div>
             <span className="font-display font-bold text-lg text-text-dark tracking-tight">PropNest</span>
           </Link>
+        </div>
+
+        <div className="p-6 border-b border-border-line/10">
+          <div className="flex items-center gap-3 p-3 bg-surface-gray rounded-2xl border border-border-line/20">
+            <div className="w-10 h-10 rounded-xl bg-brand-blue text-white-pure flex items-center justify-center font-bold text-lg flex-none shadow-sm shadow-brand-blue/20">
+              {companyName.charAt(0)}
+            </div>
+            <div className="overflow-hidden">
+               <p className="text-xs font-bold text-text-gray/50 uppercase tracking-widest leading-none mb-1">Company</p>
+               <p className="text-sm font-bold text-text-dark truncate">{companyName}</p>
+            </div>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto py-6 px-4">
