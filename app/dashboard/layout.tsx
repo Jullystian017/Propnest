@@ -23,6 +23,15 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    async function getUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    }
+    getUser();
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -56,7 +65,7 @@ export default function DashboardLayout({
         <div className="p-6 border-b border-border-line/10">
           <div className="flex items-center gap-3 p-3 bg-surface-gray rounded-2xl border border-border-line/20">
             <div className="w-10 h-10 rounded-xl bg-brand-blue text-white-pure flex items-center justify-center font-bold text-lg flex-none shadow-sm shadow-brand-blue/20">
-              {companyName.charAt(0)}
+              {companyName ? companyName.charAt(0) : 'D'}
             </div>
             <div className="overflow-hidden">
                <p className="text-xs font-bold text-text-gray/50 uppercase tracking-widest leading-none mb-1">Company</p>
