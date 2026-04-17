@@ -31,6 +31,17 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tempFilter, setTempFilter] = useState('Semua');
   const [statusFilter, setStatusFilter] = useState('Semua');
+  const [convertingId, setConvertingId] = useState<string | null>(null);
+
+  const handleConvertToDeal = (leadId: string) => {
+    setConvertingId(leadId);
+    // Simulate API call
+    setTimeout(() => {
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'Closing' as any } : l));
+      setConvertingId(null);
+      alert('Berhasil dipindahkan ke Pipeline Penjualan!');
+    }, 1500);
+  };
 
   useEffect(() => {
     async function fetchLeads() {
@@ -278,6 +289,24 @@ export default function LeadsPage() {
                                         >
                                             <MessageCircle size={16} strokeWidth={2} />
                                         </a>
+                                        <button 
+                                            onClick={() => handleConvertToDeal(lead.id)}
+                                            disabled={convertingId === lead.id || lead.status === 'Closing'}
+                                            className={`p-2.5 rounded-xl transition-all shadow-sm active:scale-95 group/btn flex items-center justify-center ${
+                                                lead.status === 'Closing' 
+                                                ? 'bg-brand-blue text-white-pure opacity-50 cursor-not-allowed' 
+                                                : 'bg-brand-blue/5 text-brand-blue hover:bg-brand-blue hover:text-white-pure'
+                                            }`}
+                                            title="Jadikan Deal"
+                                        >
+                                            {convertingId === lead.id ? (
+                                                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                            ) : lead.status === 'Closing' ? (
+                                                <Check size={16} strokeWidth={2} />
+                                            ) : (
+                                                <TrendingUp size={16} strokeWidth={2} />
+                                            )}
+                                        </button>
                                         <button className="p-2.5 bg-surface-gray/50 text-text-gray hover:bg-brand-blue hover:text-white-pure rounded-xl transition-all shadow-sm active:scale-95 group/btn">
                                             <MoreVertical size={16} strokeWidth={1.5} className="group-hover/btn:rotate-90 transition-transform duration-300" />
                                         </button>

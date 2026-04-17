@@ -13,7 +13,8 @@ import {
   Bell,
   Menu,
   PanelRightOpen,
-  PanelRightClose
+  PanelRightClose,
+  TrendingUp
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -46,6 +47,7 @@ export default function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Listing Properti', href: '/dashboard/listing', icon: Building2 },
     { name: 'CRM Leads', href: '/dashboard/leads', icon: Users },
+    { name: 'Pipeline Penjualan', href: '/dashboard/deals', icon: TrendingUp },
     { name: 'Content Studio', href: '/dashboard/content', icon: Sparkles },
     { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
   ];
@@ -160,6 +162,7 @@ export default function DashboardLayout({
               {pathname === '/dashboard' ? 'Dashboard Overview' : 
                pathname.includes('listing') ? 'Listing Properti' :
                pathname.includes('leads') ? 'CRM Leads' :
+               pathname.includes('deals') ? 'Pipeline Penjualan' :
                pathname.includes('content') ? 'AI Content Studio' :
                pathname.includes('settings') ? 'Pengaturan Akun' :
                pathname.split('/').pop()?.replace('-', ' ')}
