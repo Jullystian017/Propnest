@@ -387,108 +387,102 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* AI EXECUTIVE REPORT SECTION - PREMIUM RE-DESIGN */}
-      <div className="bg-[#0f172a] rounded-[3.5rem] p-12 md:p-16 text-white-pure relative overflow-hidden shadow-2xl shadow-slate-900/40">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/20 rounded-full blur-[120px] -mr-64 -mt-64 opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-violet-600/20 rounded-full blur-[120px] -ml-48 -mb-48 opacity-50"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      {/* AI EXECUTIVE REPORT SECTION - CLEAN PROFESSIONAL RE-DESIGN */}
+      <div className="bg-white-pure rounded-[2.5rem] border border-border-line/20 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-blue/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/5 backdrop-blur-2xl rounded-full border border-white/10 text-[10px] font-bold tracking-[0.2em] uppercase text-brand-blue-light">
-              <Sparkles size={16} className="text-amber-400 animate-pulse" />
-              AI STRATEGY ENGINE v3.3
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2">
+          {/* Left Column: Intro */}
+          <div className="p-12 md:p-16 space-y-8 lg:border-r border-border-line/10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-blue/5 rounded-full border border-brand-blue/10 text-[10px] font-bold tracking-widest uppercase text-brand-blue">
+              <Sparkles size={14} />
+              AI Strategy Engine
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-display font-medium leading-[1.1] tracking-tight">
-              Ubah Data <br /> Jadi <span className="bg-gradient-to-r from-brand-blue to-violet-400 bg-clip-text text-transparent italic font-semibold">Closing.</span>
-            </h2>
-            
-            <p className="text-xl text-slate-400 font-normal leading-relaxed max-w-lg">
-              Lewati proses analisis manual yang melelahkan. Biarkan AI kami membedah perilaku leads Bapak dan memberikan langkah taktis untuk mendominasi pasar properti.
-            </p>
+            <div className="space-y-4">
+              <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark tracking-tight leading-tight">
+                Ubah Data Lead <br /> Menjadi <span className="text-brand-blue">Strategi Taktis.</span>
+              </h2>
+              <p className="text-base text-text-gray/70 font-normal leading-relaxed max-w-md">
+                Gunakan AI kami untuk menganalisis perilaku prospek Anda secara mendalam. Dapatkan laporan eksekutif yang berisi langkah pasti untuk meningkatkan konversi hari ini.
+              </p>
+            </div>
 
-            <div className="flex flex-wrap gap-4 pt-4">
-               <button 
+            <div className="flex flex-wrap gap-4 pt-6">
+              <button 
                 onClick={handleGenerateReport}
                 disabled={isGenerating}
-                className="group relative px-10 py-5 bg-brand-blue text-white-pure rounded-full font-bold text-base shadow-2xl shadow-brand-blue/40 hover:shadow-brand-blue/60 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50 disabled:scale-100"
-               >
-                 {isGenerating ? (
-                   <>
-                     <RefreshCcw className="animate-spin" size={22} />
-                     <span className="tracking-tight">Mengolah Algoritma...</span>
-                   </>
-                 ) : (
-                   <>
-                     <FileText size={22} className="group-hover:rotate-12 transition-transform" />
-                     <span className="tracking-tight">Generate Strategy Report</span>
-                   </>
-                 )}
-               </button>
-               
-               {report && (
-                 <button className="h-16 w-16 flex items-center justify-center bg-white/5 border border-white/10 rounded-full text-slate-300 hover:text-white-pure hover:bg-white/10 transition-all shadow-xl backdrop-blur-xl">
-                   <Download size={22} />
-                 </button>
-               )}
+                className="px-8 py-4 bg-brand-blue text-white-pure rounded-2xl font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all flex items-center gap-2.5 disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCcw className="animate-spin" size={18} />
+                    <span>Menganalisis Data...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileText size={18} />
+                    <span>Generate Executive Report</span>
+                  </>
+                )}
+              </button>
+              
+              {report && (
+                <button className="h-14 w-14 flex items-center justify-center bg-surface-gray border border-border-line/10 rounded-2xl text-text-gray hover:text-brand-blue transition-all shadow-sm">
+                  <Download size={18} />
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="relative group">
-            <div className="absolute -inset-4 bg-gradient-to-br from-brand-blue/20 to-violet-600/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <div className="relative bg-[#1e293b]/50 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-1 min-h-[500px] flex flex-col shadow-inner">
+          {/* Right Column: Report Viewer */}
+          <div className="p-12 md:p-16 bg-surface-gray/30 relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-blue/5 via-transparent to-transparent opacity-50"></div>
+            
+            <div className="relative h-full min-h-[400px] bg-white-pure rounded-3xl border border-border-line/20 shadow-xl shadow-brand-blue/5 flex flex-col overflow-hidden">
               {report ? (
-                <div className="flex-1 flex flex-col h-full animate-in zoom-in-95 fade-in duration-500">
-                   <div className="flex items-center justify-between p-7 border-b border-white/5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <span className="text-[11px] font-bold text-slate-400 tracking-[0.2em] uppercase">Intelligence Briefing</span>
+                <div className="flex-1 flex flex-col h-full animate-in fade-in zoom-in-95 duration-500">
+                  <div className="flex items-center justify-between p-6 border-b border-border-line/10 bg-white-pure/50 backdrop-blur-md">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div>
+                      <span className="text-[10px] font-bold text-text-gray uppercase tracking-widest">Strategy Briefing</span>
+                    </div>
+                    <button className="p-2 text-text-gray/40 hover:text-brand-blue transition-colors">
+                      <Printer size={16} />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto px-8 py-8 scrollbar-hide">
+                    <div className="prose prose-slate max-w-none">
+                      <div className="text-text-dark/80 text-sm leading-[1.8] whitespace-pre-line font-medium tracking-tight">
+                        {report}
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2.5 hover:bg-white/5 rounded-xl transition-colors text-slate-400 hover:text-white-pure">
-                          <Printer size={18} />
-                        </button>
-                      </div>
-                   </div>
-                   <div className="flex-1 max-h-[480px] overflow-y-auto px-10 py-8 scrollbar-hide">
-                      <div className="prose prose-invert prose-slate max-w-none">
-                         <div className="text-slate-200 text-sm leading-[1.8] whitespace-pre-line font-medium tracking-tight">
-                          {report}
-                         </div>
-                      </div>
-                   </div>
-                   <div className="p-10 mt-auto bg-gradient-to-t from-slate-900/80 to-transparent rounded-b-[3rem]">
-                      <div className="p-6 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-between backdrop-blur-md">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-brand-blue flex items-center justify-center border border-white/20 shadow-lg shadow-brand-blue/20">
-                            <Sparkles size={22} />
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Model Analysis</p>
-                            <p className="text-sm font-bold text-white-pure">Vision Engine L3.3</p>
-                          </div>
-                        </div>
-                        <div className="text-[10px] font-bold bg-white-pure text-slate-900 px-3 py-1.5 rounded-full uppercase tracking-tighter">Verified AI</div>
-                      </div>
-                   </div>
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-12 space-y-8">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-brand-blue/20 blur-3xl rounded-full scale-150 animate-pulse"></div>
-                    <div className="relative w-28 h-28 rounded-[2.5rem] bg-slate-800/50 border border-white/10 flex items-center justify-center text-slate-600 shadow-2xl">
-                      <BarChart3 size={48} strokeWidth={1.5} />
                     </div>
                   </div>
-                  <div className="space-y-3 max-w-sm">
-                    <h4 className="text-2xl font-bold text-white-pure tracking-tight">Sistem Siap Menganalisis</h4>
-                    <p className="text-base text-slate-400 font-normal leading-relaxed">
-                      Klik tombol untuk meluncurkan algoritma analisis taktis pada semua leads Bapak.
+                  <div className="p-6 border-t border-border-line/5 bg-surface-gray/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue border border-brand-blue/10">
+                          <Sparkles size={16} />
+                        </div>
+                        <p className="text-[10px] font-bold text-text-gray uppercase tracking-widest">Model L3.3 Vision</p>
+                      </div>
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-bold rounded border border-emerald-100 uppercase">Verified AI</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 space-y-6">
+                  <div className="w-20 h-20 rounded-3xl bg-surface-gray flex items-center justify-center text-text-gray/20 border border-border-line/5 mb-2">
+                    <BarChart3 size={36} strokeWidth={1} />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-bold text-text-dark tracking-tight">Siap Menganalisis</h4>
+                    <p className="text-sm text-text-gray/50 font-normal leading-relaxed max-w-[240px]">
+                      Klik tombol untuk memulai sesi analisis data cerdas.
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    {[1, 2, 3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-700"></div>)}
+                  <div className="flex gap-1.5">
+                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-border-line/30"></div>)}
                   </div>
                 </div>
               )}
