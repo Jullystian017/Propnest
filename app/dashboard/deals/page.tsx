@@ -47,7 +47,6 @@ export default function DealsPipelinePage() {
   };
 
   const columns = [
-    { title: 'Terpilih', status: 'Baru', color: 'bg-indigo-500' },
     { title: 'Jadwal Survey', status: 'Survey', color: 'bg-amber-500' },
     { title: 'Negosiasi', status: 'Negosiasi', color: 'bg-blue-500' },
     { title: 'Legalitas & Dok', status: 'Legalitas', color: 'bg-emerald-500' },

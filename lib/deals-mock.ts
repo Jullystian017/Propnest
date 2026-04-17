@@ -8,7 +8,7 @@ export interface Deal {
   reservationDate: string;
   floorPlan: string;
   propertyImage: string;
-  status: 'Baru' | 'Survey' | 'Negosiasi' | 'Legalitas';
+  status: 'Survey' | 'Negosiasi' | 'Legalitas';
   members: { name: string; avatar: string }[];
   commentsCount: number;
   filesCount: number;
@@ -25,7 +25,7 @@ export const MOCK_DEALS: Deal[] = [
     reservationDate: '25 Nov 2025',
     floorPlan: 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&q=80&w=400',
     propertyImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
-    status: 'Baru',
+    status: 'Survey',
     members: [{ name: 'B', avatar: 'B' }, { name: 'K', avatar: 'K' }],
     commentsCount: 3,
     filesCount: 1
