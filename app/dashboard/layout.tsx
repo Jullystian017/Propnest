@@ -14,7 +14,8 @@ import {
   Menu,
   PanelRightOpen,
   PanelRightClose,
-  TrendingUp
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -31,11 +32,17 @@ export default function DashboardLayout({
 
   React.useEffect(() => {
     async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUser(session.user);
+        }
+      } catch (err) {
+        console.debug('Dashboard layout auth check deferred:', err);
+      }
     }
     getUser();
-  }, []);
+  }, [supabase]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -49,6 +56,7 @@ export default function DashboardLayout({
     { name: 'CRM Leads', href: '/dashboard/leads', icon: Users },
     { name: 'Pipeline Penjualan', href: '/dashboard/deals', icon: TrendingUp },
     { name: 'Content Studio', href: '/dashboard/content', icon: Sparkles },
+    { name: 'Market Analytics', href: '/dashboard/analytics', icon: BarChart3 },
     { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
   ];
 
