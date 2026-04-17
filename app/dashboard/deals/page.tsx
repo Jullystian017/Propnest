@@ -37,6 +37,7 @@ export default function DealsPipelinePage() {
 
   // Drag and Drop State
   const [draggedDealId, setDraggedDealId] = useState<string | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -95,14 +96,31 @@ export default function DealsPipelinePage() {
     e.dataTransfer.setData('dealId', dealId);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, status: string) => {
     e.preventDefault();
+    if (dragOverColumn !== status) {
+      setDragOverColumn(status);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only clear if we are leaving the main column container to prevent flickering over child elements
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (
+      e.clientX <= rect.left ||
+      e.clientX >= rect.right ||
+      e.clientY <= rect.top ||
+      e.clientY >= rect.bottom
+    ) {
+      setDragOverColumn(null);
+    }
   };
 
   const handleDrop = (e: React.DragEvent, newStatus: string) => {
     const dealId = e.dataTransfer.getData('dealId');
     setDeals(prev => prev.map(d => d.id === dealId ? { ...d, status: newStatus as any } : d));
     setDraggedDealId(null);
+    setDragOverColumn(null);
   };
 
   return (
@@ -230,9 +248,10 @@ export default function DealsPipelinePage() {
           return (
             <div 
               key={idx} 
-              onDragOver={handleDragOver}
+              onDragOver={(e) => handleDragOver(e, col.status)}
+              onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, col.status)}
-              className="flex flex-col space-y-4 min-w-0"
+              className={`flex flex-col space-y-4 min-w-0 p-3 rounded-[2.5rem] transition-all duration-300 border-2 border-transparent ${dragOverColumn === col.status ? 'bg-brand-blue/5 border-dashed border-brand-blue/30 scale-[1.01]' : ''}`}
             >
               {/* Column Header */}
               <div className={`p-4 rounded-2xl border-l-[6px] border ${col.color.replace('bg-', 'border-')} bg-white-pure shadow-sm flex items-center justify-between`}>
