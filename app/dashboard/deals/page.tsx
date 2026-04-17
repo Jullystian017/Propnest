@@ -26,7 +26,6 @@ import { MOCK_DEALS, PIPELINE_STATS, Deal } from '@/lib/deals-mock';
 
 export default function DealsPipelinePage() {
   const [deals, setDeals] = useState<Deal[]>(MOCK_DEALS);
-  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -127,44 +126,37 @@ export default function DealsPipelinePage() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="px-5 py-3 bg-brand-blue text-white-pure rounded-2xl text-sm font-medium shadow-lg shadow-brand-blue/10 hover:bg-brand-blue-deep transition-all flex items-center gap-2 active:scale-95 whitespace-nowrap">
-            <Plus size={18} strokeWidth={1.5} />
-            Buat Deal Baru
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white-pure/50 backdrop-blur-md p-4 rounded-[2.5rem] border border-border-line/10 shadow-sm">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <button className="group relative px-6 py-3.5 bg-brand-blue text-white-pure rounded-full text-sm font-semibold shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep hover:shadow-brand-blue/30 transition-all duration-300 flex items-center gap-2.5 active:scale-95 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+            <PlusCircle size={20} strokeWidth={2} />
+            <span>Buat Deal Baru</span>
           </button>
-          <div className="flex items-center bg-surface-gray/50 p-1 rounded-2xl border border-border-line/10">
-              <button 
-                onClick={() => setViewMode('kanban')}
-                className={`p-2 rounded-xl transition-all ${viewMode === 'kanban' ? 'bg-white-pure text-brand-blue shadow-sm' : 'text-text-gray/40'}`}
-              >
-                <LayoutGrid size={18} strokeWidth={1.5} />
-              </button>
-              <button 
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-white-pure text-brand-blue shadow-sm' : 'text-text-gray/40'}`}
-              >
-                <List size={18} strokeWidth={1.5} />
-              </button>
-          </div>
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
+          <div className="relative flex-1 md:w-72 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30 group-focus-within:text-brand-blue transition-colors" size={18} strokeWidth={1.5} />
             <input 
               type="text" 
-              placeholder="Cari deal atau klien..."
-              className="w-full bg-white-pure border border-border-line/20 rounded-2xl py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-brand-blue/10 outline-none transition-all shadow-sm"
+              placeholder="Cari deal, properti, atau klien..."
+              className="w-full bg-surface-gray/40 border border-transparent rounded-full py-3.5 pl-12 pr-4 text-sm focus:bg-white-pure focus:border-brand-blue/20 outline-none transition-all shadow-inner"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white-pure border border-border-line/20 rounded-2xl text-xs font-medium text-text-dark hover:bg-surface-gray transition-all shadow-sm">
-              <ArrowUpDown size={16} strokeWidth={1.5} />
-              Urutkan
+          
+          <div className="h-10 w-[1px] bg-border-line/10 mx-1 hidden md:block"></div>
+
+          <button className="flex items-center gap-2.5 px-6 py-3.5 bg-white-pure border border-border-line/20 rounded-full text-sm font-medium text-text-dark hover:bg-surface-gray hover:border-brand-blue/10 transition-all duration-300 shadow-sm active:scale-95">
+              <ArrowUpDown size={18} strokeWidth={1.5} className="text-text-gray/40" />
+              <span>Urutkan</span>
+              <ChevronDown size={14} className="text-text-gray/20" />
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white-pure border border-border-line/20 rounded-2xl text-xs font-medium text-text-dark hover:bg-surface-gray transition-all shadow-sm">
-              <FilterIcon size={16} strokeWidth={1.5} />
-              Filter
+          
+          <button className="flex items-center gap-2.5 px-6 py-3.5 bg-white-pure border border-border-line/20 rounded-full text-sm font-medium text-text-dark hover:bg-surface-gray hover:border-brand-blue/10 transition-all duration-300 shadow-sm active:scale-95">
+              <FilterIcon size={18} strokeWidth={1.5} className="text-text-gray/40" />
+              <span>Filter</span>
+              <div className="w-5 h-5 rounded-full bg-brand-blue/10 text-brand-blue text-[10px] flex items-center justify-center font-bold">3</div>
           </button>
         </div>
       </div>
