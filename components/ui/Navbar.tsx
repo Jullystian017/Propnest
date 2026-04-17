@@ -15,12 +15,23 @@ export default function Navbar() {
   const supabase = createClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    // 1. Initial Check
+    const checkUser = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) return;
+        if (session?.user) {
+          setUser(session.user);
+        }
+      } catch (err) {
+        // Silently fail if lock is stolen, onAuthStateChange will catch it anyway
+        console.debug('Supabase session check deferred:', err);
+      }
     };
-    getUser();
+    
+    checkUser();
 
+    // 2. Listen for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });

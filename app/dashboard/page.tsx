@@ -16,9 +16,10 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+        // Use getSession for initial check to avoid lock contention
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const name = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User';
           setDisplayName(name);
         }
 
@@ -31,7 +32,7 @@ export default function DashboardPage() {
         if (error) throw error;
         setLeads(data || []);
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.debug('Dashboard data sync deferred:', err);
       } finally {
         setLoading(false);
       }
