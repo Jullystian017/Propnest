@@ -169,10 +169,10 @@ export default function DealsPipelinePage() {
         </div>
       </div>
 
-      {/* Kanban Board */}
-      <div className="overflow-x-auto pb-10 flex gap-6 min-h-[700px] scroll-smooth no-scrollbar">
+      {/* Kanban Board - Now using Responsive Grid to avoid horizontal scrolling */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[700px]">
         {columns.map((col, idx) => (
-          <div key={idx} className="flex-none w-[320px] lg:w-[350px] space-y-4">
+          <div key={idx} className="flex flex-col space-y-4 min-w-0">
             {/* Column Header */}
             <div className={`p-4 rounded-2xl border-l-[6px] border ${col.color.replace('bg-', 'border-')} bg-white-pure shadow-sm flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
