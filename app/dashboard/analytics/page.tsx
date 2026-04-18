@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -16,7 +18,9 @@ import {
   ChevronDown,
   Info,
   FileText,
-  Printer
+  Printer,
+  Building2,
+  ShieldCheck
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -41,6 +45,14 @@ export default function AnalyticsPage() {
   const [report, setReport] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState('30 Hari');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [reportSerial, setReportSerial] = useState("");
+  const [reportDate, setReportDate] = useState("");
+
+  // Initialize report metadata on mount to avoid hydration mismatch
+  React.useEffect(() => {
+    setReportSerial(`PN-#${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`);
+    setReportDate(new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }));
+  }, []);
 
   // --- Data Processing for Charts ---
   
@@ -146,9 +158,9 @@ export default function AnalyticsPage() {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = (id: string = 'report-viewer-content') => {
     if (!report) return;
-    exportToPDF('report-viewer-content', `PropNest_Executive_Report_${new Date().toLocaleDateString()}.pdf`);
+    exportToPDF(id, `PropNest_Executive_Report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
   const handleExportWord = () => {
@@ -407,120 +419,137 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* AI EXECUTIVE REPORT SECTION - CLEAN PROFESSIONAL RE-DESIGN */}
-      <div className="bg-white-pure rounded-[2.5rem] border border-border-line/20 shadow-sm relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-blue/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+      {/* AI EXECUTIVE REPORT SECTION - STREAMLINED & PROFESSIONAL */}
+      <div className="bg-white-pure rounded-[2.5rem] border border-border-line/20 shadow-sm relative overflow-hidden group mb-12">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-blue/5 rounded-full blur-[120px] -mr-48 -mt-48 opacity-60"></div>
         
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2">
-          {/* Left Column: Intro */}
-          <div className="p-12 md:p-16 space-y-8 lg:border-r border-border-line/10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-blue/5 rounded-full border border-brand-blue/10 text-[10px] font-bold tracking-widest uppercase text-brand-blue">
-              <Sparkles size={14} />
-              AI Strategy Engine
-            </div>
-            
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark tracking-tight leading-tight">
-                Ubah Data Lead <br /> Menjadi <span className="text-brand-blue">Strategi Taktis.</span>
-              </h2>
-              <p className="text-base text-text-gray/70 font-normal leading-relaxed max-w-md">
-                Gunakan AI kami untuk menganalisis perilaku prospek Anda secara mendalam. Dapatkan laporan eksekutif yang berisi langkah pasti untuk meningkatkan konversi hari ini.
-              </p>
-            </div>
+        <div className="relative z-10 p-12 md:p-16 flex flex-col items-center text-center max-w-4xl mx-auto space-y-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-blue/5 rounded-full border border-brand-blue/10 text-[10px] font-bold tracking-widest uppercase text-brand-blue">
+            <Sparkles size={14} />
+            AI Strategy Engine
+          </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-3xl md:text-5xl font-display font-medium text-text-dark tracking-tight leading-tight">
+              Ubah Data Lead Menjadi <span className="text-brand-blue">Strategi Taktis.</span>
+            </h2>
+            <p className="text-lg text-text-gray/70 font-normal leading-relaxed max-w-2xl mx-auto">
+              Analisis performa pemasaran Anda secara mendalam dengan AI. Dapatkan laporan eksekutif siap pakai dalam format PDF dan Word.
+            </p>
+          </div>
 
-            <div className="flex flex-wrap gap-4 pt-6">
+          <div className="flex flex-col items-center gap-6 w-full max-w-md">
+            {!report ? (
               <button 
                 onClick={handleGenerateReport}
                 disabled={isGenerating}
-                className="px-8 py-4 bg-brand-blue text-white-pure rounded-2xl font-bold text-sm shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all flex items-center gap-2.5 disabled:opacity-50"
+                className="w-full h-16 bg-brand-blue text-white-pure rounded-2xl font-bold text-base shadow-xl shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {isGenerating ? (
                   <>
-                    <RefreshCcw className="animate-spin" size={18} />
-                    <span>Menganalisis Data...</span>
+                    <RefreshCcw className="animate-spin" size={20} />
+                    <span>Menganalisis Data Analytics...</span>
                   </>
                 ) : (
                   <>
-                    <FileText size={18} />
-                    <span>Generate Executive Report</span>
+                    <Sparkles size={20} />
+                    <span>Generate Strategy Briefing</span>
                   </>
                 )}
               </button>
-              
-              {report && (
-                <div className="flex gap-3">
+            ) : (
+              <div className="w-full space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="text-sm font-bold text-emerald-600 uppercase tracking-widest">Laporan Berhasil Dibuat</span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button 
-                    onClick={handleExportPDF}
-                    className="h-14 w-14 flex items-center justify-center bg-surface-gray border border-border-line/10 rounded-2xl text-text-gray hover:text-brand-blue transition-all shadow-sm"
-                    title="Export as PDF"
+                    onClick={() => handleExportPDF('report-print-template')}
+                    className="h-16 flex items-center justify-center bg-white-pure border-2 border-brand-blue text-brand-blue rounded-2xl font-bold text-sm hover:bg-brand-blue/5 transition-all gap-3 shadow-sm"
                   >
-                    <Download size={18} />
+                    <Download size={20} />
+                    UNDUH LAPORAN PDF
                   </button>
                   <button 
                     onClick={handleExportWord}
-                    className="h-14 px-6 flex items-center justify-center bg-surface-gray border border-border-line/10 rounded-2xl text-text-gray hover:text-brand-blue transition-all shadow-sm gap-2 font-bold text-xs"
-                    title="Export as Word"
+                    className="h-16 flex items-center justify-center bg-surface-gray border border-border-line/10 text-text-dark rounded-2xl font-bold text-sm hover:bg-surface-dim transition-all gap-3"
                   >
-                    <FileText size={18} />
-                    DOCX
+                    <FileText size={20} className="text-brand-blue" />
+                    UNDUH LAPORAN WORD
                   </button>
                 </div>
-              )}
+
+                <button 
+                  onClick={() => setReport(null)}
+                  className="text-[11px] font-bold text-text-gray/40 uppercase tracking-widest hover:text-brand-blue transition-colors pt-2"
+                >
+                  Buat Ulang Laporan
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* HIDDEN PRINT TEMPLATE (FIXED WIDTH FOR HIGH-QUALITY PDF) */}
+      <div className="fixed top-0 left-0 pointer-events-none opacity-0 -z-50 overflow-hidden h-0">
+        <div 
+          id="report-print-template" 
+          className="bg-white-pure p-16" 
+          style={{ width: '1000px' }}
+        >
+          {/* Professional Document Header */}
+          <div className="mb-12 border-b-4 border-brand-blue pb-10">
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-2xl bg-brand-blue flex items-center justify-center text-white-pure shadow-2xl">
+                  <Building2 size={36} />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-display font-bold text-text-dark tracking-tight">PropNest <span className="text-brand-blue">Intelligence</span></h1>
+                  <p className="text-sm font-bold text-text-gray uppercase tracking-[0.3em] opacity-60 mt-1">Strategic Market Analysis</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-bold text-text-gray uppercase tracking-widest mb-2">Report Serial No.</p>
+                <p className="text-lg font-bold text-text-dark">{reportSerial}</p>
+                <p className="text-sm text-text-gray font-medium mt-1">{reportDate}</p>
+              </div>
+            </div>
+            <div className="flex gap-6">
+              <div className="px-5 py-2.5 bg-surface-gray rounded-xl border border-border-line/10 flex items-center gap-3">
+                <ShieldCheck size={16} className="text-emerald-500" />
+                <span className="text-xs font-bold text-text-dark/70 uppercase tracking-widest">Data Integrity Verified</span>
+              </div>
+              <div className="px-5 py-2.5 bg-surface-gray rounded-xl border border-border-line/10 flex items-center gap-3">
+                <Calendar size={16} className="text-brand-blue" />
+                <span className="text-xs font-bold text-text-dark/70 uppercase tracking-widest">Real-time Insight Engine</span>
+              </div>
             </div>
           </div>
 
-          {/* Right Column: Report Viewer */}
-          <div className="p-12 md:p-16 bg-surface-gray/30 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-blue/5 via-transparent to-transparent opacity-50"></div>
-            
-            <div className="relative h-full min-h-[400px] bg-white-pure rounded-3xl border border-border-line/20 shadow-xl shadow-brand-blue/5 flex flex-col overflow-hidden">
-              {report ? (
-                <div id="report-viewer-content" className="flex-1 flex flex-col h-full animate-in fade-in zoom-in-95 duration-500 bg-white-pure">
-                  <div className="flex items-center justify-between p-6 border-b border-border-line/10 bg-white-pure/50 backdrop-blur-md">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div>
-                      <span className="text-[10px] font-bold text-text-gray uppercase tracking-widest">Strategy Briefing</span>
-                    </div>
-                    <button onClick={() => window.print()} className="p-2 text-text-gray/40 hover:text-brand-blue transition-colors">
-                      <Printer size={16} />
-                    </button>
-                  </div>
-                  <div className="flex-1 overflow-y-auto px-8 py-8 scrollbar-hide">
-                    <div className="prose prose-slate max-w-none">
-                      <div className="text-text-dark/80 text-sm leading-[1.8] whitespace-pre-line font-medium tracking-tight">
-                        {report}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6 border-t border-border-line/5 bg-surface-gray/20">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-brand-blue/10 flex items-center justify-center text-brand-blue border border-brand-blue/10">
-                          <Sparkles size={16} />
-                        </div>
-                        <p className="text-[10px] font-bold text-text-gray uppercase tracking-widest">Model L3.3 Vision</p>
-                      </div>
-                      <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[9px] font-bold rounded border border-emerald-100 uppercase">Verified AI</span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-10 space-y-6">
-                  <div className="w-20 h-20 rounded-3xl bg-surface-gray flex items-center justify-center text-text-gray/20 border border-border-line/5 mb-2">
-                    <BarChart3 size={36} strokeWidth={1} />
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-bold text-text-dark tracking-tight">Siap Menganalisis</h4>
-                    <p className="text-sm text-text-gray/50 font-normal leading-relaxed max-w-[240px]">
-                      Klik tombol untuk memulai sesi analisis data cerdas.
-                    </p>
-                  </div>
-                  <div className="flex gap-1.5">
-                    {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-border-line/30"></div>)}
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Styled Markdown Content */}
+          <div className={`prose prose-slate max-w-none 
+            prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-text-dark
+            prose-h2:text-4xl prose-h2:mb-10 prose-h2:pb-4 prose-h2:border-b prose-h2:border-border-line/10
+            prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-6
+            prose-p:text-text-dark/80 prose-p:leading-[2] prose-p:text-[18px]
+            prose-strong:text-brand-blue prose-strong:font-bold
+            prose-table:border prose-table:border-border-line/10 prose-table:rounded-2xl prose-table:overflow-hidden prose-table:my-10
+            prose-th:bg-surface-gray prose-th:px-6 prose-th:py-5 prose-th:text-xs prose-th:font-bold prose-th:uppercase prose-th:tracking-widest prose-th:text-text-gray
+            prose-td:px-6 prose-td:py-5 prose-td:text-base prose-td:text-text-dark/70 prose-td:border-t prose-td:border-border-line/5
+            prose-li:text-text-dark/80 prose-li:text-[18px] prose-li:my-2
+            `}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {report || ''}
+            </ReactMarkdown>
+          </div>
+
+          <div className="mt-24 pt-10 border-t border-border-line/10 flex justify-between items-center opacity-50 italic text-xs text-text-gray">
+            <p>© 2026 PropNest Intelligence — Internal Use Only</p>
+            <p>Empowering Property Decisions through Data and AI.</p>
           </div>
         </div>
       </div>

@@ -44,58 +44,129 @@ export async function exportToPDF(elementId: string, filename: string = 'PropNes
  * Generates a professional Word document from the AI report markdown.
  */
 export async function exportToWord(reportContent: string, filename: string = 'PropNest-Executive-Report.docx') {
-  // Simple markdown parser to docx primitives
   const lines = reportContent.split('\n');
   const docChildren: any[] = [];
 
-  // Add Header
+  // 1. BRAND HEADER
   docChildren.push(
     new Paragraph({
-      text: "PROPNEST EXECUTIVE REPORT",
-      heading: HeadingLevel.HEADING_1,
-      alignment: AlignmentType.CENTER,
+      alignment: AlignmentType.LEFT,
+      children: [
+        new TextRun({
+          text: "PROPNEST ",
+          bold: true,
+          size: 28,
+          color: "1d4ed8",
+        }),
+        new TextRun({
+          text: "INTELLIGENCE",
+          bold: true,
+          size: 28,
+          color: "111827",
+        }),
+      ],
+      spacing: { after: 100 },
+    }),
+    new Paragraph({
+      text: "EXECUTIVE STRATEGY BRIEFING",
+      heading: HeadingLevel.HEADING_6,
+      spacing: { after: 600 },
+    })
+  );
+
+  // 2. METADATA
+  docChildren.push(
+    new Paragraph({
+      children: [
+        new TextRun({ text: "Generated Date: ", bold: true, size: 20 }),
+        new TextRun({ text: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }), size: 20 }),
+      ],
       spacing: { after: 400 },
     })
   );
 
+  // 3. CONTENT PARSING
   lines.forEach(line => {
     const trimmed = line.trim();
     if (!trimmed) return;
 
-    // Headings
+    // Handle Headings (supports # to ###)
     if (trimmed.startsWith('### ')) {
-      docChildren.push(new Paragraph({ text: trimmed.replace('### ', ''), heading: HeadingLevel.HEADING_3, spacing: { before: 200, after: 100 } }));
+      docChildren.push(new Paragraph({ 
+        text: trimmed.replace('### ', '').toUpperCase(), 
+        heading: HeadingLevel.HEADING_3, 
+        spacing: { before: 240, after: 120 } 
+      }));
     } else if (trimmed.startsWith('## ')) {
-      docChildren.push(new Paragraph({ text: trimmed.replace('## ', ''), heading: HeadingLevel.HEADING_2, spacing: { before: 300, after: 150 } }));
+      docChildren.push(new Paragraph({ 
+        text: trimmed.replace('## ', '').toUpperCase(), 
+        heading: HeadingLevel.HEADING_2, 
+        spacing: { before: 360, after: 180 } 
+      }));
     } else if (trimmed.startsWith('# ')) {
-      docChildren.push(new Paragraph({ text: trimmed.replace('# ', ''), heading: HeadingLevel.HEADING_1, spacing: { before: 400, after: 200 } }));
+      docChildren.push(new Paragraph({ 
+        text: trimmed.replace('# ', '').toUpperCase(), 
+        heading: HeadingLevel.HEADING_1, 
+        spacing: { before: 480, after: 240 } 
+      }));
     } 
-    // Bullet points
+    // Handle Bullet Points
     else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       docChildren.push(
         new Paragraph({
           text: trimmed.substring(2),
           bullet: { level: 0 },
-          spacing: { after: 100 }
+          spacing: { after: 120 }
         })
       );
     }
-    // Normal text with bold support
+    // Handle Table Rows (Simple conversion to text for now if table parser is too complex)
+    else if (trimmed.startsWith('|')) {
+      // For now, let's keep table rows as monospaced text if they are complex, 
+      // or just clean them up. Professional docx tables require complex nested objects.
+      // We'll strip the pipes and make them clean lines.
+      const cleanRow = trimmed.split('|').filter(cell => cell.trim()).join('  |  ');
+      docChildren.push(new Paragraph({ 
+        children: [new TextRun({ text: cleanRow, font: "Courier New", size: 18 })],
+        spacing: { after: 80 } 
+      }));
+    }
+    // Handle Normal Paragraphs with Bold support
     else {
       const parts = trimmed.split(/(\*\*.*?\*\*)/);
-      const children = parts.map(part => {
+      const runs = parts.map(part => {
         if (part.startsWith('**') && part.endsWith('**')) {
-          return new TextRun({ text: part.replace(/\*\*/g, ''), bold: true });
+          return new TextRun({ text: part.replace(/\*\*/g, ''), bold: true, color: "1d4ed8" });
         }
-        return new TextRun(part);
+        return new TextRun({ text: part, size: 22 });
       });
 
-      docChildren.push(new Paragraph({ children, spacing: { after: 150 } }));
+      docChildren.push(new Paragraph({ children: runs, spacing: { after: 200 }, lineSpacing: { line: 360 } }));
     }
   });
 
-  // Create document
+  // 4. FOOTER
+  docChildren.push(
+    new Paragraph({
+      text: "PropNest Intelligence — Empowering Property Decisions.",
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 800 },
+      children: [new TextRun({ text: "PropNest Intelligence — Empowering Property Decisions.", italic: true, size: 18, color: "6b7280" })]
+    })
+  );
+
+  // Create document with premium settings
   const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: "Inter",
+            color: "111827",
+          },
+        },
+      },
+    },
     sections: [{
       properties: {},
       children: docChildren,

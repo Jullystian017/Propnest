@@ -11,7 +11,6 @@ const MODEL = 'llama-3.3-70b-versatile';
 
 /**
  * Generates an AI-powered executive report based on current leads data.
- * This analyzes sources, property popularity, and conversion potential.
  */
 export async function generateExecutiveReport(analyticsData?: {
   totalLeads: number;
@@ -20,53 +19,46 @@ export async function generateExecutiveReport(analyticsData?: {
   qualityStats: any;
   trendSummary?: string;
 }) {
-  // 1. Data Aggregation for AI Context
   // Use provided data or fallback to MOCK_LEADS
-  const totalLeads = analyticsData?.totalLeads || MOCK_LEADS.length;
-  const sourceStats = analyticsData?.sourceStats || MOCK_LEADS.reduce((acc: any, lead) => {
-    acc[lead.source] = (acc[lead.source] || 0) + 1;
-    return acc;
-  }, {});
-
-  const propertyStats = analyticsData?.propertyStats || MOCK_LEADS.reduce((acc: any, lead) => {
-    acc[lead.property] = (acc[lead.property] || 0) + 1;
-    return acc;
-  }, {});
-
-  const tempStats = analyticsData?.qualityStats || MOCK_LEADS.reduce((acc: any, lead) => {
-    acc[lead.temperature] = (acc[lead.temperature] || 0) + 1;
-    return acc;
-  }, {});
-
-  const trendText = analyticsData?.trendSummary ? `\nTren Terakhir: ${analyticsData.trendSummary}` : "";
-
-  // 2. Performance Breakdown string for Prompt
-  const promptData = `
-    DATA REAL-TIME ANALYTICS:
-    - Total Volume Leads: ${totalLeads}
-    - Distribusi Channel: ${JSON.stringify(sourceStats)}
-    - Properti Terpopuler: ${JSON.stringify(propertyStats)}
-    - Kualitas Prospek (Temperature): ${JSON.stringify(tempStats)}${trendText}
-  `;
+  const data = {
+    totalLeads: analyticsData?.totalLeads || MOCK_LEADS.length,
+    sources: analyticsData?.sourceStats || MOCK_LEADS.reduce((acc: any, lead) => {
+      acc[lead.source] = (acc[lead.source] || 0) + 1;
+      return acc;
+    }, {}),
+    properties: analyticsData?.propertyStats || MOCK_LEADS.reduce((acc: any, lead) => {
+      acc[lead.property] = (acc[lead.property] || 0) + 1;
+      return acc;
+    }, {}),
+    quality: analyticsData?.qualityStats || MOCK_LEADS.reduce((acc: any, lead) => {
+      acc[lead.temperature] = (acc[lead.temperature] || 0) + 1;
+      return acc;
+    }, {})
+  };
 
   const prompt = `
-    Kamu adalah Direktur Marketing Properti (CMO) senior. 
-    Berdasarkan DATA REAL-TIME ANALYTICS berikut, buatlah LAPORAN STRATEGIS yang tajam dan profesional untuk developer perumahan.
-    
-    ${promptData}
+Anda adalah Chief Marketing Officer (CMO) Senior di PropNest, platform analitik properti cerdas.
+Tugas Anda adalah membuat **Laporan Strategis Eksekutif** berdasarkan data real-time di bawah ini.
 
-    INSTRUKSI KHUSUS:
-    1. Jangan sekadar mendeskripsikan angka, berikan ANALISIS MENDALAM. (Contoh: "Meskipun Instagram membawa banyak lead, kualitasnya rendah dibanding WhatsApp, tandanya tim konten harus lebih selektif...").
-    2. Identifikasi properti mana yang "Winner" (paling laku) dan berikan saran optimasi.
-    3. Gunakan Markdown yang rapi dengan heading, bullet points, dan penekanan (bold).
-    4. Gunakan Bahasa Indonesia yang Executive, Elegan, dan Powerful.
+### DATA ANALITIK REAL-TIME:
+- Total Leads: ${data.totalLeads}
+- Distribusi Channel: ${Object.entries(data.sources).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Properti Terpopuler: ${Object.entries(data.properties).map(([k, v]) => `${k}: ${v} peminat`).join(', ')}
+- Kualitas Prospek: ${Object.entries(data.quality).map(([k, v]) => `${k}: ${v}`).join(', ')}
 
-    STRUKTUR LAPORAN:
-    1. **Data Highlights**: Ringkasan performa berbasis angka.
-    2. **Strategic Deep Dive**: Analisis tajam per channel dan properti.
-    3. **Action Plan (7-Day Focus)**: 3-5 langkah konkrit yang bisa dilakukan minggu ini.
-    4. **Executive Insight**: Prediksi atau motivasi penutup.
-  `;
+### STRUKTUR LAPORAN (WAJIB):
+1. **Executive Summary**: Ringkasan performa dalam 2-3 kalimat profesional.
+2. **Key Performance Metrics**: Sajikan data di atas dalam bentuk **TABEL MARKDOWN** yang rapi.
+3. **Strategic Deep Dive**: Analisis mendalam tentang tren (misal: "Channel WhatsApp mendominasi dengan konversi tinggi...").
+4. **Actionable Recommendations**: 3-5 poin taktis untuk meningkatkan penjualan minggu depan.
+
+### ATURAN PENULISAN:
+- Gunakan bahasa Indonesia yang sangat profesional, elegan, dan meyakinkan.
+- Gunakan format Markdown yang bersih (Heading 2 dan 3, Bold, Tabel, Bullet points).
+- Fokus pada insight bisnis, bukan sekadar angka.
+- JANGAN menyertakan metadata atau teks pembuka. Langsung ke isi laporan.
+- Tambahkan tagline di akhir: "PropNest Intelligence — Empowering Property Decisions."
+    `;
 
   try {
     const completion = await groq.chat.completions.create({
