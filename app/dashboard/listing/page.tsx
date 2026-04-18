@@ -202,22 +202,8 @@ export default function ListingPage() {
                   <div className="absolute top-4 right-4 backdrop-blur-md bg-white-pure/90 px-3 py-1.5 rounded-full shadow-premium border border-white/20 text-[9px] font-medium text-text-gray/60 uppercase tracking-widest">
                     {prop.type}
                   </div>
-                  {/* Action Buttons */}
-                  <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                    <button
-                      onClick={() => handleEdit(prop)}
-                      className="w-8 h-8 bg-white-pure rounded-full flex items-center justify-center shadow-premium text-brand-blue hover:bg-brand-blue hover:text-white-pure transition-all"
-                    >
-                      <Pencil size={14} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(prop)}
-                      className="w-8 h-8 bg-white-pure rounded-full flex items-center justify-center shadow-premium text-red-400 hover:bg-red-500 hover:text-white-pure transition-all"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
                 </div>
+                
                 <div className="relative -mt-14 mx-3 bg-white-pure rounded-[1.5rem] p-5 shadow-premium border border-border-line/20 group-hover:border-brand-blue/30 transition-all duration-500 z-10">
                   <div className="flex justify-between items-start mb-1">
                     <div className="min-w-0 flex-1">
@@ -228,7 +214,9 @@ export default function ListingPage() {
                       </p>
                     </div>
                   </div>
+                  
                   <div className="my-3 border-t border-border-line/5 w-full" />
+                  
                   <div className="flex items-center justify-between">
                     <p className="text-lg font-medium text-text-dark tracking-tight">
                       {formatPrice(prop.price).replace('Rp', 'Rp ')}
@@ -237,11 +225,28 @@ export default function ListingPage() {
                       {prop.price_type}
                     </span>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-border-line/5 flex items-center justify-between text-[10px] font-medium text-text-gray/40">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1.5"><Bed size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bedrooms} KT</span>
-                      <span className="flex items-center gap-1.5"><Bath size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bathrooms} KM</span>
+
+                  <div className="mt-4 pt-4 border-t border-border-line/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-[10px] font-medium text-text-gray/40">
+                      <span className="flex items-center gap-1.5"><Bed size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bedrooms}</span>
+                      <span className="flex items-center gap-1.5"><Bath size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.bathrooms}</span>
                       <span className="flex items-center gap-1.5"><Maximize size={14} strokeWidth={1.5} className="text-brand-blue/40" /> {prop.land_area}m²</span>
+                    </div>
+                    
+                    {/* Action Buttons - Always Visible */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => { e.preventDefault(); handleEdit(prop); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue/5 text-brand-blue rounded-xl text-[10px] font-bold hover:bg-brand-blue hover:text-white-pure transition-all active:scale-95"
+                      >
+                        <Pencil size={12} /> Edit
+                      </button>
+                      <button
+                        onClick={(e) => { e.preventDefault(); handleDelete(prop); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-[10px] font-bold hover:bg-red-500 hover:text-white-pure transition-all active:scale-95"
+                      >
+                        <Trash2 size={12} /> Hapus
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -303,15 +308,15 @@ export default function ListingPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEdit(prop)}
-                          className="w-8 h-8 rounded-xl bg-brand-blue/5 text-brand-blue hover:bg-brand-blue hover:text-white-pure transition-all flex items-center justify-center"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-blue/5 text-brand-blue rounded-xl text-xs font-bold hover:bg-brand-blue hover:text-white-pure transition-all active:scale-95"
                         >
-                          <Pencil size={14} />
+                          <Pencil size={14} /> Edit
                         </button>
                         <button
                           onClick={() => handleDelete(prop)}
-                          className="w-8 h-8 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white-pure transition-all flex items-center justify-center"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white-pure transition-all active:scale-95"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={14} /> Hapus
                         </button>
                       </div>
                     </td>

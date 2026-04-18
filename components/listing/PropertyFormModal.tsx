@@ -50,27 +50,53 @@ const INITIAL_FORM: FormState = {
 
 // Geocode alamat → koordinat via Nominatim (OpenStreetMap, gratis, no key)
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number; display: string } | null> {
-  try {
-    const q = encodeURIComponent(address + ', Indonesia');
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=0`,
-      {
-        headers: { 'Accept-Language': 'id' },
-        signal: AbortSignal.timeout(8000),
-      }
-    );
-    const data = await res.json();
-    if (data?.length > 0) {
-      return {
+  const fetchGeocode = async (query: string) => {
+    try {
+      const q = encodeURIComponent(query + ', Indonesia');
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=0`,
+        {
+          headers: { 'Accept-Language': 'id', 'User-Agent': 'PropNest-App' },
+          signal: AbortSignal.timeout(8000),
+        }
+      );
+      const data = await res.json();
+      return data?.length > 0 ? {
         lat: parseFloat(data[0].lat),
         lng: parseFloat(data[0].lon),
         display: data[0].display_name,
-      };
+      } : null;
+    } catch {
+      return null;
     }
-    return null;
-  } catch {
-    return null;
+  };
+
+  // 1. Coba alamat asli
+  let result = await fetchGeocode(address);
+  if (result) return result;
+
+  // 2. Fallback: Jika ada RT/RW, bersihkan (karena sering bikin pencarian gagal)
+  // Contoh: "Linggasari RT 2 RW 6..." -> "Linggasari Kecamatan Kembaran..."
+  const cleanedAddress = address
+    .replace(/rt\s?\d+/gi, '')
+    .replace(/rw\s?\d+/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleanedAddress !== address) {
+    result = await fetchGeocode(cleanedAddress);
+    if (result) return result;
   }
+
+  // 3. Fallback Terakhir: Coba ambil bagian akhir alamat (Kecamatan/Kota)
+  const parts = address.split(/,|\s/);
+  if (parts.length > 3) {
+    const broadAddress = parts.slice(-3).join(' '); // Ambil 3 kata terakhir (biasanya Kec/Kab/Prov)
+    result = await fetchGeocode(broadAddress);
+    return result;
+  }
+
+  return null;
 }
 
 export default function PropertyFormModal({ isOpen, onClose, editData }: PropertyFormModalProps) {
