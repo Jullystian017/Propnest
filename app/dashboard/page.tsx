@@ -63,18 +63,17 @@ export default function DashboardPage() {
 
   const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(new Date());
   const formattedDate = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
-
   return (
     <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-700">
       
       {/* Header Welcome Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-3xl font-display font-medium text-text-dark tracking-tight leading-tight">
+          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">
             {getGreeting()}, <span className="text-brand-blue">{displayName}</span>
           </h1>
-          <p className="text-text-gray font-normal text-sm flex items-center gap-2">
-            {dayName}, {formattedDate} <span className="w-1 h-1 rounded-full bg-text-gray/20"></span> Senang melihat Anda kembali.
+          <p className="text-text-gray/50 font-normal text-sm flex items-center gap-2">
+            Selamat datang kembali! Ini rangkuman performa Anda hari ini.
           </p>
         </div>
         

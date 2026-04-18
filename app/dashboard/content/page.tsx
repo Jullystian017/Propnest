@@ -140,9 +140,9 @@ export default function ContentStudioPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header & Stats */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-text-dark tracking-tight">Content Studio</h1>
-          <p className="text-text-gray mt-1 font-medium">Buat konten marketing & otomatisasi iklan dengan AI</p>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">Content Studio</h1>
+          <p className="text-sm font-normal text-text-gray/50">Buat konten marketing & otomatisasi iklan dengan AI</p>
         </div>
         
         <div className="flex items-center gap-4">

@@ -125,6 +125,14 @@ export default function DealsPipelinePage() {
 
   return (
     <div className="max-w-full mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700 relative">
+      
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">Deals Pipeline</h1>
+          <p className="text-sm font-normal text-text-gray/50">Pantau dan kelola alur transaksi properti Anda secara real-time.</p>
+        </div>
+      </div>
 
       {/* Top Stats Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

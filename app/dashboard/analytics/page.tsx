@@ -181,9 +181,9 @@ export default function AnalyticsPage() {
       
       {/* Header & Filter */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-display font-medium text-text-dark tracking-tight">Market Intelligence</h1>
-          <p className="text-text-gray font-normal text-base mt-2">Dapatkan pandangan 360 derajat terhadap ekosistem pemasaran Anda.</p>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">Market Intelligence</h1>
+          <p className="text-sm font-normal text-text-gray/50">Dapatkan pandangan 360 derajat terhadap ekosistem pemasaran Anda.</p>
         </div>
         
         <div className="flex items-center gap-3">
