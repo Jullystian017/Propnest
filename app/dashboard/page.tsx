@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { TrendingUp, Users, Home, MousePointerClick, ArrowUpRight, ArrowRight, ChevronDown, Check, Sparkles } from 'lucide-react';
+import { TrendingUp, Users, Home, MousePointerClick, ArrowUpRight, ArrowDownRight, ArrowRight, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import LeadsChart from '@/components/dashboard/LeadsChart';
 
@@ -41,10 +41,10 @@ export default function DashboardPage() {
   }, []);
 
   const stats = [
-    { label: 'Total Leads', value: '124', change: '+12%', isPositive: true, icon: Users, color: 'from-blue-600 to-blue-400', shadow: 'shadow-blue-500/10' },
-    { label: 'Listing Aktif', value: '8', change: '0%', isPositive: true, icon: Home, color: 'from-emerald-600 to-emerald-400', shadow: 'shadow-emerald-500/10' },
-    { label: 'Tingkat Konversi', value: '2.4%', change: '+0.4%', isPositive: true, icon: TrendingUp, color: 'from-violet-600 to-violet-400', shadow: 'shadow-violet-500/10' },
-    { label: 'Klik Chatbot', value: '432', change: '+45%', isPositive: true, icon: MousePointerClick, color: 'from-orange-600 to-orange-400', shadow: 'shadow-orange-500/10' },
+    { label: 'Total Leads', value: '124', change: '+12.5%', isPos: true, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50', gradient: 'from-blue-500/10 to-transparent' },
+    { label: 'Listing Aktif', value: '8', change: '0%', isPos: true, icon: Home, color: 'text-emerald-600', bg: 'bg-emerald-50', gradient: 'from-emerald-500/10 to-transparent' },
+    { label: 'Tingkat Konversi', value: '2.4%', change: '+0.4%', isPos: true, icon: TrendingUp, color: 'text-violet-600', bg: 'bg-violet-50', gradient: 'from-violet-500/10 to-transparent' },
+    { label: 'Klik Chatbot', value: '432', change: '+45%', isPos: true, icon: MousePointerClick, color: 'text-orange-600', bg: 'bg-orange-50', gradient: 'from-orange-500/10 to-transparent' },
   ];
 
   const timeRanges = [
@@ -92,26 +92,24 @@ export default function DashboardPage() {
 
       {/* Stat Cards - Premium & Light Design */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => {
-          const Icon = stat.icon;
-          return (
-            <div key={i} className="bg-white-pure p-6 rounded-[2rem] border border-border-line/30 shadow-sm hover:shadow-md transition-all duration-300 group">
-              <div className="flex justify-between items-start mb-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.color} text-white-pure shadow-md ${stat.shadow} group-hover:scale-105 transition-transform duration-500`}>
-                  <Icon size={22} strokeWidth={1.5} />
+        {stats.map((stat, i) => (
+          <div key={i} className="bg-white-pure p-7 rounded-[2.5rem] border border-border-line/10 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group overflow-hidden relative">
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
+                  <stat.icon size={24} />
                 </div>
-                <div className={`flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full ${stat.isPositive ? 'text-green-600 bg-green-50/50' : 'text-red-600 bg-red-50/50'} ring-1 ring-inset ${stat.isPositive ? 'ring-green-600/10' : 'ring-red-600/10'}`}>
-                  {stat.isPositive && <ArrowUpRight size={10} strokeWidth={2} />}
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${stat.isPos ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} border border-current/5`}>
+                  {stat.isPos ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
                   {stat.change}
                 </div>
               </div>
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-medium text-text-gray/50 uppercase tracking-widest">{stat.label}</p>
-                <h3 className="text-2xl font-display font-medium text-text-dark">{stat.value}</h3>
-              </div>
+              <p className="text-[10px] uppercase font-semibold text-text-gray/50 tracking-[0.1em]">{stat.label}</p>
+              <h3 className="text-2xl font-medium text-text-dark mt-1 tracking-tight group-hover:translate-x-1 transition-transform duration-300">{stat.value}</h3>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Analytics Chart Section - Polished & Light */}

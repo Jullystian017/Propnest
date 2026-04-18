@@ -221,8 +221,8 @@ export default function AnalyticsPage() {
                 <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
                   <stat.icon size={24} />
                 </div>
-                <div className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full ${stat.isPos ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} border border-current/10`}>
-                  {stat.isPos ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${stat.isPos ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} border border-current/5`}>
+                  {stat.isPos ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
                   {stat.change}
                 </div>
               </div>
