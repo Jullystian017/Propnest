@@ -13,14 +13,24 @@ import {
   Area 
 } from 'recharts';
 
-const data = [
-  { day: 'Sen', leads: 12, click: 40 },
-  { day: 'Sel', leads: 18, click: 55 },
-  { day: 'Rab', leads: 15, click: 48 },
-  { day: 'Kam', leads: 25, click: 70 },
-  { day: 'Jum', leads: 32, click: 85 },
-  { day: 'Sab', leads: 28, click: 75 },
-  { day: 'Min', leads: 40, click: 95 },
+interface ChartData {
+  day: string;
+  leads: number;
+  click: number;
+}
+
+interface LeadsChartProps {
+  data?: ChartData[];
+}
+
+const defaultData = [
+  { day: 'Sen', leads: 0, click: 0 },
+  { day: 'Sel', leads: 0, click: 0 },
+  { day: 'Rab', leads: 0, click: 0 },
+  { day: 'Kam', leads: 0, click: 0 },
+  { day: 'Jum', leads: 0, click: 0 },
+  { day: 'Sab', leads: 0, click: 0 },
+  { day: 'Min', leads: 0, click: 0 },
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -38,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-brand-blue/30"></div>
             <p className="text-sm font-medium text-text-dark">
-              {payload[1].value} <span className="text-text-gray font-normal">Klik Chatbot</span>
+              {payload[1].value} <span className="text-text-gray font-normal">Klik AI</span>
             </p>
           </div>
         </div>
@@ -48,7 +58,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function LeadsChart() {
+export default function LeadsChart({ data = defaultData }: LeadsChartProps) {
   return (
     <div className="w-full h-[350px] mt-4">
       <ResponsiveContainer width="100%" height="100%">
@@ -86,7 +96,6 @@ export default function LeadsChart() {
           />
           <Tooltip content={<CustomTooltip />} />
           
-          {/* Top Layer - Click Area (Lighter) */}
           <Area 
             type="monotone" 
             dataKey="click" 
@@ -97,7 +106,6 @@ export default function LeadsChart() {
             animationDuration={2000}
           />
 
-          {/* Bottom Layer - Leads Area (Darker/Main) */}
           <Area 
             type="monotone" 
             dataKey="leads" 
