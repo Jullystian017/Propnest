@@ -267,7 +267,7 @@ const InquiryModal = ({ isOpen, onClose, propertyName, propertyId }: { isOpen: b
                   <p className="text-xs text-text-gray">Lengkapi form di bawah untuk kami kirimkan brosur & pricelist terbaru.</p>
                 </div>
                 <button suppressHydrationWarning onClick={onClose} className="p-2 hover:bg-surface-gray rounded-full transition-colors text-text-gray/40">
-                  <Box size={20} className="rotate-45" />
+                  <X size={20} />
                 </button>
               </div>
 
@@ -551,31 +551,42 @@ export default function DetailPropertiPage({
   useEffect(() => {
     if (mockProperty) return; // numeric ID → use mock
     async function fetchFromDb() {
-      const { data, error } = await supabase
+      // 1. Fetch Property
+      const { data: propData, error: propError } = await supabase
         .from('properties')
         .select('*')
         .eq('id', id)
         .single();
-      if (!error && data) {
+
+      if (!propError && propData) {
+        // 2. Fetch Agent Profile (Separate to avoid join relationship issues)
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, avatar_url, company_name')
+          .eq('id', propData.user_id)
+          .single();
+
+        const agentProfile = profileData as any;
+        
         // Normalize DB record to match the shape the page expects
         setDbProperty({
-          id: data.id,
-          name: data.title,
-          location: data.location,
-          price: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(data.price),
-          specs: { beds: data.bedrooms, baths: data.bathrooms, size: data.land_area },
-          badge: data.type,
-          image: data.images?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
-          gallery: data.images || [],
-          description: data.description || '',
-          features: ['Properti Terverifikasi', `${data.building_area}m² Luas Bangunan`, data.price_type === 'Sewa' ? 'Per Tahun' : 'Harga Jual'],
+          id: propData.id,
+          name: propData.title,
+          location: propData.location,
+          price: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(propData.price),
+          specs: { beds: propData.bedrooms, baths: propData.bathrooms, size: propData.land_area },
+          badge: propData.type,
+          image: propData.images?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+          gallery: propData.images || [],
+          description: propData.description || '',
+          features: ['Properti Terverifikasi', `${propData.building_area}m² Luas Bangunan`, propData.price_type === 'Sewa' ? 'Per Tahun' : 'Harga Jual'],
           agent: {
-            name: 'PropNest Agent',
-            type: 'Agen Terverifikasi',
-            avatar: `https://ui-avatars.com/api/?name=PA&background=3B5BDB&color=fff`
+            name: agentProfile?.full_name || 'Agen PropNest',
+            type: agentProfile?.company_name || 'Developer Resmi',
+            avatar: agentProfile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(agentProfile?.full_name || 'AP')}&background=3B5BDB&color=fff`
           },
-          coords: data.lat && data.lng ? { lat: data.lat, lng: data.lng } : { lat: -7.025, lng: 110.320 },
-          _raw: data,
+          coords: propData.lat && propData.lng ? { lat: propData.lat, lng: propData.lng } : { lat: -7.025, lng: 110.320 },
+          _raw: propData,
         });
       }
       setLoadingDb(false);
