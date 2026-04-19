@@ -259,14 +259,7 @@ export default function LeadsPage() {
         </div>
         
         <div className="flex items-center gap-3">
-            <button className="px-5 py-3 bg-white-pure border border-border-line/20 rounded-2xl text-sm font-medium text-text-dark hover:bg-surface-gray transition-all flex items-center gap-2 active:scale-95 shadow-sm">
-                <Calendar size={18} strokeWidth={1.5} />
-                Laporan Bulanan
-            </button>
-            <button className="px-5 py-3 bg-brand-blue text-white-pure rounded-2xl text-sm font-medium shadow-lg shadow-brand-blue/10 hover:bg-brand-blue-deep transition-all flex items-center gap-2 active:scale-95">
-              <TrendingUp size={18} strokeWidth={1.5} />
-              Analisis AI
-            </button>
+            {/* Tombol dihapus sesuai request */}
         </div>
       </div>
 

@@ -107,10 +107,10 @@ export default function ListingPage() {
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-5">
-                  <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
+                  <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner border border-white-pure/50`}>
                     <stat.icon size={22} />
                   </div>
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-current/5">
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-current/10 shadow-sm">
                     <ArrowUpRight size={10} />Live
                   </div>
                 </div>
