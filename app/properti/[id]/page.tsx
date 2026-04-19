@@ -582,6 +582,7 @@ export default function DetailPropertiPage({
 
   const [activeTab, setActiveTab] = useState<'transport' | 'school' | 'shopping' | 'health' | 'tourism' | 'worship'>('transport');
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [budgetFilter, setBudgetFilter] = useState<number | null>(null);
 
   const [isSaved, setIsSaved] = useState(false);
@@ -692,15 +693,6 @@ export default function DetailPropertiPage({
             <div className="absolute inset-0 bg-cover bg-center hover:scale-105 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.image}')` }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/30 to-transparent"></div>
             
-            {/* Floating Back Button on Image */}
-            <button 
-              suppressHydrationWarning
-              onClick={() => router.back()}
-              className="absolute top-8 left-8 z-20 flex items-center gap-2 bg-white-pure/10 backdrop-blur-xl border border-white-pure/20 px-4 py-2 rounded-xl text-white-pure text-[10px] uppercase tracking-widest font-medium hover:bg-white-pure/20 transition-all shadow-xl group/back"
-            >
-              <ArrowLeft size={14} />
-              Kembali
-            </button>
             <button suppressHydrationWarning className="absolute bottom-8 left-8 flex items-center gap-3 bg-white-pure/10 backdrop-blur-xl border border-white-pure/30 px-6 py-3 rounded-2xl text-white-pure text-sm font-semibold hover:bg-white-pure/20 transition-all shadow-xl group/btn">
               <div className="p-1.5 bg-brand-blue rounded-lg shadow-blue-glow group-hover/btn:scale-110 transition-transform">
                 <Box size={16} />
