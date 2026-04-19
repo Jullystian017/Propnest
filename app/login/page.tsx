@@ -43,7 +43,7 @@ export default function LoginPage() {
       // Cek role dan status onboarding untuk menentukan redirect
       const metadata = data.user?.user_metadata;
       
-      if (metadata?.onboarding_completed !== true) {
+      if (!metadata?.role) {
         router.push('/onboarding');
       } else if (metadata?.role === 'developer') {
         router.push('/dashboard');

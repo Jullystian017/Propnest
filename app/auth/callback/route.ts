@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     if (!error && data.session) {
       const metadata = data.session.user.user_metadata;
       
-      if (metadata?.onboarding_completed !== true) {
+      if (!metadata?.role) {
         return NextResponse.redirect(`${origin}/onboarding`)
       } else if (metadata?.role === 'developer') {
         return NextResponse.redirect(`${origin}/dashboard`)

@@ -41,7 +41,6 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: fullName,
-            onboarding_completed: false, // Flag for onboarding
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },

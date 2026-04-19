@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, ArrowRight, Sparkles, Layout, Zap, Check, Search, Home, Phone } from 'lucide-react';
+import { Building2, ArrowRight, Sparkles, Layout, Zap, Check, Search, Home, Phone, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { createClient } from '@/lib/supabase/client';
@@ -26,8 +26,9 @@ export default function OnboardingPage() {
         router.push('/login');
       } else {
         setUser(user);
-        // If already completed onboarding, redirect properly
-        if (user.user_metadata?.onboarding_completed) {
+        
+        // If already has a role, redirect properly
+        if (user.user_metadata?.role) {
           if (user.user_metadata?.role === 'developer') {
             router.push('/dashboard');
           } else {
@@ -46,11 +47,18 @@ export default function OnboardingPage() {
       try {
         const { error: updateError } = await supabase.auth.updateUser({
           data: { 
-            role: 'user',
-            onboarding_completed: true 
+            role: 'user'
           }
         });
         if (updateError) throw updateError;
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ role: 'user' })
+          .eq('id', user.id);
+        
+        if (profileError) throw profileError;
+
         router.push('/');
         router.refresh();
       } catch (err: any) {
@@ -75,8 +83,7 @@ export default function OnboardingPage() {
         data: { 
           role: 'developer',
           company_name: companyName,
-          phone_number: phoneNumber,
-          onboarding_completed: true 
+          phone_number: phoneNumber
         }
       });
 
@@ -85,7 +92,7 @@ export default function OnboardingPage() {
       // 2. Update Profiles Table (for DB integrity)
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ company_name: companyName })
+        .update({ company_name: companyName, role: 'developer' })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
@@ -190,6 +197,15 @@ export default function OnboardingPage() {
           <div className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-premium p-10 lg:p-14 border border-white/50 animate-in fade-in slide-in-from-right-8 duration-500 max-w-[550px] mx-auto relative overflow-hidden">
              {/* Decorative Top Gradient */}
              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-blue/40 via-brand-blue to-blue-400"></div>
+
+             {/* Back Button */}
+             <button 
+               onClick={() => setStep(1)} 
+               className="absolute top-6 left-6 p-2 rounded-full hover:bg-surface-gray text-text-gray hover:text-text-dark transition-colors flex items-center justify-center group z-20"
+               title="Kembali ke pilihan profil"
+             >
+               <ArrowLeft size={20} className="group-hover:-translate-x-0.5 transition-transform" />
+             </button>
 
             <div className="mb-10 text-center relative z-10">
               <div className="w-20 h-20 bg-gradient-to-br from-brand-blue/10 to-blue-400/10 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-brand-blue shadow-inner border border-brand-blue/10">

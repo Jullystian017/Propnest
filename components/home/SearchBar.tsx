@@ -205,6 +205,7 @@ export default function SearchBar() {
               <MapPin size={18} className="text-brand-blue shrink-0" />
               <input 
                 type="text"
+                suppressHydrationWarning
                 value={lokasiQuery}
                 onChange={handleLokasiChange}
                 onFocus={() => setOpenDropdown('lokasi')}

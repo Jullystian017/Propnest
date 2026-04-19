@@ -103,7 +103,7 @@ export default function HomePage() {
                     </p>
                   </div>
 
-                  <button className="p-2.5 bg-blue-50/80 text-brand-blue rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 shadow-sm overflow-hidden active:scale-95 group-hover:shadow-soft">
+                  <button suppressHydrationWarning className="p-2.5 bg-blue-50/80 text-brand-blue rounded-full hover:bg-brand-blue hover:text-white-pure transition-all duration-300 shadow-sm overflow-hidden active:scale-95 group-hover:shadow-soft">
                     <Bookmark size={16} fill="currentColor" className="fill-transparent hover:fill-current" />
                   </button>
                 </div>

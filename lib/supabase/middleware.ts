@@ -41,28 +41,29 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Enforce onboarding
-  const isOnboardingCompleted = user?.user_metadata?.company_name;
+  const hasRole = user?.user_metadata?.role;
   
-  if (user && !isOnboardingCompleted && request.nextUrl.pathname.startsWith('/dashboard')) {
+  // Exclude auth pages and API routes from forced redirection
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                     request.nextUrl.pathname.startsWith('/register') || 
+                     request.nextUrl.pathname.startsWith('/auth/callback');
+  
+  if (user && !hasRole && request.nextUrl.pathname !== '/onboarding' && !isAuthPage && !request.nextUrl.pathname.startsWith('/api')) {
     const url = request.nextUrl.clone();
     url.pathname = '/onboarding';
     return NextResponse.redirect(url);
   }
 
-  if (user && isOnboardingCompleted && request.nextUrl.pathname === '/onboarding') {
+  if (user && hasRole && request.nextUrl.pathname === '/onboarding') {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = hasRole === 'developer' ? '/dashboard' : '/';
     return NextResponse.redirect(url);
   }
 
   // Redirect authenticated users away from auth pages
-  if (
-    user &&
-    (request.nextUrl.pathname === '/login' ||
-      request.nextUrl.pathname === '/register')
-  ) {
+  if (user && isAuthPage && request.nextUrl.pathname !== '/auth/callback') {
     const url = request.nextUrl.clone();
-    url.pathname = isOnboardingCompleted ? '/dashboard' : '/onboarding';
+    url.pathname = hasRole ? (hasRole === 'developer' ? '/dashboard' : '/') : '/onboarding';
     return NextResponse.redirect(url);
   }
 
