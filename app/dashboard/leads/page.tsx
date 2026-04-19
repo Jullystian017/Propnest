@@ -47,14 +47,66 @@ export default function LeadsPage() {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const handleConvertToDeal = (leadId: string) => {
+  const handleConvertToDeal = async (leadId: string) => {
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) return;
+
     setConvertingId(leadId);
-    // Simulate API call
-    setTimeout(() => {
-      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'Closing' as any } : l));
-      setConvertingId(null);
+    try {
+      let dealTitle = lead.property || 'Properti Baru';
+      let dealPrice = 0;
+      let dealImage = '';
+
+      // If property is a UUID, fetch real details
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(lead.property);
+      
+      if (isUuid) {
+        const { data: propData } = await supabase
+          .from('properties')
+          .select('title, price, images')
+          .eq('id', lead.property)
+          .single();
+        
+        if (propData) {
+          dealTitle = propData.title;
+          dealPrice = propData.price;
+          dealImage = propData.images?.[0] || '';
+        }
+      }
+
+      // 1. Create a new deal in the deals table
+      const { error: dealError } = await supabase
+        .from('deals')
+        .insert([{
+          lead_id: leadId,
+          title: dealTitle,
+          client_name: lead.name,
+          price: dealPrice,
+          status: 'Survey',
+          priority: lead.temperature === 'Hot' ? 'High' : (lead.temperature === 'Warm' ? 'Medium' : 'Low'),
+          source: lead.source,
+          display_id: `DL-${Math.floor(1000 + Math.random() * 9000)}`,
+          property_image: dealImage
+        }]);
+
+      if (dealError) throw dealError;
+
+      // 2. Update lead status to 'Closing'
+      const { error: leadError } = await supabase
+        .from('leads')
+        .update({ status: 'Closing' })
+        .eq('id', leadId);
+
+      if (leadError) throw leadError;
+
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'Closing' } : l));
       alert('Berhasil dipindahkan ke Pipeline Penjualan!');
-    }, 1500);
+    } catch (err) {
+      console.error('Error converting lead to deal:', err);
+      alert('Gagal memindahkan ke Pipeline.');
+    } finally {
+      setConvertingId(null);
+    }
   };
 
   const fetchLeads = async () => {
@@ -176,6 +228,7 @@ export default function LeadsPage() {
 
   const statusColors: Record<string, string> = {
     'Baru': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    'new': 'bg-emerald-50 text-emerald-600 border-emerald-100',
     'Dihubungi': 'bg-blue-50 text-blue-600 border-blue-100',
     'Tertarik': 'bg-violet-50 text-violet-600 border-violet-100',
     'Closing': 'bg-brand-blue/10 text-brand-blue border-brand-blue/20',
@@ -333,7 +386,7 @@ export default function LeadsPage() {
                                 </td>
                                 <td className="p-6">
                                     <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-medium border ${statusColors[lead.status]}`}>
-                                        {lead.status}
+                                        {lead.status === 'new' ? 'Baru' : lead.status}
                                     </span>
                                 </td>
                                 <td className="p-6">

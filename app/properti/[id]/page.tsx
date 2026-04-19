@@ -238,7 +238,7 @@ const InquiryModal = ({ isOpen, onClose, propertyName, propertyId }: { isOpen: b
         email: formData.email,
         property_id: propertyId,
         message: formData.message,
-        status: 'new'
+        status: 'Baru'
       }]);
 
       if (error) throw error;

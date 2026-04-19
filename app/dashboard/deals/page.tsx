@@ -37,8 +37,8 @@ export interface Deal {
   source: string;
   priority: 'High' | 'Medium' | 'Low' | string;
   reservation_date: string;
-  floor_plan_url: string;
-  property_image_url: string;
+  floor_plan: string;
+  property_image: string;
   status: 'Survey' | 'Negosiasi' | 'Legalitas' | string;
   members: { name: string; avatar: string }[];
   comments_count: number;
@@ -408,17 +408,15 @@ export default function DealsPipelinePage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 mb-5 h-28 pointer-events-none">
-                      <div className="rounded-xl overflow-hidden border border-border-line/5 bg-surface-gray">
-                        {deal.floor_plan_url ? (
-                          <img src={deal.floor_plan_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Floorplan" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-text-gray/30"><FileText size={24} /></div>
-                        )}
-                      </div>
-                      <div className="rounded-xl overflow-hidden border border-border-line/5 bg-surface-gray">
-                        {deal.property_image_url ? (
-                          <img src={deal.property_image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Property" />
+                    <div className={`mb-5 h-28 pointer-events-none rounded-xl overflow-hidden border border-border-line/5 bg-surface-gray ${deal.floor_plan ? 'grid grid-cols-2 gap-2' : 'block'}`}>
+                      {deal.floor_plan && (
+                        <div className="rounded-xl overflow-hidden border border-border-line/5 bg-surface-gray">
+                          <img src={deal.floor_plan} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Floorplan" />
+                        </div>
+                      )}
+                      <div className={`rounded-xl overflow-hidden border border-border-line/5 bg-surface-gray ${!deal.floor_plan ? 'w-full h-full' : ''}`}>
+                        {deal.property_image ? (
+                          <img src={deal.property_image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Property" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-text-gray/30"><Building2 size={24} /></div>
                         )}
