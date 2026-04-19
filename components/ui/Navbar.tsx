@@ -109,8 +109,11 @@ export default function Navbar() {
           {/* Actions - Fixed width for symmetry */}
           <div className="flex-1 flex items-center justify-end gap-3">
              {user ? (
-               <Link href="/dashboard" className="bg-brand-blue hover:bg-brand-blue-hover text-white-pure text-sm font-medium px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
-                 Dashboard
+               <Link 
+                 href={user.user_metadata?.role === 'developer' ? '/dashboard' : '/profil'} 
+                 className="bg-brand-blue hover:bg-brand-blue-hover text-white-pure text-sm font-medium px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95"
+               >
+                 {user.user_metadata?.role === 'developer' ? 'Dashboard' : 'Profil Saya'}
                </Link>
              ) : (
                <Link href="/login" className="bg-brand-blue hover:bg-brand-blue-hover text-white-pure text-sm font-medium px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
@@ -182,11 +185,11 @@ export default function Navbar() {
             )}
             {user && (
               <Link
-                href="/dashboard"
+                href={user.user_metadata?.role === 'developer' ? '/dashboard' : '/profil'}
                 className="btn-primary w-full rounded-2xl"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Dashboard
+                {user.user_metadata?.role === 'developer' ? 'Dashboard' : 'Profil Saya'}
               </Link>
             )}
           </div>
