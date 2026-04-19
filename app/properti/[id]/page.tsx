@@ -394,8 +394,6 @@ export default function DetailPropertiPage({
 
   const [activeTab, setActiveTab] = useState<'transport' | 'school' | 'shopping' | 'health' | 'tourism' | 'worship'>('transport');
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [budgetFilter, setBudgetFilter] = useState<number | null>(null);
 
   const [isSaved, setIsSaved] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -463,12 +461,6 @@ export default function DetailPropertiPage({
   // Related: use mock for suggestions (both mock + DB IDs work for suggestions section)
   const relatedProperties = MOCK_PROPERTIES
     .filter(p => p.id !== id)
-    .filter(p => !budgetFilter || (() => {
-      let clean = p.price.replace('Rp', '').trim();
-      if (clean.includes('Miliar')) return parseFloat(clean) * 1_000_000_000;
-      if (clean.includes('Juta')) return parseFloat(clean) * 1_000_000;
-      return parseFloat(clean.replace(/\./g, ''));
-    })() <= budgetFilter)
     .slice(0, 3);
 
   const tabs = [
@@ -902,11 +894,7 @@ export default function DetailPropertiPage({
         propertyName={property.name}
         propertyId={property.id}
       />
-      <AIChatbot 
-        isOpen={isChatOpen} 
-        setIsOpen={setIsChatOpen} 
-        onFilter={(budget) => setBudgetFilter(budget || null)}
-      />
+      {/* Universal AI is now handled by the root layout */}
 
       {/* Photo Explorer Modal */}
       {isGalleryOpen && (
