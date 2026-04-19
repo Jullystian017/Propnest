@@ -15,9 +15,11 @@ import {
   PanelRightOpen,
   PanelRightClose,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  Search
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import NotificationDropdown from '@/components/dashboard/NotificationDropdown';
 
 export default function DashboardLayout({
   children,
@@ -29,19 +31,53 @@ export default function DashboardLayout({
   const supabase = createClient();
   const [user, setUser] = React.useState<any>(null);
   const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const notificationRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     async function getUser() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setUser(session.user);
+          // Fetch additional profile data for avatar and names
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          setUser({
+            ...session.user,
+            profile: profile
+          });
         }
       } catch (err) {
         console.debug('Dashboard layout auth check deferred:', err);
       }
     }
     getUser();
+
+    // Close notifications on outside click
+    function handleClickOutside(event: MouseEvent) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Listen for auth state changes to refresh data
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        getUser();
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [supabase]);
 
   const handleLogout = async () => {
@@ -60,8 +96,9 @@ export default function DashboardLayout({
     { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
   ];
 
-  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
-  const companyName = user?.user_metadata?.company_name || 'PropNest Developer';
+  const displayName = user?.profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
+  const companyName = user?.profile?.company_name || user?.user_metadata?.company_name || 'PropNest Developer';
+  const avatarUrl = user?.profile?.avatar_url || user?.user_metadata?.avatar_url;
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-sans flex transition-all duration-300">
@@ -178,13 +215,29 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="w-10 h-10 rounded-full border border-border-line/30 flex items-center justify-center text-text-gray/60 hover:bg-surface-gray hover:text-brand-blue transition-all relative">
-              <Bell size={18} />
-              <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-brand-blue rounded-full border-2 border-white-pure"></span>
-            </button>
+            <div className="relative" ref={notificationRef}>
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                suppressHydrationWarning
+                className={`w-10 h-10 rounded-full border border-border-line/30 flex items-center justify-center transition-all relative ${
+                  showNotifications ? 'bg-brand-blue text-white-pure border-brand-blue shadow-lg shadow-brand-blue/15' : 'text-text-gray/60 hover:bg-surface-gray hover:text-brand-blue'
+                }`}
+              >
+                <Bell size={18} />
+                <span className={`absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full border-2 border-white-pure transition-all ${showNotifications ? 'bg-white-pure scale-0' : 'bg-brand-blue scale-100'}`}></span>
+              </button>
+              
+              {showNotifications && (
+                <NotificationDropdown onClose={() => setShowNotifications(false)} />
+              )}
+            </div>
             <div className="h-11 pl-1 pr-4 flex items-center gap-3 bg-surface-gray/40 rounded-full border border-border-line/10 hover:bg-surface-gray/60 transition-colors">
-                <div className="w-9 h-9 rounded-full bg-white-pure border border-border-line/10 flex items-center justify-center text-brand-blue font-medium text-sm shadow-sm ring-2 ring-brand-blue/5">
-                    {displayName.charAt(0)}
+                <div className="w-9 h-9 rounded-full bg-white-pure border border-border-line/10 flex items-center justify-center text-brand-blue font-medium text-sm shadow-sm ring-2 ring-brand-blue/5 overflow-hidden">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      displayName.charAt(0)
+                    )}
                 </div>
                 <div className="hidden sm:block overflow-hidden max-w-[150px]">
                     <p className="text-xs font-medium text-text-dark truncate leading-tight">{displayName}</p>
