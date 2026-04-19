@@ -140,3 +140,25 @@ Jawab dengan ramah, informatif, dan profesional dalam Bahasa Indonesia.`;
 
   return completion.choices[0].message.content || 'Maaf, ada gangguan. Coba lagi ya!';
 }
+
+// ---- Daily Marketing Tip ----
+export async function generateDailyMarketingTip(): Promise<string> {
+  const prompt = `Berikan satu tips marketing properti singkat, kreatif, dan praktis hari ini dalam Bahasa Indonesia. 
+  Fokus pada strategi media sosial (Instagram/TikTok/WhatsApp) atau tren pasar properti Indonesia saat ini.
+  Hanya berikan 1-2 kalimat saja yang powerful dan langsung ke intinya. 
+  Jangan gunakan pembukaan seperti "Tips hari ini adalah...". 
+  Contoh: "Gunakan fitur 'Collab' di Instagram dengan agen properti lain untuk melipatgandakan jangkauan audiens Anda malam ini."`;
+
+  try {
+    const completion = await groq.chat.completions.create({
+      model: MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.9,
+      max_tokens: 150,
+    });
+
+    return completion.choices[0].message.content || 'Gunakan foto cahaya alami (golden hour) untuk meningkatkan engagement postingan properti Anda.';
+  } catch (error) {
+    return 'Gunakan foto cahaya alami (golden hour) untuk meningkatkan engagement postingan properti Anda.';
+  }
+}

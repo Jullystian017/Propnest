@@ -107,9 +107,8 @@ export async function getDeveloperProperties() {
 
   const { data, error } = await supabase
     .from('properties')
-    .select('id, title, price, images, type, status, specs')
-    .eq('developer_id', user.id)
-    .eq('status', 'Aktif')
+    .select('id, title, price, images, type, status, bedrooms, bathrooms, land_area, building_area, description, location')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -117,7 +116,24 @@ export async function getDeveloperProperties() {
     return [];
   }
 
-  return data || [];
+  // Map to match the expected Listing type if necessary
+  const formattedData = (data || []).map(p => ({
+    ...p,
+    name: p.title, 
+    location_city: p.location || '',
+    location_address: p.location || '',
+    price_min: Number(p.price) || 0,
+    price_max: null,
+    facilities: [], // Table doesn't have facilities, or it's separate
+    specs: {
+      kamar_tidur: p.bedrooms,
+      kamar_mandi: p.bathrooms,
+      luas_tanah: p.land_area,
+      luas_bangunan: p.building_area
+    }
+  }));
+
+  return formattedData;
 }
 // ---- Post Sekarang (ubah status ke published) ----
 export async function publishNow(params: {

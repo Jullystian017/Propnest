@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from 'react';
 import { ContentTemplate, ContentTone, ContentPlatform } from '@/lib/types';
 import { saveToQueue, approvePost, deletePost, getDeveloperProperties, getContentQueue, publishNow } from '@/lib/content/actions';
-import { generatePropertyCaption } from '@/lib/groq';
+import { generatePropertyCaption, generateDailyMarketingTip } from '@/lib/groq';
 import { 
   Sparkles, 
   Send, 
@@ -60,6 +60,7 @@ export default function ContentStudioPage() {
   const [isSaving, startSaveTransition] = useTransition();
   const [isApproving, startApproveTransition] = useTransition();
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [aiTip, setAiTip] = useState<string>('Memuat saran AI...');
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -69,15 +70,17 @@ export default function ContentStudioPage() {
   useEffect(() => {
     async function loadData() {
       setIsLoadingQueue(true);
-      const [props, queueData] = await Promise.all([
+      const [props, queueData, tip] = await Promise.all([
         getDeveloperProperties(),
-        getContentQueue()
+        getContentQueue(),
+        generateDailyMarketingTip()
       ]);
       setProperties(props);
       if (props.length > 0 && !selectedPropertyId) {
         setSelectedPropertyId(props[0].id);
       }
       setQueue(queueData);
+      setAiTip(tip);
       setIsLoadingQueue(false);
     }
     loadData();
@@ -213,12 +216,11 @@ export default function ContentStudioPage() {
       </div>
 
       {/* Stats - Premium Summary Design */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           { label: 'Konten Terjadwal', value: queue.filter(i => i.status === 'scheduled').length, change: '+4', isPos: true, icon: CalendarDays, color: 'text-brand-blue', bg: 'bg-brand-blue/5', gradient: 'from-blue-500/10 to-transparent' },
           { label: 'Menunggu Approval', value: queue.filter(i => i.status === 'waiting').length, change: 'Urgent', isPos: false, icon: Clock3, color: 'text-orange-600', bg: 'bg-orange-50', gradient: 'from-orange-500/10 to-transparent' },
           { label: 'Berhasil Diposting', value: queue.filter(i => i.status === 'published').length, change: '+12%', isPos: true, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50', gradient: 'from-emerald-500/10 to-transparent' },
-          { label: 'Kesehatan AI', value: '98%', change: 'Optimum', isPos: true, icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50', gradient: 'from-purple-500/10 to-transparent' },
         ].map((stat, i) => (
           <div key={i} className="bg-white-pure p-6 rounded-[2.5rem] border border-border-line/10 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group overflow-hidden relative">
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
@@ -346,8 +348,8 @@ export default function ContentStudioPage() {
               </div>
               <div>
                 <p className="text-emerald-900 font-bold text-sm">Saran AI Hari Ini</p>
-                <p className="text-emerald-700/80 text-xs mt-1 leading-relaxed">
-                  Postingan bertema <strong>"Storytelling"</strong> di Instagram pada jam 19:00 malam ini diperkirakan akan meningkatkan engagement 40%.
+                <p className="text-emerald-700/80 text-xs mt-1 leading-relaxed italic">
+                  "{aiTip}"
                 </p>
               </div>
             </div>
@@ -511,10 +513,6 @@ export default function ContentStudioPage() {
               Antrean Otomatisasi Konten
             </h2>
             <p className="text-sm text-text-gray mt-1">Kelola dan jadwalkan publikasi konten ke media sosial</p>
-          </div>
-          <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-2xl border border-emerald-500/20">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-xs font-black tracking-wider uppercase">AUTOPILOT AKTIF</span>
           </div>
         </div>
 
