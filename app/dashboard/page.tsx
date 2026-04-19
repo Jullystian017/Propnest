@@ -191,7 +191,10 @@ export default function DashboardPage() {
       <div className="bg-white-pure p-8 lg:p-10 rounded-[2.5rem] border border-border-line/30 shadow-sm overflow-visible relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="space-y-1">
-            <h2 className="text-xl font-medium text-text-dark tracking-tight">Performa Marketing</h2>
+            <h2 className="text-xl font-bold text-text-dark flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-brand-blue rounded-full"></div>
+              Performa Marketing
+            </h2>
             <p className="text-sm font-normal text-text-gray/60">Tren Leads & Klik Chatbot AI ({timeRange})</p>
           </div>
           
@@ -248,7 +251,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 bg-white-pure rounded-[2.5rem] border border-border-line/30 shadow-sm flex flex-col overflow-hidden">
             <div className="p-8 border-b border-border-line/10 flex justify-between items-center">
               <div className="space-y-0.5">
-                <h2 className="text-lg font-medium text-text-dark tracking-tight">Leads Terbaru</h2>
+                <h2 className="text-lg font-bold text-text-dark flex items-center gap-3">
+                  <div className="w-1.5 h-5 bg-brand-blue rounded-full"></div>
+                  Leads Terbaru
+                </h2>
                 <p className="text-xs font-normal text-text-gray/50">Prospek dari AI Chatbot & Inquiry</p>
               </div>
               <Link href="/dashboard/leads" className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-blue hover:gap-2 transition-all">
@@ -351,8 +357,8 @@ export default function DashboardPage() {
           {/* Activity Log - Refined Light */}
           <div className="bg-white-pure rounded-[2.5rem] p-8 border border-border-line/30 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="font-medium text-text-dark text-sm flex items-center gap-2">
-                  <div className="w-1 h-5 bg-brand-blue/20 rounded-full"></div>
+              <h3 className="text-base font-bold text-text-dark flex items-center gap-3">
+                  <div className="w-1.5 h-5 bg-brand-blue rounded-full"></div>
                   Aktivitas Terakhir
               </h3>
               <Link href="/dashboard/activity" className="text-[10px] font-bold text-brand-blue hover:underline uppercase tracking-widest">

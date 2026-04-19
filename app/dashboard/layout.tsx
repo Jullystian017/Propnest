@@ -93,8 +93,8 @@ export default function DashboardLayout({
     { name: 'Listing Properti', href: '/dashboard/listing', icon: Building2 },
     { name: 'CRM Leads', href: '/dashboard/leads', icon: Users },
     { name: 'Pipeline Penjualan', href: '/dashboard/deals', icon: TrendingUp },
-    { name: 'Content Studio', href: '/dashboard/content', icon: Sparkles },
-    { name: 'Market Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'Studio Konten AI', href: '/dashboard/content', icon: Sparkles },
+    { name: 'Analitik Pasar', href: '/dashboard/analytics', icon: BarChart3 },
     { name: 'Aktivitas & Notifikasi', href: '/dashboard/activity', icon: Bell },
     { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
   ];
