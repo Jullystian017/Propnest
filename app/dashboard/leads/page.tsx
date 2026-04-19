@@ -49,10 +49,23 @@ export default function LeadsPage() {
 
   const handleConvertToDeal = async (leadId: string) => {
     const lead = leads.find(l => l.id === leadId);
-    if (!lead) return;
+    if (!lead || lead.status === 'Closing') return;
 
     setConvertingId(leadId);
     try {
+      // Check if deal already exists for this lead to prevent duplicates
+      const { data: existingDeal } = await supabase
+        .from('deals')
+        .select('id')
+        .eq('lead_id', leadId)
+        .maybeSingle();
+
+      if (existingDeal) {
+        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'Closing' } : l));
+        alert('Lead ini sudah terdaftar di Pipeline!');
+        return;
+      }
+
       let dealTitle = lead.property || 'Properti Baru';
       let dealPrice = 0;
       let dealImage = '';
