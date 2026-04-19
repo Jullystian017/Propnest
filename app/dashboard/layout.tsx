@@ -108,6 +108,7 @@ export default function DashboardLayout({
         <div className={`h-20 flex items-center border-b border-border-line/5 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
           {isCollapsed ? (
             <button 
+                suppressHydrationWarning
                 onClick={() => setIsCollapsed(false)}
                 className="group relative flex items-center justify-center w-12 h-12 hover:bg-surface-gray rounded-2xl transition-all"
                 title="Expand Sidebar"
@@ -131,6 +132,7 @@ export default function DashboardLayout({
                 <span className="font-display font-medium text-base text-text-dark tracking-tight animate-in fade-in slide-in-from-left-2 duration-300">PropNest</span>
               </Link>
               <button 
+                suppressHydrationWarning
                 onClick={() => setIsCollapsed(true)}
                 className="p-2 text-text-gray/40 hover:text-brand-blue hover:bg-surface-gray rounded-xl transition-all group"
                 title="Collapse Sidebar"
@@ -177,6 +179,7 @@ export default function DashboardLayout({
 
         <div className={`p-4 border-t border-border-line/10 mt-auto ${isCollapsed ? 'flex justify-center' : ''}`}>
           <button 
+            suppressHydrationWarning
             onClick={handleLogout}
             title={isCollapsed ? 'Keluar Akun' : ''}
             className={`flex items-center text-red-500/70 hover:text-red-500 hover:bg-red-50 transition-all rounded-full ${
@@ -194,7 +197,10 @@ export default function DashboardLayout({
         {/* Topbar */}
         <header className="h-20 bg-white-pure/60 backdrop-blur-xl border-b border-border-line/30 sticky top-0 z-40 flex items-center justify-between px-6 lg:px-10">
           <div className="flex items-center gap-4 lg:hidden">
-            <button className="p-2 text-text-gray hover:bg-surface-gray rounded-lg">
+            <button 
+              suppressHydrationWarning
+              className="p-2 text-text-gray hover:bg-surface-gray rounded-lg"
+            >
               <Menu size={24} />
             </button>
             <div className="w-8 h-8 bg-brand-blue rounded-xl flex items-center justify-center">
