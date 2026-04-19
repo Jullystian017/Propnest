@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { ContentTemplate, ContentTone, ContentPlatform } from '@/lib/types';
-import { MOCK_PROPERTIES } from '@/lib/mock-data';
+import { saveToQueue, approvePost, deletePost, getDeveloperProperties, getContentQueue, publishNow } from '@/lib/content/actions';
 import { generatePropertyCaption } from '@/lib/groq';
 import { 
   Sparkles, 
@@ -47,59 +47,67 @@ const TikTokIcon = ({ size = 20, className = "" }) => (
   </svg>
 );
 
-interface QueuedItem {
-  id: string;
-  property: any;
-  platform: ContentPlatform;
-  caption: string;
-  suggestedTime: string;
-  status: 'waiting' | 'scheduled' | 'published';
-}
-
 export default function ContentStudioPage() {
-  const [selectedPropertyId, setSelectedPropertyId] = useState(MOCK_PROPERTIES[0].id);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
   const [tone, setTone] = useState<ContentTone>('profesional');
   const [template, setTemplate] = useState<ContentTemplate>('grand_launching');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePlatform, setActivePlatform] = useState<ContentPlatform>('instagram');
   const [captions, setCaptions] = useState<Partial<Record<ContentPlatform, string>>>({});
-  const [queue, setQueue] = useState<QueuedItem[]>([
-    {
-      id: 'q1',
-      property: MOCK_PROPERTIES[1],
-      platform: 'instagram',
-      caption: 'Siap-siap punya rumah sendiri! 🏠✨ Cluster Premium Colomadu unit terakhir sudah tersedia. Lokasi strategis dekat tol dan bandara. Jangan sampai telat! #RumahSolo #InvestasiProperti',
-      suggestedTime: 'Sabtu, 19:30 (High Traffic)',
-      status: 'waiting'
-    },
-    {
-      id: 'q2',
-      property: MOCK_PROPERTIES[2],
-      platform: 'facebook',
-      caption: 'Promo Spesial Lebaran! Vila Tropis Ungaran diskon s/d 100jt. Udara sejuk, view gunung, kolam renang pribadi. Hubungi kami untuk kunjungan lokasi.',
-      suggestedTime: 'Besok, 09:15',
-      status: 'scheduled'
-    }
-  ]);
+  const [queue, setQueue] = useState<any[]>([]);
+  const [isLoadingQueue, setIsLoadingQueue] = useState(true);
+  const [isSaving, startSaveTransition] = useTransition();
+  const [isApproving, startApproveTransition] = useTransition();
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  const selectedProperty = MOCK_PROPERTIES.find(p => p.id === selectedPropertyId)!;
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoadingQueue(true);
+      const [props, queueData] = await Promise.all([
+        getDeveloperProperties(),
+        getContentQueue()
+      ]);
+      setProperties(props);
+      if (props.length > 0 && !selectedPropertyId) {
+        setSelectedPropertyId(props[0].id);
+      }
+      setQueue(queueData);
+      setIsLoadingQueue(false);
+    }
+    loadData();
+  }, []);
+
+  const selectedProperty = properties.find(p => p.id === selectedPropertyId);
 
   const handleGenerate = async () => {
+    if (!selectedProperty) {
+      showToast('Pilih properti terlebih dahulu!');
+      return;
+    }
     setIsGenerating(true);
     try {
-      // Map Property to Listing for Groq function
+      // Map real property data to Listing format
       const listing: any = {
-        name: selectedProperty.name,
-        type: 'rumah',
-        price_min: 1000000000, // Dummy mapping
-        location_city: selectedProperty.location,
+        name: selectedProperty.title,
+        type: selectedProperty.type || 'rumah',
+        price_min: selectedProperty.price || 0,
+        price_max: null,
+        location_city: selectedProperty.location_city || 'Indonesia',
+        location_address: selectedProperty.address || '',
         specs: {
-          kamar_tidur: selectedProperty.specs.beds,
-          kamar_mandi: selectedProperty.specs.baths,
-          luas_tanah: selectedProperty.specs.size,
+          kamar_tidur: selectedProperty.specs?.bedrooms || selectedProperty.specs?.kamar_tidur,
+          kamar_mandi: selectedProperty.specs?.bathrooms || selectedProperty.specs?.kamar_mandi,
+          luas_tanah: selectedProperty.specs?.land_area || selectedProperty.specs?.luas_tanah,
+          luas_bangunan: selectedProperty.specs?.building_area || selectedProperty.specs?.luas_bangunan,
         },
-        facilities: selectedProperty.features || [],
-        description: selectedProperty.description
+        facilities: selectedProperty.facilities || [],
+        description: selectedProperty.description || ''
       };
 
       const result = await generatePropertyCaption({
@@ -111,52 +119,93 @@ export default function ContentStudioPage() {
       });
       
       setCaptions(result);
+      showToast('✨ Caption berhasil digenerate!');
     } catch (error) {
       console.error('Failed to generate:', error);
+      showToast('Gagal generate caption. Coba lagi.');
     } finally {
       setIsGenerating(false);
     }
   };
 
   const addToQueue = (platform: ContentPlatform) => {
-    const newId = Math.random().toString(36).substr(2, 9);
-    setQueue(prev => [{
-      id: newId,
-      property: selectedProperty,
-      platform,
-      caption: captions[platform] || '',
-      suggestedTime: 'AI Suggestion: Besok, 18:00',
-      status: 'waiting'
-    }, ...prev]);
+    const caption = captions[platform];
+    if (!caption || !selectedPropertyId) return;
+
+    startSaveTransition(async () => {
+      try {
+        await saveToQueue({
+          propertyId: selectedPropertyId,
+          platform,
+          caption,
+          tone,
+          template,
+          scheduledAt: null,
+        });
+        // Optimistic update
+        setQueue(prev => [{
+          id: Math.random().toString(36).substr(2, 9),
+          property_id: selectedPropertyId,
+          properties: selectedProperty,
+          platform,
+          caption,
+          tone,
+          template,
+          status: 'waiting',
+          created_at: new Date().toISOString(),
+        }, ...prev]);
+        showToast('✅ Berhasil masuk ke antrean!');
+      } catch (e: any) {
+        showToast(e.message || 'Gagal menyimpan.');
+      }
+    });
   };
 
   const approveItem = (id: string) => {
-    setQueue(prev => prev.map(item => 
-      item.id === id ? { ...item, status: 'scheduled' } : item
-    ));
+    startApproveTransition(async () => {
+      try {
+        await approvePost(id);
+        setQueue(prev => prev.map(item =>
+          item.id === id ? { ...item, status: 'scheduled' } : item
+        ));
+        showToast('✅ Post dijadwalkan!');
+      } catch (e: any) {
+        showToast(e.message || 'Gagal menyetujui.');
+      }
+    });
   };
+
+  const removeItem = (id: string) => {
+    startSaveTransition(async () => {
+      try {
+        await deletePost(id);
+        setQueue(prev => prev.filter(item => item.id !== id));
+        showToast('🗑️ Post dihapus.');
+      } catch (e: any) {
+        showToast(e.message || 'Gagal menghapus.');
+      }
+    });
+  };
+
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="fixed bottom-8 right-8 z-50 bg-text-dark text-white-pure px-6 py-3 rounded-2xl shadow-xl text-sm font-medium animate-in fade-in slide-in-from-bottom-4 duration-300">
+          {toastMsg}
+        </div>
+      )}
       {/* Header & Stats */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">Content Studio</h1>
-          <p className="text-sm font-normal text-text-gray/50">Buat konten marketing & otomatisasi iklan dengan AI</p>
+          <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">
+            Studio Konten AI
+          </h1>
+          <p className="text-sm font-normal text-text-gray/50">Buat konten marketing & jadwalkan iklan dengan AI</p>
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-surface-gray overflow-hidden shadow-sm">
-                <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" className="w-full h-full object-cover" />
-              </div>
-            ))}
-            <div className="w-8 h-8 rounded-full border-2 border-white bg-brand-blue text-white-pure flex items-center justify-center text-[10px] font-bold shadow-sm">
-              +12
-            </div>
-          </div>
-          <div className="h-8 w-[1px] bg-border-line/10"></div>
           <button className="p-2.5 rounded-xl bg-white-pure border border-border-line/10 text-text-gray hover:text-brand-blue transition-colors shadow-sm">
             <Settings size={20} strokeWidth={1.5} />
           </button>
@@ -166,10 +215,10 @@ export default function ContentStudioPage() {
       {/* Stats - Premium Summary Design */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Konten di Antrean', value: queue.filter(i => i.status === 'scheduled').length, change: '+4', isPos: true, icon: CalendarDays, color: 'text-brand-blue', bg: 'bg-brand-blue/5', gradient: 'from-blue-500/10 to-transparent' },
+          { label: 'Konten Terjadwal', value: queue.filter(i => i.status === 'scheduled').length, change: '+4', isPos: true, icon: CalendarDays, color: 'text-brand-blue', bg: 'bg-brand-blue/5', gradient: 'from-blue-500/10 to-transparent' },
           { label: 'Menunggu Approval', value: queue.filter(i => i.status === 'waiting').length, change: 'Urgent', isPos: false, icon: Clock3, color: 'text-orange-600', bg: 'bg-orange-50', gradient: 'from-orange-500/10 to-transparent' },
-          { label: 'Posting Berhasil', value: '124', change: '+12%', isPos: true, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50', gradient: 'from-emerald-500/10 to-transparent' },
-          { label: 'AI Health Status', value: '98%', change: 'Optimum', isPos: true, icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50', gradient: 'from-purple-500/10 to-transparent' },
+          { label: 'Berhasil Diposting', value: queue.filter(i => i.status === 'published').length, change: '+12%', isPos: true, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50', gradient: 'from-emerald-500/10 to-transparent' },
+          { label: 'Kesehatan AI', value: '98%', change: 'Optimum', isPos: true, icon: Sparkles, color: 'text-purple-600', bg: 'bg-purple-50', gradient: 'from-purple-500/10 to-transparent' },
         ].map((stat, i) => (
           <div key={i} className="bg-white-pure p-6 rounded-[2.5rem] border border-border-line/10 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group overflow-hidden relative">
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
@@ -201,7 +250,7 @@ export default function ContentStudioPage() {
                 </div>
                 <div>
                   <h3 className="font-bold">Magic Compose</h3>
-                  <p className="text-white/60 text-xs">AI-Powered Content Generator</p>
+                  <p className="text-white/60 text-xs">Generator Konten AI</p>
                 </div>
               </div>
             </div>
@@ -210,17 +259,32 @@ export default function ContentStudioPage() {
               {/* Select Property */}
               <div className="space-y-3">
                 <label className="text-xs font-bold text-text-gray uppercase tracking-widest pl-1">Pilih Properti</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {MOCK_PROPERTIES.slice(0, 3).map(p => (
+                <div className="grid grid-cols-1 gap-2 max-h-[260px] overflow-y-auto pr-1">
+                  {properties.length === 0 ? (
+                    <div className="text-center py-6 text-text-gray/40 text-sm">
+                      <p>Belum ada properti aktif.</p>
+                      <a href="/dashboard/listing" className="text-brand-blue font-bold text-xs mt-1 block">+ Tambah Listing</a>
+                    </div>
+                  ) : properties.map(p => (
                     <button 
                       key={p.id}
                       onClick={() => setSelectedPropertyId(p.id)}
-                      className={`flex items-center gap-3 p-3 rounded-2xl transition-all border ${selectedPropertyId === p.id ? 'bg-brand-blue/5 border-brand-blue/20 ring-1 ring-brand-blue/10' : 'bg-surface-gray/50 border-transparent hover:bg-surface-gray'}`}
+                      className={`flex items-center gap-3 p-3 rounded-2xl transition-all border ${
+                        selectedPropertyId === p.id 
+                          ? 'bg-brand-blue/5 border-brand-blue/20 ring-1 ring-brand-blue/10' 
+                          : 'bg-surface-gray/50 border-transparent hover:bg-surface-gray'
+                      }`}
                     >
-                      <img src={p.image} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt={p.name} />
+                      {p.images?.[0] ? (
+                        <img src={p.images[0]} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt={p.title} />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center shrink-0">
+                          <Sparkles size={16} className="text-brand-blue" />
+                        </div>
+                      )}
                       <div className="text-left overflow-hidden">
-                        <p className={`text-sm font-bold truncate ${selectedPropertyId === p.id ? 'text-brand-blue' : 'text-text-dark'}`}>{p.name}</p>
-                        <p className="text-[10px] text-text-gray font-medium truncate">{p.location}</p>
+                        <p className={`text-sm font-bold truncate ${selectedPropertyId === p.id ? 'text-brand-blue' : 'text-text-dark'}`}>{p.title}</p>
+                        <p className="text-[10px] text-text-gray font-medium truncate">{p.type || 'Properti'}</p>
                       </div>
                       {selectedPropertyId === p.id && <CheckCircle2 size={16} className="text-brand-blue ml-auto shrink-0" />}
                     </button>
@@ -231,7 +295,7 @@ export default function ContentStudioPage() {
               {/* Tone & Template */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <label className="text-xs font-bold text-text-gray uppercase tracking-widest pl-1">Vibe / Tone</label>
+                  <label className="text-xs font-bold text-text-gray uppercase tracking-widest pl-1">Nuansa / Gaya</label>
                   <select 
                     value={tone}
                     onChange={(e) => setTone(e.target.value as any)}
@@ -337,8 +401,12 @@ export default function ContentStudioPage() {
                       <p className="text-[10px] font-bold">PropNest Official</p>
                     </div>
                     {/* Image */}
-                    <div className="aspect-square bg-surface-gray">
-                      <img src={selectedProperty.image} className="w-full h-full object-cover" alt="prev" />
+                    <div className="aspect-square bg-surface-gray flex items-center justify-center">
+                      {selectedProperty?.images?.[0] ? (
+                        <img src={selectedProperty.images[0]} className="w-full h-full object-cover" alt="prev" />
+                      ) : (
+                        <Sparkles size={40} className="text-brand-blue/20" />
+                      )}
                     </div>
                     {/* Interaction */}
                     <div className="flex items-center gap-3 p-3 text-text-gray">
@@ -362,8 +430,11 @@ export default function ContentStudioPage() {
                 <div className="flex-1 space-y-6">
                   <div className="space-y-3">
                     <label className="text-xs font-bold text-text-gray uppercase tracking-widest flex items-center justify-between">
-                      Caption Editor
-                      <span className="bg-surface-gray px-2 py-0.5 rounded text-[10px] text-text-gray/60 font-medium">Auto-saved</span>
+                      <span className="flex items-center gap-3">
+                        <div className="w-1 h-4 bg-brand-blue rounded-full"></div>
+                        Editor Caption
+                      </span>
+                      <span className="bg-surface-gray px-2 py-0.5 rounded text-[10px] text-text-gray/60 font-medium">Tersimpan Otomatis</span>
                     </label>
                     <textarea 
                       value={captions[activePlatform] || ''}
@@ -396,7 +467,31 @@ export default function ContentStudioPage() {
                     <span>Masukkan ke Antrean</span>
                     <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="w-full py-4 bg-brand-blue text-white-pure rounded-full font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+                  <button 
+                    onClick={() => {
+                      const caption = captions[activePlatform];
+                      if (!caption || !selectedPropertyId) return;
+                      startSaveTransition(async () => {
+                        try {
+                          await publishNow({
+                            propertyId: selectedPropertyId,
+                            platform: activePlatform,
+                            caption,
+                            tone,
+                            template,
+                          });
+                          showToast('🚀 Konten Berhasil Diposting!');
+                          // Refresh queue
+                          const queueData = await getContentQueue();
+                          setQueue(queueData);
+                        } catch (e: any) {
+                          showToast(e.message);
+                        }
+                      });
+                    }}
+                    disabled={!captions[activePlatform] || isSaving}
+                    className="w-full py-4 bg-brand-blue text-white-pure rounded-full font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
+                  >
                     <Send size={18} />
                     <span>Post Sekarang</span>
                   </button>
@@ -409,20 +504,17 @@ export default function ContentStudioPage() {
 
       {/* Automation Queue Section */}
       <div className="bg-white-pure rounded-[2.5rem] border border-border-line/10 shadow-xl overflow-hidden mt-12 mb-20 animate-in slide-in-from-bottom-8 duration-1000">
-        <div className="p-8 border-b border-border-line/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center">
-              <Calendar size={28} />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-text-dark">Antrean Konten Otomatis</h3>
-              <p className="text-text-gray text-sm font-medium">Kelola dan setujui jadwal publikasi konten Anda</p>
-            </div>
+        <div className="p-8 border-b border-border-line/5 bg-surface-gray/10 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-text-dark flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-brand-blue rounded-full"></div>
+              Antrean Otomatisasi Konten
+            </h2>
+            <p className="text-sm text-text-gray mt-1">Kelola dan jadwalkan publikasi konten ke media sosial</p>
           </div>
-          
-          <div className="flex items-center gap-2 bg-surface-gray/50 px-4 py-2 rounded-full border border-border-line/10">
+          <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-2xl border border-emerald-500/20">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-xs font-bold text-text-dark">AUTO-PILOT ACTIVE</span>
+            <span className="text-xs font-black tracking-wider uppercase">AUTOPILOT AKTIF</span>
           </div>
         </div>
 
@@ -438,18 +530,39 @@ export default function ContentStudioPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-line/5">
-              {queue.map((item) => (
+              {isLoadingQueue ? (
+                <tr><td colSpan={5} className="text-center py-16">
+                  <div className="w-8 h-8 border-2 border-brand-blue/20 border-t-brand-blue rounded-full animate-spin mx-auto"></div>
+                </td></tr>
+              ) : queue.length === 0 ? (
+                <tr><td colSpan={5} className="text-center py-16 text-text-gray/40 text-sm">
+                  Belum ada konten di antrean. Generate caption lalu masukkan ke antrean!
+                </td></tr>
+              ) : queue.map((item) => {
+                const propName = item.properties?.title || item.property?.name || 'Properti';
+                const propImg = item.properties?.images?.[0] || item.property?.image || null;
+                const scheduledTime = item.scheduled_at
+                  ? new Date(item.scheduled_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+                  : item.suggestedTime?.replace('AI Suggestion: ', '') || 'Belum dijadwalkan';
+                const isAISuggestion = !item.scheduled_at;
+                return (
                 <tr key={item.id} className="hover:bg-surface-gray/20 transition-colors group">
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
                       <div className="relative">
-                        <img src={item.property.image} className="w-14 h-14 rounded-xl object-cover shadow-md" alt="p" />
+                        {propImg ? (
+                          <img src={propImg} className="w-14 h-14 rounded-xl object-cover shadow-md" alt="p" />
+                        ) : (
+                          <div className="w-14 h-14 rounded-xl bg-brand-blue/10 flex items-center justify-center">
+                            <Sparkles size={20} className="text-brand-blue" />
+                          </div>
+                        )}
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
                           <Sparkles size={12} className="text-brand-blue" />
                         </div>
                       </div>
                       <div className="max-w-[300px]">
-                        <p className="font-bold text-text-dark truncate">{item.property.name}</p>
+                        <p className="font-bold text-text-dark truncate">{propName}</p>
                         <p className="text-xs text-text-gray mt-1 line-clamp-1">{item.caption}</p>
                       </div>
                     </div>
@@ -459,14 +572,15 @@ export default function ContentStudioPage() {
                        {item.platform === 'instagram' && <InstagramIcon size={16} className="text-[#E4405F]" />}
                        {item.platform === 'facebook' && <FacebookIcon size={16} className="text-[#1877F2]" />}
                        {item.platform === 'tiktok' && <TikTokIcon size={16} className="text-black" />}
+                       {item.platform === 'whatsapp' && <span className="text-green-500 font-bold text-xs">WA</span>}
                        <span className="text-sm font-semibold text-text-dark capitalize">{item.platform}</span>
                     </div>
                   </td>
                   <td className="px-8 py-5">
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-text-dark">{item.suggestedTime.replace('AI Suggestion: ', '')}</span>
-                      {item.suggestedTime.includes('AI') && (
-                        <span className="text-[10px] text-brand-blue font-black tracking-wider uppercase mt-0.5">Recommended by AI</span>
+                      <span className="text-sm font-bold text-text-dark">{scheduledTime}</span>
+                      {isAISuggestion && (
+                        <span className="text-[10px] text-brand-blue font-black tracking-wider uppercase mt-0.5">Disarankan AI</span>
                       )}
                     </div>
                   </td>
@@ -474,17 +588,17 @@ export default function ContentStudioPage() {
                     {item.status === 'waiting' ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold border border-orange-200">
                         <Clock size={12} strokeWidth={2.5} />
-                        Approval Required
+                        Menunggu Persetujuan
                       </span>
                     ) : item.status === 'scheduled' ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold border border-blue-200">
                         <CalendarDays size={12} strokeWidth={2.5} />
-                        Scheduled
+                        Dijadwalkan
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
                         <CheckCircle2 size={12} strokeWidth={2.5} />
-                        Published
+                        Dipublikasi
                       </span>
                     )}
                   </td>
@@ -493,26 +607,33 @@ export default function ContentStudioPage() {
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => approveItem(item.id)}
-                          className="w-10 h-10 rounded-xl bg-emerald-500 text-white-pure flex items-center justify-center shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all hover:scale-110"
-                          title="Setujui"
+                          disabled={isApproving}
+                          className="w-10 h-10 rounded-xl bg-emerald-500 text-white-pure flex items-center justify-center shadow-lg shadow-emerald-500/20 hover:bg-emerald-600 transition-all hover:scale-110 disabled:opacity-50"
+                          title="Setujui & Jadwalkan"
                         >
                           <Check size={20} strokeWidth={3} />
                         </button>
                         <button 
-                          className="w-10 h-10 rounded-xl bg-white-pure border border-border-line/10 text-text-gray hover:text-red-500 transition-all shadow-sm flex items-center justify-center"
-                          title="Tolak"
+                          onClick={() => removeItem(item.id)}
+                          disabled={isSaving}
+                          className="w-10 h-10 rounded-xl bg-white-pure border border-border-line/10 text-text-gray hover:text-red-500 transition-all shadow-sm flex items-center justify-center disabled:opacity-50"
+                          title="Hapus"
                         >
                           <X size={20} strokeWidth={2.5} />
                         </button>
                       </div>
                     ) : (
-                      <button className="p-2 text-text-gray hover:text-text-dark transition-colors">
-                        <MoreVertical size={20} strokeWidth={1.5} />
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="p-2 text-text-gray/30 hover:text-red-400 transition-colors"
+                        title="Hapus"
+                      >
+                        <X size={18} strokeWidth={2} />
                       </button>
                     )}
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>
