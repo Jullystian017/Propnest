@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Shield, Bell, Building, Save, Camera, Mail, Phone, MapPin, 
-  Lock, Globe, Check, Loader2, AlertCircle, ChevronRight, LogOut 
+  Lock, Globe, Check, Loader2, AlertCircle, ChevronRight, LogOut,
+  Users, Sparkles, Home
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -16,6 +17,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form States
   const [profile, setProfile] = useState({
@@ -92,6 +94,53 @@ export default function SettingsPage() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+
+      // Upload to 'avatars' bucket
+      const { error: uploadError, data } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile and metadata
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
+
+      setProfile({ ...profile, avatarUrl: publicUrl });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-text-gray/40">
@@ -136,6 +185,7 @@ export default function SettingsPage() {
           ].map((tab) => (
             <button
               key={tab.id}
+              suppressHydrationWarning
               onClick={() => setActiveTab(tab.id as TabType)}
               className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${
                 activeTab === tab.id 
@@ -152,7 +202,10 @@ export default function SettingsPage() {
           ))}
           
           <div className="pt-4 mt-4 border-t border-border-line/10">
-            <button className="w-full flex items-center gap-3 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-medium text-sm">
+            <button 
+              suppressHydrationWarning
+              className="w-full flex items-center gap-3 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-medium text-sm"
+            >
               <LogOut size={18} />
               Keluar Akun
             </button>
@@ -176,9 +229,20 @@ export default function SettingsPage() {
                         </div>
                       )}
                     </div>
-                    <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-brand-blue text-white-pure rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95 border-4 border-white-pure">
+                    <button 
+                      suppressHydrationWarning
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute -bottom-2 -right-2 w-10 h-10 bg-brand-blue text-white-pure rounded-2xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95 border-4 border-white-pure"
+                    >
                       <Camera size={16} />
                     </button>
+                    <input 
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-text-dark">Foto Profil</h3>
@@ -193,6 +257,7 @@ export default function SettingsPage() {
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
                       <input 
                         type="text" 
+                        suppressHydrationWarning
                         value={profile.fullName}
                         onChange={e => setProfile({...profile, fullName: e.target.value})}
                         className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
@@ -206,6 +271,7 @@ export default function SettingsPage() {
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
                       <input 
                         type="email" 
+                        suppressHydrationWarning
                         value={profile.email}
                         readOnly
                         className="w-full bg-surface-gray/10 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-text-gray/50 cursor-not-allowed" 
@@ -218,6 +284,7 @@ export default function SettingsPage() {
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
                       <input 
                         type="text" 
+                        suppressHydrationWarning
                         value={profile.phone}
                         onChange={e => setProfile({...profile, phone: e.target.value})}
                         className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
@@ -231,6 +298,7 @@ export default function SettingsPage() {
                       <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
                       <input 
                         type="text" 
+                        suppressHydrationWarning
                         value={profile.company}
                         onChange={e => setProfile({...profile, company: e.target.value})}
                         className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
@@ -259,17 +327,29 @@ export default function SettingsPage() {
                     <label className="text-[10px] font-bold text-text-gray/40 uppercase tracking-widest ml-1">Password Lama</label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
-                      <input type="password" underline className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" />
+                      <input 
+                        type="password" 
+                        suppressHydrationWarning
+                        className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
+                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-text-gray/40 uppercase tracking-widest ml-1">Password Baru</label>
-                      <input type="password" className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 px-6 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" />
+                      <input 
+                        type="password" 
+                        suppressHydrationWarning
+                        className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 px-6 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-text-gray/40 uppercase tracking-widest ml-1">Konfirmasi Password Baru</label>
-                      <input type="password" className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 px-6 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" />
+                      <input 
+                        type="password" 
+                        suppressHydrationWarning
+                        className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 px-6 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
+                      />
                     </div>
                   </div>
                 </div>
@@ -300,7 +380,12 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" defaultChecked />
+                      <input 
+                        type="checkbox" 
+                        suppressHydrationWarning
+                        className="sr-only peer" 
+                        defaultChecked 
+                      />
                       <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue"></div>
                     </label>
                   </div>
@@ -314,6 +399,7 @@ export default function SettingsPage() {
                     <label className="text-[10px] font-bold text-text-gray/40 uppercase tracking-widest ml-1">Deskripsi Bisnis / Profile Bio</label>
                     <textarea 
                       rows={4}
+                      suppressHydrationWarning
                       className="w-full bg-surface-gray/30 border-none rounded-2xl py-4 px-6 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all resize-none" 
                       placeholder="Ceritakan tentang layanan atau spesialisasi Anda..."
                     />
@@ -325,6 +411,7 @@ export default function SettingsPage() {
                       <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-text-gray/30" size={16} />
                       <input 
                         type="url" 
+                        suppressHydrationWarning
                         className="w-full bg-surface-gray/30 border-none rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-brand-blue/10 transition-all" 
                         placeholder="https://yourwebsite.com"
                       />
@@ -337,7 +424,10 @@ export default function SettingsPage() {
                     </div>
                     <p className="text-xs font-bold text-text-dark">Unggah Logo Perusahaan</p>
                     <p className="text-[10px] text-text-gray/40 mt-1">Logo akan muncul di kartu listing dan laporan leads.</p>
-                    <button className="mt-4 px-4 py-2 bg-white-pure border border-border-line/20 rounded-xl text-[10px] font-bold text-brand-blue hover:bg-brand-blue/5 transition-all">
+                    <button 
+                      suppressHydrationWarning
+                      className="mt-4 px-4 py-2 bg-white-pure border border-border-line/20 rounded-xl text-[10px] font-bold text-brand-blue hover:bg-brand-blue/5 transition-all"
+                    >
                       PILIH FILE
                     </button>
                   </div>
@@ -350,6 +440,7 @@ export default function SettingsPage() {
              <button 
               onClick={handleSave}
               disabled={saving}
+              suppressHydrationWarning
               className="px-8 py-3.5 bg-brand-blue text-white-pure rounded-2xl text-sm font-bold shadow-lg shadow-brand-blue/10 hover:bg-brand-blue-deep transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
              >
                {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
