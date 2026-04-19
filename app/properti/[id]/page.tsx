@@ -18,6 +18,7 @@ import { notFound, useRouter } from 'next/navigation';
 import MapContainer from '@/components/maps/MapContainer';
 import { createClient } from '@/lib/supabase/client';
 import { useNearbyPlaces } from '@/hooks/useNearbyPlaces';
+import PropNestAI from '@/components/dashboard/PropNestAI';
 
 // --- KPR CALCULATOR COMPONENT ---
 const KPRCalculator = ({ propertyPrice }: { propertyPrice: string }) => {
@@ -894,7 +895,24 @@ export default function DetailPropertiPage({
         propertyName={property.name}
         propertyId={property.id}
       />
-      {/* Universal AI is now handled by the root layout */}
+      {/* PropNest AI with full property context */}
+      <PropNestAI
+        pageContext={{
+          page: 'properti',
+          property: {
+            title: property.name,
+            location: property.location,
+            price: property.price,
+            type: property.badge,
+            bedrooms: property.specs?.beds,
+            bathrooms: property.specs?.baths,
+            land_area: property.specs?.size,
+            building_area: property._raw?.building_area,
+          },
+          lat: propLat,
+          lng: propLng,
+        }}
+      />
 
       {/* Photo Explorer Modal */}
       {isGalleryOpen && (

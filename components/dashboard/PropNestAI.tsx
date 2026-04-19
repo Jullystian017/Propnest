@@ -16,71 +16,91 @@ interface SuggestionChip {
   text: string;
 }
 
+export interface AIPageContext {
+  page: 'dashboard' | 'properti' | 'public';
+  property?: {
+    title?: string;
+    name?: string;
+    location?: string;
+    price?: number | string;
+    type?: string;
+    badge?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    land_area?: number;
+    building_area?: number;
+    specs?: { beds?: number; baths?: number; size?: number };
+  };
+  lat?: number | null;
+  lng?: number | null;
+}
+
 // Context-aware suggestion chips
 const CHIPS_BY_CONTEXT: Record<string, SuggestionChip[]> = {
-  // Dashboard admin pages
   dashboard: [
-    { label: '🏠 Cek Listing Properti', text: 'Ada berapa listing properti saya saat ini? Tampilkan ringkasannya.' },
-    { label: '👥 Analisis Leads', text: 'Siapa leads paling baru yang masuk dan apa statusnya?' },
-    { label: '💰 Ringkasan Deals', text: 'Tampilkan ringkasan pipeline deals saya sekarang.' },
-    { label: '✍️ Buat Caption IG', text: 'Bantu buatkan caption Instagram yang menarik untuk properti terbaru saya.' },
-    { label: '📊 Performa Bisnis', text: 'Bagaimana performa bisnis properti saya bulan ini secara keseluruhan?' },
-    { label: '📞 Follow-up Lead', text: 'Bantu saya buat pesan WhatsApp follow-up untuk leads yang belum direspons.' },
+    { label: '🏠 Listing Aktif', text: 'Ada berapa listing properti saya dan berapa total nilai portofolionya?' },
+    { label: '👥 Leads Terbaru', text: 'Siapa saja leads yang paling baru masuk? Urutkan dari yang terbaru.' },
+    { label: '💰 Ringkasan Deals', text: 'Tampilkan ringkasan pipeline deals saya per tahapan.' },
+    { label: '✍️ Caption IG', text: 'Buatkan caption Instagram yang menarik untuk properti terbaru saya.' },
+    { label: '📞 Draft Follow-up', text: 'Bantu saya buat pesan WhatsApp follow-up yang persuasif untuk leads yang belum direspons.' },
+    { label: '📊 Performa Bisnis', text: 'Berikan analisis singkat performa bisnis properti saya berdasarkan data yang ada.' },
   ],
-  // Public pages: homepage, search/listing
-  public: [
-    { label: '🏡 Cari Rumah Ideal', text: 'Rumah seperti apa yang cocok untuk keluarga muda dengan budget 500 juta?' },
-    { label: '💳 Simulasi KPR', text: 'Bantu saya hitung simulasi cicilan KPR untuk rumah seharga 800 juta.' },
-    { label: '📍 Lokasi Strategis', text: 'Di mana lokasi perumahan yang strategis dan dekat pusat kota?' },
-    { label: '📋 Tips Beli Rumah', text: 'Apa saja tips penting sebelum membeli rumah pertama?' },
-  ],
-  // Property detail page
   properti: [
-    { label: '💰 Simulasi Cicilan', text: 'Bantu saya hitung estimasi cicilan KPR untuk properti ini dengan DP 20%.' },
-    { label: '📍 Info Sekitar', text: 'Apa saja fasilitas umum terdekat dari lokasi properti ini?' },
-    { label: '🤝 Cara Negosiasi', text: 'Berikan saya tips negosiasi harga yang efektif untuk pembelian properti.' },
-    { label: '📑 Dokumen Legal', text: 'Dokumen apa saja yang perlu saya cek sebelum membeli properti ini?' },
-    { label: '📅 Jadwal Survei', text: 'Saya ingin jadwalkan survei lokasi, apa yang harus saya siapkan?' },
+    { label: '💰 Hitung Cicilan KPR', text: 'Hitung estimasi cicilan KPR properti ini dengan DP 20% tenor 15 tahun.' },
+    { label: '📍 Fasilitas Terdekat', text: 'Apa saja fasilitas terdekat dari properti ini? Sekolah, rumah sakit, atau pusat perbelanjaan?' },
+    { label: '📈 Nilai Investasi', text: 'Mengapa properti ini menarik sebagai investasi? Jelaskan potensi kenaikan nilainya.' },
+    { label: '🏡 Keunggulan Properti', text: 'Ceritakan keunggulan utama dari properti ini dibanding properti lain di area yang sama.' },
+    { label: '🚗 Akses Transportasi', text: 'Bagaimana akses transportasi dan kemudahan mobilitas dari lokasi properti ini?' },
+  ],
+  public: [
+    { label: '🏡 Rekomendasi Rumah', text: 'Rekomendasikan properti yang tersedia untuk keluarga muda dengan budget 1 miliar.' },
+    { label: '💳 Simulasi KPR', text: 'Hitung simulasi cicilan KPR untuk properti seharga 1 miliar dengan DP 20%.' },
+    { label: '📍 Daerah Terbaik', text: 'Di daerah mana saja properti tersedia? Mana yang paling strategis?' },
+    { label: '📈 Pilih yang Tepat', text: 'Apa tips memilih properti yang tepat sebagai hunian sekaligus investasi?' },
   ],
 };
 
-function getContext(pathname: string): string {
+function getContext(pathname: string): AIPageContext['page'] {
   if (pathname.startsWith('/dashboard')) return 'dashboard';
   if (pathname.startsWith('/properti')) return 'properti';
   return 'public';
 }
 
-function getWelcomeMessage(context: string): string {
+function getWelcomeMessage(context: AIPageContext['page']): string {
   switch (context) {
     case 'dashboard':
-      return 'Halo! Saya **PropNest AI** — asisten cerdas Anda. 🚀\n\nSaya terhubung langsung ke database properti, leads, dan deals Anda. Tanyakan apa saja!';
+      return '👋 Halo! Saya **PropNest AI**, asisten bisnis Anda.\n\nSaya terhubung ke database properti, leads, dan deals Anda secara real-time. Tanyakan apa saja — dari analisis performa hingga draft pesan follow-up!';
     case 'properti':
-      return 'Halo! Saya **PropNest AI**. 👋\n\nSaya bisa bantu Anda memahami detail properti ini, simulasi KPR, hingga tips pembelian. Ada yang ingin ditanyakan?';
+      return '👋 Halo! Saya **PropNest AI**, agen properti digital Anda.\n\nSaya tahu detail properti ini dan fasilitas di sekitarnya. Ingin tahu estimasi cicilan KPR, keunggulan lokasi, atau nilai investasinya? Tanya saja!';
     default:
-      return 'Halo! Saya **PropNest AI**, asisten properti cerdas Anda. 🏡\n\nSaya bisa bantu cari properti ideal, simulasi KPR, atau menjawab pertanyaan seputar properti Indonesia.';
+      return '👋 Halo! Saya **PropNest AI**.\n\nSaya bisa bantu Anda menemukan properti impian, menghitung simulasi KPR, atau menjawab pertanyaan seputar properti. Mulai dari mana?';
   }
 }
 
-export default function PropNestAI() {
+interface PropNestAIProps {
+  pageContext?: AIPageContext;
+}
+
+export default function PropNestAI({ pageContext }: PropNestAIProps) {
   const pathname = usePathname();
-  const context = getContext(pathname || '');
-  const chips = CHIPS_BY_CONTEXT[context] || CHIPS_BY_CONTEXT.public;
-  const welcomeMsg = getWelcomeMessage(context);
+  const derivedContext = pageContext?.page || getContext(pathname || '');
+  const chips = CHIPS_BY_CONTEXT[derivedContext] || CHIPS_BY_CONTEXT.public;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: welcomeMsg }
+    { role: 'assistant', content: getWelcomeMessage(derivedContext) }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Re-init messages when context changes (e.g. navigating between pages)
+  // Reset messages when navigating to a different context
   useEffect(() => {
-    setMessages([{ role: 'assistant', content: getWelcomeMessage(getContext(pathname || '')) }]);
-  }, [pathname]);
+    const ctx = pageContext?.page || getContext(pathname || '');
+    setMessages([{ role: 'assistant', content: getWelcomeMessage(ctx) }]);
+  }, [pathname, pageContext?.page]);
 
   useEffect(() => {
     setMounted(true);
@@ -102,10 +122,17 @@ export default function PropNestAI() {
     setIsLoading(true);
 
     try {
+      const contextToSend: AIPageContext = pageContext || {
+        page: getContext(pathname || ''),
+      };
+
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+          pageContext: contextToSend,
+        }),
       });
 
       const data = await response.json();
@@ -114,7 +141,10 @@ export default function PropNestAI() {
       setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
     } catch (error) {
       console.error('Chat Error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Maaf, terjadi kesalahan. Silakan coba lagi nanti.' }]);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Maaf, terjadi kesalahan. Silakan coba lagi nanti.'
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +152,11 @@ export default function PropNestAI() {
 
   if (!mounted) return null;
 
-  const contextLabel = context === 'dashboard' ? 'Business Intelligence' : context === 'properti' ? 'Property Advisor' : 'Property Assistant';
+  const contextLabel = derivedContext === 'dashboard'
+    ? 'Business Intelligence'
+    : derivedContext === 'properti'
+    ? 'Property Advisor'
+    : 'Property Assistant';
 
   return (
     <>
@@ -133,7 +167,9 @@ export default function PropNestAI() {
           setIsOpen(true);
           setIsMinimized(false);
         }}
-        className={`fixed bottom-6 right-6 w-14 h-14 bg-brand-blue text-white-pure rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 z-50 group ${isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}`}
+        className={`fixed bottom-6 right-6 w-14 h-14 bg-brand-blue text-white-pure rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 z-50 group ${
+          isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'
+        }`}
       >
         <Sparkles className="group-hover:rotate-12 transition-transform" size={24} />
         <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white-pure rounded-full animate-pulse"></span>
@@ -178,11 +214,8 @@ export default function PropNestAI() {
         {/* Messages + Chips */}
         {!isMinimized && (
           <>
-            <div
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#FBFBFE]"
-            >
-              {/* Suggestion Chips — only show when conversation is fresh */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#FBFBFE]">
+              {/* Suggestion Chips */}
               {messages.length <= 1 && (
                 <div className="flex flex-wrap gap-2 pb-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
                   {chips.map((chip, i) => (
@@ -197,7 +230,7 @@ export default function PropNestAI() {
                 </div>
               )}
 
-              {/* Message Bubbles */}
+              {/* Messages */}
               {messages.map((msg, i) => (
                 <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
@@ -219,7 +252,7 @@ export default function PropNestAI() {
                 </div>
               ))}
 
-              {/* Loading Indicator */}
+              {/* Loading */}
               {isLoading && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center shrink-0">
@@ -244,10 +277,10 @@ export default function PropNestAI() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   placeholder={
-                    context === 'dashboard'
+                    derivedContext === 'dashboard'
                       ? 'Tanya tentang properti, leads, atau deals...'
-                      : context === 'properti'
-                      ? 'Tanya tentang properti ini, simulasi KPR...'
+                      : derivedContext === 'properti'
+                      ? 'Tanya KPR, fasilitas terdekat, keunggulan...'
                       : 'Cari properti, simulasi KPR, tanya-tanya...'
                   }
                   className="w-full bg-surface-gray/50 border border-transparent rounded-2xl py-3.5 pl-4 pr-12 text-sm focus:bg-white-pure focus:border-brand-blue/20 outline-none transition-all shadow-inner"
