@@ -911,6 +911,7 @@ export default function DetailPropertiPage({
       <NusaEstateAI
         pageContext={{
           page: 'properti',
+          developer_id: property._raw?.user_id || null,
           property: {
             title: property.name,
             location: property.location,

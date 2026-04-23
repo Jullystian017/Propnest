@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Sparkles, X, Send, User, Bot, Loader2, Minus, Maximize2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { trackChatbotClick } from '@/hooks/useTrackChatbotClick';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -33,6 +34,7 @@ export interface AIPageContext {
   };
   lat?: number | null;
   lng?: number | null;
+  developer_id?: string | null;  // user_id of the property owner
 }
 
 // Context-aware suggestion chips
@@ -125,6 +127,15 @@ export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+
+    // Track message sent (only from public/property pages, not dashboard)
+    if (pageContext?.page !== 'dashboard') {
+      trackChatbotClick({
+        developer_id: pageContext?.developer_id,
+        property_id: (pageContext?.property as any)?.id,
+        page: pageContext?.page || 'public',
+      });
+    }
 
     try {
       const contextToSend: AIPageContext = pageContext || {

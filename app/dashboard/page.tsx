@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [leads, setLeads] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [deals, setDeals] = useState<any[]>([]);
+  const [chatbotClicks, setChatbotClicks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('7 Hari');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -43,16 +44,20 @@ export default function DashboardPage() {
           setDisplayName(name);
         }
 
-        const [leadsRes, propsRes, dealsRes] = await Promise.all([
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+        const [leadsRes, propsRes, dealsRes, clicksRes] = await Promise.all([
           supabase.from('leads').select('*').order('created_at', { ascending: false }),
           supabase.from('properties').select('*'),
-          supabase.from('deals').select('*')
+          supabase.from('deals').select('*'),
+          supabase.from('chatbot_clicks').select('clicked_at').gte('clicked_at', sevenDaysAgo),
         ]);
         
         if (leadsRes.error) throw leadsRes.error;
         setLeads(leadsRes.data || []);
         setProperties(propsRes.data || []);
         setDeals(dealsRes.data || []);
+        setChatbotClicks(clicksRes.data || []);
       } catch (err) {
         console.debug('Dashboard data sync deferred:', err);
       } finally {
@@ -60,6 +65,22 @@ export default function DashboardPage() {
       }
     }
     fetchData();
+
+    // Real-time subscription: update chart instantly when someone clicks AI
+    const channel = supabase
+      .channel('chatbot-clicks-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'chatbot_clicks' },
+        (payload) => {
+          setChatbotClicks(prev => [...prev, payload.new]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const activeListings = properties.filter(p => p.status === 'Aktif').length;
@@ -100,16 +121,21 @@ export default function DashboardPage() {
         const ld = new Date(l.created_at);
         return ld.getDate() === d.getDate() && ld.getMonth() === d.getMonth();
       }).length;
+
+      // Count REAL chatbot clicks for this day
+      const clickCount = chatbotClicks.filter(c => {
+        const cd = new Date(c.clicked_at);
+        return cd.getDate() === d.getDate() && cd.getMonth() === d.getMonth();
+      }).length;
       
       result.push({
-        day: dayName, // LeadsChart expects 'day'
+        day: dayName,
         leads: leadsCount,
-        // Simulated clicks based on leads + random factor to make chart look alive
-        click: leadsCount > 0 ? leadsCount * 3 + Math.floor(Math.random() * 5) : Math.floor(Math.random() * 10) + 5
+        click: clickCount,
       });
     }
     return result;
-  }, [leads]);
+  }, [leads, chatbotClicks]);
 
   const recentActivities = useMemo(() => {
     const activities: { text: string; time: string; timestamp: number }[] = [];
