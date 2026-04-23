@@ -155,7 +155,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-display font-medium text-text-dark tracking-tight">
             {getGreeting()}, <span className="text-brand-blue">{displayName}</span>
           </h1>
-          <p className="text-text-gray/50 font-normal text-sm flex items-center gap-2">
+          <p className="text-text-gray/80 font-normal text-sm flex items-center gap-2">
             Selamat datang kembali! Ini rangkuman performa Anda hari ini.
           </p>
         </div>
