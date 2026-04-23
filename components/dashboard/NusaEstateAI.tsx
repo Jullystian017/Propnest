@@ -95,9 +95,14 @@ export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const isFirstRender = useRef(true);
 
   // Reset messages when navigating to a different context
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     const ctx = pageContext?.page || getContext(pathname || '');
     setMessages([{ role: 'assistant', content: getWelcomeMessage(ctx) }]);
   }, [pathname, pageContext?.page]);

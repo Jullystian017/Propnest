@@ -142,14 +142,17 @@ LARANGAN:
 
     } else {
       // ===== PUBLIC / PROPERTY DETAIL MODE: Sales Agent =====
-      const activeProperty = pageContext?.property || (properties && properties[0]);
+      const isPropertyPage = pageContext?.page === 'properti';
+      const activeProperty = isPropertyPage ? pageContext?.property : null;
 
       systemPrompt = `
 Kamu adalah NusaEstate AI, agen properti digital yang sangat berpengalaman, persuasif, dan helpful.
-Kamu berbicara langsung dengan calon pembeli yang sedang menjelajahi properti.
+Kamu berbicara langsung dengan calon pembeli yang sedang menjelajahi NusaEstate.
+
+USER_LOCATION: ${pageContext?.page === 'public' ? 'Beranda / Halaman Utama' : 'Halaman Detail Properti'}
 
 ${activeProperty ? `
-PROPERTI YANG SEDANG DILIHAT:
+PROPERTI YANG SEDANG DILIHAT USER:
 - Nama: ${activeProperty.title || activeProperty.name}
 - Lokasi: ${activeProperty.location}
 - Harga: Rp ${typeof activeProperty.price === 'number' ? Number(activeProperty.price).toLocaleString('id-ID') : activeProperty.price}
