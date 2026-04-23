@@ -8,14 +8,6 @@ const groq = new Groq({
 
 // Fetch nearby places from Overpass for a given coordinate
 async function fetchNearbyForAI(lat: number, lng: number): Promise<string> {
-  const queries: Record<string, string> = {
-    sekolah: `nwr["amenity"~"school|university|college|kindergarten"](around:3000,${lat},${lng});`,
-    kesehatan: `nwr["amenity"~"hospital|clinic|pharmacy"](around:5000,${lat},${lng});`,
-    transportasi: `nwr["highway"~"bus_stop|bus_station"](around:3000,${lat},${lng});nwr["railway"~"station|halt"](around:3000,${lat},${lng});`,
-    perbelanjaan: `nwr["shop"~"mall|supermarket|convenience"](around:3000,${lat},${lng});nwr["amenity"~"marketplace"](around:3000,${lat},${lng});`,
-    ibadah: `nwr["amenity"="place_of_worship"](around:2000,${lat},${lng});`,
-  };
-
   const haversine = (lat1: number, lng1: number, lat2: number, lng2: number) => {
     const R = 6371000;
     const d = Math.PI / 180;
@@ -29,216 +21,87 @@ async function fetchNearbyForAI(lat: number, lng: number): Promise<string> {
     return mins < 1 ? '< 1 menit' : `${mins} menit`;
   };
 
-  const results: string[] = [];
+  const queries: Record<string, string> = {
+    sekolah: `nwr["amenity"~"school|university|college|kindergarten"](around:3000,${lat},${lng});`,
+    kesehatan: `nwr["amenity"~"hospital|clinic|pharmacy"](around:5000,${lat},${lng});`,
+    transportasi: `nwr["highway"~"bus_stop|bus_station"](around:3000,${lat},${lng});nwr["railway"~"station|halt"](around:3000,${lat},${lng});`,
+    perbelanjaan: `nwr["shop"~"mall|supermarket|convenience"](around:3000,${lat},${lng});nwr["amenity"~"marketplace"](around:3000,${lat},${lng});`,
+  };
 
+  const results: string[] = [];
   for (const [category, query] of Object.entries(queries)) {
     try {
       const fullQuery = `[out:json][timeout:10];(${query});out center;`;
-      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(fullQuery)}`, {
-        signal: AbortSignal.timeout(10000),
-      });
+      const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(fullQuery)}`);
       if (!res.ok) continue;
       const json = await res.json();
-
       const places = json.elements
-        .filter((el: any) => {
-          const name = el.tags?.name || el.tags?.['name:id'] || el.tags?.brand;
-          const elLat = el.lat ?? el.center?.lat;
-          const elLng = el.lon ?? el.center?.lon;
-          return name && elLat && elLng;
-        })
+        .filter((el: any) => (el.tags?.name || el.tags?.brand) && (el.lat ?? el.center?.lat))
         .map((el: any) => {
           const elLat = el.lat ?? el.center?.lat;
           const elLng = el.lon ?? el.center?.lon;
           const dist = haversine(lat, lng, elLat, elLng);
-          return {
-            name: el.tags?.name || el.tags?.['name:id'] || el.tags?.brand,
-            dist,
-            distLabel: formatDist(dist),
-            timeLabel: formatTime(dist),
-          };
+          return { name: el.tags?.name || el.tags?.brand, dist, distLabel: formatDist(dist), timeLabel: formatTime(dist) };
         })
         .sort((a: any, b: any) => a.dist - b.dist)
-        .slice(0, 4); // top 4 per category
-
+        .slice(0, 3);
       if (places.length > 0) {
-        const formatted = places.map((p: any) => `  - ${p.name} (${p.distLabel}, ±${p.timeLabel})`).join('\n');
-        results.push(`${category.charAt(0).toUpperCase() + category.slice(1)}:\n${formatted}`);
+        results.push(`${category.charAt(0).toUpperCase() + category.slice(1)}: ${places.map((p: any) => `${p.name} (${p.distLabel})`).join(', ')}`);
       }
-    } catch {
-      // skip on timeout
-    }
+    } catch {}
   }
-
-  return results.length > 0 ? results.join('\n\n') : 'Data fasilitas sekitar tidak tersedia.';
+  return results.join('\n');
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { messages, pageContext } = await req.json();
-
-    if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
-    }
-
     const supabase = await createClient();
     const { data: properties } = await supabase.from('properties').select('*');
     const { data: leads } = await supabase.from('leads').select('*');
     const { data: deals } = await supabase.from('deals').select('*');
 
-    // Determine AI mode based on page context
-    const isPublicPage = pageContext?.page === 'public' || pageContext?.page === 'properti';
     const isDashboard = pageContext?.page === 'dashboard';
-
-    // Fetch nearby places if on property detail page with coordinates
     let nearbyContext = '';
     if (pageContext?.lat && pageContext?.lng) {
       nearbyContext = await fetchNearbyForAI(pageContext.lat, pageContext.lng);
     }
 
-    // Format property data compactly
     const formatProperties = (props: any[]) => props.map(p =>
-      `- "${p.title}" | ${p.location} | Rp ${Number(p.price).toLocaleString('id-ID')} | ${p.type} | ${p.bedrooms} KT, ${p.bathrooms} KM | LT ${p.land_area}m² | LB ${p.building_area}m² | Status: ${p.status}`
+      `- ${p.title} | ${p.location} | Rp ${Number(p.price).toLocaleString('id-ID')} | ${p.type}`
     ).join('\n');
 
     let systemPrompt = '';
 
     if (isDashboard) {
-      // ===== DASHBOARD MODE: Business Intelligence =====
-      systemPrompt = `
-Kamu adalah NusaEstate AI, asisten bisnis properti cerdas dan profesional.
-Kamu memiliki akses REAL-TIME ke seluruh database bisnis properti user.
-
-DATA PROPERTI (${properties?.length || 0} listing):
-${properties?.length ? formatProperties(properties) : 'Belum ada listing.'}
-
-DATA LEADS (${leads?.length || 0} prospek):
-${JSON.stringify(leads || [], null, 2)}
-
-DATA DEALS (${deals?.length || 0} transaksi):
-${JSON.stringify(deals || [], null, 2)}
-
-KEPRIBADIAN & CARA KERJA:
-- Kamu adalah asisten bisnis yang tajam, data-driven, dan proaktif
-- Selalu gunakan angka nyata dari database, bukan estimasi
-- Berikan insight yang actionable, bukan sekedar data mentah
-- Format jawaban dengan rapi: gunakan bold, list, atau tabel markdown
-- Bahasa Indonesia yang profesional tapi tidak kaku
-- Jika data kosong, sarankan langkah konkrit yang bisa diambil user
-
-KEMAMPUAN UTAMA:
-- Analisis performa listing (berapa aktif, total nilai portofolio, dll)
-- Identifikasi leads prioritas berdasarkan status dan tanggal masuk
-- Ringkasan pipeline deals per tahapan
-- Buat caption media sosial yang menjual untuk listing tertentu
-- Draft pesan WhatsApp follow-up yang persuasif untuk leads
-- Rekomendasikan strategi berdasarkan data yang ada
-
-LARANGAN:
-- JANGAN tampilkan data teknis database (id, uuid, dll) ke user
-- JANGAN jawab dengan format bertele-tele yang tidak perlu
-- JANGAN tanya balik hal-hal yang sudah ada di database
-`.trim();
-
+      systemPrompt = `Kamu NusaEstate AI. Asisten bisnis proaktif. Gunakan data:
+PROPERTI: ${formatProperties(properties || [])}
+LEADS: ${leads?.length || 0} orang.
+DEALS: ${deals?.length || 0} transaksi.
+Jawab singkat, padat, profesional. Berikan insight langsung.`.trim();
     } else {
-      // ===== PUBLIC / PROPERTY DETAIL MODE: Sales Agent =====
-      const isPropertyPage = pageContext?.page === 'properti';
-      const activeProperty = isPropertyPage ? pageContext?.property : null;
+      const prop = pageContext?.property;
+      systemPrompt = `Kamu NusaEstate AI, agen properti persuasif dan singkat.
+PROPERTI: ${prop ? `${prop.title}, ${prop.location}, Rp ${prop.price}` : 'Lihat katalog.'}
+FASILITAS: ${nearbyContext || 'Strategis.'}
 
-      systemPrompt = `
-Kamu adalah NusaEstate AI, agen properti digital yang sangat berpengalaman, persuasif, dan helpful.
-Kamu berbicara langsung dengan calon pembeli yang sedang menjelajahi NusaEstate.
-
-USER_LOCATION: ${pageContext?.page === 'public' ? 'Beranda / Halaman Utama' : 'Halaman Detail Properti'}
-
-${activeProperty ? `
-PROPERTI YANG SEDANG DILIHAT USER:
-- Nama: ${activeProperty.title || activeProperty.name}
-- Lokasi: ${activeProperty.location}
-- Harga: Rp ${typeof activeProperty.price === 'number' ? Number(activeProperty.price).toLocaleString('id-ID') : activeProperty.price}
-- Tipe: ${activeProperty.type || activeProperty.badge}
-- Kamar Tidur: ${activeProperty.bedrooms || activeProperty.specs?.beds}
-- Kamar Mandi: ${activeProperty.bathrooms || activeProperty.specs?.baths}
-- Luas Tanah: ${activeProperty.land_area || activeProperty.specs?.size} m²
-- Luas Bangunan: ${activeProperty.building_area} m²
-` : `
-LISTING PROPERTI TERSEDIA (${properties?.length || 0} unit):
-${properties?.length ? formatProperties(properties) : 'Belum ada listing yang tersedia.'}
-`}
-
-${nearbyContext ? `
-FASILITAS TERDEKAT (Data real dari OpenStreetMap):
-${nearbyContext}
-` : ''}
-
-KEPRIBADIAN:
-- Kamu adalah agen properti terbaik: ramah, antusias, dan sangat tahu seluk-beluk properti ini
-- Bicaralah seperti agen properti profesional yang ingin membantu pembeli menemukan rumah impian mereka
-- Highlight keunggulan properti secara natural dan meyakinkan
-- Gunakan bahasa Indonesia yang hangat, tidak terlalu formal, tapi tetap profesional
-- JANGAN pernah terkesan seperti robot yang hanya membaca data
-
-KEMAMPUAN UTAMA:
-1. JUAL properti: ceritakan keunggulan lokasi, spesifikasi, dan nilai investasinya
-2. SIMULASI KPR: hitung estimasi cicilan berdasarkan harga properti (asumsi DP 20%, bunga 3.99-4.5%/tahun, tenor 15-20 tahun)
-3. FASILITAS SEKITAR: gunakan data fasilitas terdekat untuk meyakinkan calon pembeli
-4. KEUNGGULAN INVESTASI: jelaskan mengapa properti ini adalah pilihan cerdas (lokasi, harga/m², potensi kenaikan)
-5. PERBANDINGAN: bantu calon pembeli membandingkan dengan opsi lain yang tersedia
-
-CARA JAWAB SIMULASI KPR (jika ditanya):
-- Ambil Harga Properti. Hitung Pokok Pinjaman = Harga - DP 20%.
-- **INSTRUKSI KRITIKAL: DILARANG MENGHITUNG PAKAI RUMUS SENDIRI.**
-- **WAJIB GUNAKAN TABEL PENGALI INI (Bunga 3.99% - Sesuai Sistem):**
-  *   10 Tahun: Pokok Pinjaman x 0.010119
-  *   15 Tahun: Pokok Pinjaman x 0.007392
-  *   20 Tahun: Pokok Pinjaman x 0.006053
-- **CONTOH FIX:** Jika pokok 1.2 Miliar, maka 15 thn = 1.200.000.000 x 0.007392 = **8.870.400**.
-- Tampilkan jawaban dengan format **PROFESIONAL & RAPI** seperti ini:
-  
-  ### 📊 Simulasi Cicilan KPR (Suku Bunga 3.99%)
-  Berikut adalah rincian estimasi cicilan untuk properti ini:
-  
-  *   **Harga Properti**: Rp [Harga]
-  *   **Uang Muka (DP 20%)**: Rp [DP]
-  *   **Pokok Pinjaman**: Rp [Pokok]
-  
-  ---
-  
-  #### **Estimasi Cicilan Per Bulan:**
-  | Tenor | Cicilan per Bulan |
-  | :--- | :--- |
-  | 10 Tahun | **Rp [Hasil Pokok x 0.010119]** |
-  | 15 Tahun | **Rp [Hasil Pokok x 0.007392]** |
-  | 20 Tahun | **Rp [Hasil Pokok x 0.006053]** |
-  
-  ---
-  👉 *Catatan: Angka di atas adalah estimasi akurat berdasarkan bunga promo 3.99%. Untuk hasil presisi sesuai bank pilihan Anda, silakan gunakan fitur **Simulasi Cicilan KPR** di halaman ini.*
-
-LARANGAN KERAS:
-- JANGAN sarankan user untuk mengecek dokumen sendiri atau negosiasi sendiri (kamu yang bantu)
-- JANGAN jawab dengan kalimat "Saya memiliki akses ke database..." — itu tidak profesional
-- JANGAN tanya balik hal yang tidak perlu
-- JANGAN berikan disclaimer panjang lebar
-- JANGAN tampilkan data teknis (id, uuid, dll)
-`.trim();
+ATURAN PENTING:
+1. JANGAN basa-basi. JANGAN jelaskan langkah-langkah pembelian (DP, KPR, dll) secara panjang lebar.
+2. Jika user ingin beli, tertarik, atau mau lanjut, TANYA KONFIRMASI singkat lalu WAJIB sertakan tag ACTION_INQUIRY.
+3. Contoh: "Baik, mari kita proses. Apakah Anda ingin saya hubungkan dengan agen properti untuk langkah selanjutnya? ACTION_INQUIRY"
+4. JANGAN ulangi spesifikasi rumah jika user sudah mau beli.
+5. Gunakan tag ACTION_INQUIRY hanya di akhir jawaban saat user siap diproses.`.trim();
     }
 
     const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
       model: 'llama-3.3-70b-versatile',
-      temperature: 0.6, // Lower temperature for more stable math
-      max_tokens: 1500,
+      temperature: 0.5,
+      max_tokens: 1000,
     });
 
-    return NextResponse.json({
-      content: chatCompletion.choices[0].message.content,
-    });
-
+    return NextResponse.json({ content: chatCompletion.choices[0].message.content });
   } catch (error: any) {
-    console.error('AI Chat Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

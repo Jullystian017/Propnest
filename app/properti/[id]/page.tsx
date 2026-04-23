@@ -925,6 +925,11 @@ export default function DetailPropertiPage({
           lat: propLat,
           lng: propLng,
         }}
+        onAction={(action) => {
+          if (action === 'TRIGGER_INQUIRY') {
+            setIsInquiryOpen(true);
+          }
+        }}
       />
 
       {/* Photo Explorer Modal */}

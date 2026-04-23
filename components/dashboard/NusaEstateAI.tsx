@@ -81,9 +81,10 @@ function getWelcomeMessage(context: AIPageContext['page']): string {
 
 interface NusaEstateAIProps {
   pageContext?: AIPageContext;
+  onAction?: (action: string, data?: any) => void;
 }
 
-export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
+export default function NusaEstateAI({ pageContext, onAction }: NusaEstateAIProps) {
   const pathname = usePathname();
   const derivedContext = pageContext?.page || getContext(pathname || '');
   const chips = CHIPS_BY_CONTEXT[derivedContext] || CHIPS_BY_CONTEXT.public;
@@ -154,7 +155,20 @@ export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
+      let content = data.content;
+      
+      // Parse for actions like ACTION_INQUIRY
+      if (content.includes('ACTION_INQUIRY')) {
+        content = content.replace('ACTION_INQUIRY', '').trim();
+        if (onAction) {
+          onAction('TRIGGER_INQUIRY', {
+            propertyId: (pageContext?.property as any)?.id,
+            propertyName: pageContext?.property?.title || pageContext?.property?.name
+          });
+        }
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant', content }]);
     } catch (error) {
       console.error('Chat Error:', error);
       setMessages(prev => [...prev, {
