@@ -4,18 +4,19 @@
   --font-sans: "Inter", sans-serif;
   --font-display: "Outfit", sans-serif;
 
-  /* Clean & Elegant Refinements */
-  --color-brand-blue: #1d4ed8;
-  --color-brand-blue-hover: #1e40af;
-  --color-brand-blue-light: #2563eb;
-  --color-brand-blue-deep: #1e3a8a;
+  /* Clean & Elegant Refinements - NusaEstate Brand Colors */
+  --color-brand-blue: #2F6BFF;
+  --color-brand-blue-hover: #1E54E6;
+  --color-brand-blue-light: #4DA3FF;
+  --color-brand-blue-deep: #1E54E6;
+  --color-brand-blue-soft: #7EC8FF;
 
   /* Neutral / Accents - Lightened */
   --color-surface-gray: #fcfcfd;
   --color-surface-dim: #f3f4f6;
   --color-text-dark: #111827;
   /* Deep Black/Blue */
-  --color-text-gray: #6b7280;
+  --color-text-gray: #B0B7C3;
   /* Neutral gray */
   --color-border-line: #e5e7eb;
 

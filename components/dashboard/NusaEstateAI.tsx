@@ -160,20 +160,32 @@ export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
 
   return (
     <>
-      {/* Floating Button */}
-      <button
-        suppressHydrationWarning
-        onClick={() => {
-          setIsOpen(true);
-          setIsMinimized(false);
-        }}
-        className={`fixed bottom-6 right-6 w-14 h-14 bg-brand-blue text-white-pure rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 z-50 group ${
-          isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'
+      {/* Integrated Floating Action Button */}
+      <div 
+        className={`fixed bottom-6 right-6 flex items-center z-50 transition-all duration-500 ${
+          isOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100 hover:scale-105'
         }`}
       >
-        <Sparkles className="group-hover:rotate-12 transition-transform" size={24} />
-        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white-pure rounded-full animate-pulse"></span>
-      </button>
+        <button 
+          onClick={() => {
+            setIsOpen(true);
+            setIsMinimized(false);
+          }}
+          className="hidden md:flex items-center bg-gradient-to-l from-brand-blue to-brand-blue-deep pl-7 pr-12 py-3.5 rounded-l-full -mr-10 shadow-2xl border-y border-l border-white/20 text-[11px] font-bold text-white-pure whitespace-nowrap animate-fade-in-right tracking-wide hover:pr-14 transition-all cursor-pointer"
+        >
+          Tanya NusaEstate AI
+        </button>
+        <button
+          suppressHydrationWarning
+          onClick={() => {
+            setIsOpen(true);
+            setIsMinimized(false);
+          }}
+          className="w-16 h-16 bg-brand-blue text-white-pure rounded-full shadow-[0_10px_40px_rgba(29,78,216,0.3)] flex items-center justify-center transition-all duration-500 group shrink-0 relative border-2 border-white-pure"
+        >
+          <Sparkles className="group-hover:rotate-12 group-hover:scale-110 transition-all duration-500" size={28} />
+        </button>
+      </div>
 
       {/* Chat Window */}
       <div
@@ -304,6 +316,15 @@ export default function NusaEstateAI({ pageContext }: NusaEstateAIProps) {
           </>
         )}
       </div>
+      <style jsx global>{`
+        @keyframes fade-in-right {
+          from { opacity: 0; transform: translateX(10px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-fade-in-right {
+          animation: fade-in-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </>
   );
 }
