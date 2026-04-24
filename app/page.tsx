@@ -8,7 +8,7 @@ import {
   MapPin, Home, DollarSign, Search,
   BrainCircuit, Calculator, Map, FileCheck, Zap, TrendingUp,
   Heart, BedDouble, Bath, Scaling, ArrowUpRight, Bookmark,
-  ChevronDown
+  ChevronDown, Shield, CheckCircle, Building, Store, ArrowRight
 } from 'lucide-react';
 import SearchBar from '@/components/home/SearchBar';
 
@@ -55,7 +55,109 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── KEUNGGULAN NUSAESTATE ── */}
+      <section className="py-24 bg-white-pure">
+        <div className="container-standard">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3">Mengapa NusaEstate</p>
+            <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Standar Baru dalam Pencarian Properti</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
+              <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <BrainCircuit size={24} />
+              </div>
+              <h3 className="text-xl font-medium text-text-dark mb-3">AI Property Matcher</h3>
+              <p className="text-text-gray text-sm leading-relaxed">Algoritma AI kami menganalisis preferensi Anda untuk menemukan properti yang paling cocok, menghemat waktu pencarian hingga 70%.</p>
+            </div>
+            
+            <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
+              <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Shield size={24} />
+              </div>
+              <h3 className="text-xl font-medium text-text-dark mb-3">Transaksi Aman</h3>
+              <p className="text-text-gray text-sm leading-relaxed">Bekerjasama dengan notaris dan bank terpercaya untuk memastikan setiap transaksi berjalan aman, transparan, dan legal.</p>
+            </div>
+            
+            <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
+              <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <CheckCircle size={24} />
+              </div>
+              <h3 className="text-xl font-medium text-text-dark mb-3">Listing Terverifikasi</h3>
+              <p className="text-text-gray text-sm leading-relaxed">Semua properti melewati proses verifikasi ketat. Apa yang Anda lihat di foto adalah apa yang Anda dapatkan di lokasi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* ── KATEGORI PROPERTI ── */}
+      <section className="py-24 container-standard">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div>
+            <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-2">Eksplorasi</p>
+            <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Kategori Properti</h2>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
+            <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800')" }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between">
+              <div>
+                <Home className="text-white-pure/80 mb-2" size={24} />
+                <h3 className="text-white-pure font-medium text-lg">Rumah Tapak</h3>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white-pure group-hover:bg-brand-blue transition-colors">
+                <ArrowRight size={16} />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
+            <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800')" }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between">
+              <div>
+                <Building className="text-white-pure/80 mb-2" size={24} />
+                <h3 className="text-white-pure font-medium text-lg">Apartemen</h3>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white-pure group-hover:bg-brand-blue transition-colors">
+                <ArrowRight size={16} />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
+            <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582063289852-62e3ba2747f8?auto=format&fit=crop&q=80&w=800')" }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between">
+              <div>
+                <Store className="text-white-pure/80 mb-2" size={24} />
+                <h3 className="text-white-pure font-medium text-lg">Ruko / Komersial</h3>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white-pure group-hover:bg-brand-blue transition-colors">
+                <ArrowRight size={16} />
+              </div>
+            </div>
+          </Link>
+          
+          <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
+            <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800')" }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between">
+              <div>
+                <Map className="text-white-pure/80 mb-2" size={24} />
+                <h3 className="text-white-pure font-medium text-lg">Tanah</h3>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white-pure group-hover:bg-brand-blue transition-colors">
+                <ArrowRight size={16} />
+              </div>
+            </div>
+          </Link>
+        </div>
+      </section>
 
       {/* ── REKOMENDASI PROPERTI ── */}
       <section className="py-24 container-standard border-t border-border-line/50">
@@ -128,9 +230,73 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── CARA KERJA ── */}
+      <section className="py-24 bg-white-pure border-t border-border-line/40">
+        <div className="container-standard">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3">Proses Mudah</p>
+            <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Cara Kerja NusaEstate</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-border-line/60 z-0"></div>
+            
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">1</span>
+                <Search size={32} />
+              </div>
+              <h3 className="text-lg font-medium text-text-dark mb-2">Cari Properti</h3>
+              <p className="text-text-gray text-sm">Gunakan AI atau filter pintar kami untuk menemukan properti yang sesuai dengan kebutuhan dan budget Anda.</p>
+            </div>
+            
+            <div className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0">
+              <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">2</span>
+                <MapPin size={32} />
+              </div>
+              <h3 className="text-lg font-medium text-text-dark mb-2">Kunjungi Lokasi</h3>
+              <p className="text-text-gray text-sm">Jadwalkan kunjungan properti secara online. Agen kami akan menemani Anda melihat langsung properti idaman.</p>
+            </div>
+            
+            <div className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0">
+              <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">3</span>
+                <FileCheck size={32} />
+              </div>
+              <h3 className="text-lg font-medium text-text-dark mb-2">Transaksi Aman</h3>
+              <p className="text-text-gray text-sm">Selesaikan pembayaran atau KPR dengan panduan tim legal dan finansial kami yang berpengalaman.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── BOTTOM CTA ── */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-brand-blue"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[800px] h-[800px] bg-white-pure/10 rounded-full blur-[100px]"></div>
+        
+        <div className="container-standard relative z-10 text-center">
+          <h2 className="text-3xl md:text-5xl font-display font-medium text-white-pure mb-6 max-w-2xl mx-auto leading-tight">
+            Siap Menemukan Rumah Impian Anda Hari Ini?
+          </h2>
+          <p className="text-white-pure/80 text-base md:text-lg mb-10 max-w-xl mx-auto">
+            Bergabunglah dengan ribuan keluarga lain yang telah menemukan hunian terbaik mereka melalui NusaEstate.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/cari" className="px-8 py-4 bg-white-pure text-brand-blue font-medium rounded-lg hover:bg-gray-50 transition-colors w-full sm:w-auto shadow-premium">
+              Mulai Pencarian
+            </Link>
+            <Link href="/tentang" className="px-8 py-4 bg-transparent border border-white-pure/30 text-white-pure font-medium rounded-lg hover:bg-white-pure/10 transition-colors w-full sm:w-auto">
+              Konsultasi Gratis
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>
   );
 }
-
