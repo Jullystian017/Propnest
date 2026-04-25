@@ -19,7 +19,7 @@ export default function KPRCalculatorPage() {
   const cicilan = (plafon * bungaPerBulan) / (1 - Math.pow(1 + bungaPerBulan, -totalBulan));
 
   return (
-    <div className="bg-surface-gray min-h-screen pt-24 font-sans">
+    <div className="bg-surface-gray min-h-screen pt-[100px] font-sans">
       <Navbar />
 
       <main className="container-standard py-10">

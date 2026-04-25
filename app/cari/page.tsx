@@ -50,7 +50,7 @@ function CariContent() {
   const closePopovers = () => setActivePopover(null);
 
   return (
-    <div className="bg-white-pure min-h-screen flex flex-col font-sans pt-20" suppressHydrationWarning>
+    <div className="bg-white-pure min-h-screen flex flex-col font-sans pt-[100px]" suppressHydrationWarning>
       <Navbar />
 
       {/* ────── HEADER SEARCH BAR (STICKY TOP-0) ────── */}

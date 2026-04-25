@@ -499,7 +499,7 @@ export default function DetailPropertiPage({
   ];
 
   return (
-    <div className="bg-white-pure min-h-screen pt-24 font-sans selection:bg-brand-blue/10 relative">
+    <div className="bg-white-pure min-h-screen pt-[100px] font-sans selection:bg-brand-blue/10 relative">
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/5 rounded-full blur-[120px] -mr-96 -mt-96"></div>
         <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-brand-blue/3 rounded-full blur-[100px] -ml-48"></div>
