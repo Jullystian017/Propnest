@@ -4,6 +4,8 @@ import { useState, useEffect, useTransition } from 'react';
 import { ContentTemplate, ContentTone, ContentPlatform } from '@/lib/types';
 import { saveToQueue, approvePost, deletePost, getDeveloperProperties, getContentQueue, publishNow } from '@/lib/content/actions';
 import { generatePropertyCaption, generateDailyMarketingTip } from '@/lib/groq';
+import { createClient } from '@/lib/supabase/client';
+import { uploadPropertyImage } from '@/hooks/useProperties';
 import { 
   Sparkles, 
   Send, 
@@ -23,7 +25,8 @@ import {
   CalendarDays,
   Smartphone,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  UploadCloud
 } from 'lucide-react';
 
 // --- Custom Brand Icons ---
@@ -61,6 +64,8 @@ export default function ContentStudioPage() {
   const [isApproving, startApproveTransition] = useTransition();
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [aiTip, setAiTip] = useState<string>('Memuat saran AI...');
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -87,6 +92,30 @@ export default function ContentStudioPage() {
   }, []);
 
   const selectedProperty = properties.find(p => p.id === selectedPropertyId);
+
+  useEffect(() => {
+    setSelectedMedia(null);
+  }, [selectedPropertyId]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingMedia(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const publicUrl = await uploadPropertyImage(file, user.id);
+      setSelectedMedia(publicUrl);
+      showToast('📸 Media berhasil diunggah!');
+    } catch (err: any) {
+      showToast(err.message || 'Gagal mengunggah media');
+    } finally {
+      setIsUploadingMedia(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!selectedProperty) {
@@ -144,6 +173,7 @@ export default function ContentStudioPage() {
           tone,
           template,
           scheduledAt: null,
+          mediaUrl: selectedMedia || selectedProperty?.images?.[0] || null,
         });
         // Optimistic update
         setQueue(prev => [{
@@ -154,6 +184,7 @@ export default function ContentStudioPage() {
           caption,
           tone,
           template,
+          media_url: selectedMedia || selectedProperty?.images?.[0] || null,
           status: 'waiting',
           created_at: new Date().toISOString(),
         }, ...prev]);
@@ -294,6 +325,59 @@ export default function ContentStudioPage() {
                 </div>
               </div>
 
+              {/* Select Media */}
+              {selectedProperty && (
+                <div className="space-y-3 pt-3 border-t border-border-line/10">
+                  <label className="text-xs font-bold text-text-gray uppercase tracking-widest pl-1">Media Postingan</label>
+                  
+                  {/* Existing Images Thumbnails */}
+                  {selectedProperty.images && selectedProperty.images.length > 0 && (
+                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                      {selectedProperty.images.map((img: string, idx: number) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedMedia(img)}
+                          className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
+                            (selectedMedia === img || (!selectedMedia && idx === 0))
+                              ? 'border-brand-blue ring-2 ring-brand-blue/20'
+                              : 'border-transparent hover:border-brand-blue/50'
+                          }`}
+                        >
+                          <img src={img} className="w-full h-full object-cover" alt={`img-${idx}`} />
+                          {(selectedMedia === img || (!selectedMedia && idx === 0)) && (
+                            <div className="absolute inset-0 bg-brand-blue/20 flex items-center justify-center">
+                              <CheckCircle2 size={16} className="text-white drop-shadow-md" />
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Upload Custom Media */}
+                  <div>
+                    <input 
+                      type="file" 
+                      id="upload-media" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                    />
+                    <label 
+                      htmlFor="upload-media"
+                      className={`flex items-center justify-center gap-2 w-full py-3 border border-dashed border-border-line/30 rounded-xl text-sm font-medium text-text-gray hover:bg-surface-gray hover:text-brand-blue transition-colors cursor-pointer ${isUploadingMedia ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                      {isUploadingMedia ? (
+                        <div className="w-4 h-4 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin"></div>
+                      ) : (
+                        <UploadCloud size={16} />
+                      )}
+                      {isUploadingMedia ? 'Mengunggah...' : 'Upload Media Kustom'}
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {/* Tone & Template */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
@@ -404,8 +488,8 @@ export default function ContentStudioPage() {
                     </div>
                     {/* Image */}
                     <div className="aspect-square bg-surface-gray flex items-center justify-center">
-                      {selectedProperty?.images?.[0] ? (
-                        <img src={selectedProperty.images[0]} className="w-full h-full object-cover" alt="prev" />
+                      {(selectedMedia || selectedProperty?.images?.[0]) ? (
+                        <img src={selectedMedia || selectedProperty?.images?.[0]} className="w-full h-full object-cover" alt="prev" />
                       ) : (
                         <Sparkles size={40} className="text-brand-blue/20" />
                       )}
@@ -481,6 +565,7 @@ export default function ContentStudioPage() {
                             caption,
                             tone,
                             template,
+                            mediaUrl: selectedMedia || selectedProperty?.images?.[0] || null,
                           });
                           showToast('🚀 Konten Berhasil Diposting!');
                           // Refresh queue
@@ -538,7 +623,7 @@ export default function ContentStudioPage() {
                 </td></tr>
               ) : queue.map((item) => {
                 const propName = item.properties?.title || item.property?.name || 'Properti';
-                const propImg = item.properties?.images?.[0] || item.property?.image || null;
+                const propImg = item.media_url || item.properties?.images?.[0] || item.property?.image || null;
                 const scheduledTime = item.scheduled_at
                   ? new Date(item.scheduled_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
                   : item.suggestedTime?.replace('AI Suggestion: ', '') || 'Belum dijadwalkan';

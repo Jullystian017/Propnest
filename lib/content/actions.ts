@@ -41,6 +41,7 @@ export async function saveToQueue(params: {
   tone: ContentTone;
   template: ContentTemplate;
   scheduledAt?: string | null;
+  mediaUrl?: string | null;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -54,6 +55,7 @@ export async function saveToQueue(params: {
     tone: params.tone,
     template: params.template,
     scheduled_at: params.scheduledAt || null,
+    media_url: params.mediaUrl || null,
     status: 'waiting',
   });
 
@@ -142,6 +144,7 @@ export async function publishNow(params: {
   caption: string;
   tone: ContentTone;
   template: ContentTemplate;
+  mediaUrl?: string | null;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -154,6 +157,7 @@ export async function publishNow(params: {
     caption: params.caption,
     tone: params.tone,
     template: params.template,
+    media_url: params.mediaUrl || null,
     status: 'published',
     published_at: new Date().toISOString(),
   });
