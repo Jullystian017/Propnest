@@ -108,6 +108,23 @@ export default function ContentStudioPage() {
       if (!user) throw new Error('Not authenticated');
 
       const publicUrl = await uploadPropertyImage(file, user.id);
+      
+      // Update property images in database so it persists
+      if (selectedProperty) {
+        const updatedImages = [...(selectedProperty.images || []), publicUrl];
+        const { error: updateError } = await supabase
+          .from('properties')
+          .update({ images: updatedImages })
+          .eq('id', selectedProperty.id);
+          
+        if (!updateError) {
+           // Optimistically update local state
+           setProperties(prev => prev.map(p => 
+             p.id === selectedProperty.id ? { ...p, images: updatedImages } : p
+           ));
+        }
+      }
+
       setSelectedMedia(publicUrl);
       showToast('📸 Media berhasil diunggah!');
     } catch (err: any) {
@@ -331,28 +348,32 @@ export default function ContentStudioPage() {
                   <label className="text-xs font-bold text-text-gray uppercase tracking-widest pl-1">Media Postingan</label>
                   
                   {/* Existing Images Thumbnails */}
-                  {selectedProperty.images && selectedProperty.images.length > 0 && (
-                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                      {selectedProperty.images.map((img: string, idx: number) => (
+                  <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    {(() => {
+                      const allMedia = [...(selectedProperty.images || [])];
+                      if (selectedMedia && !allMedia.includes(selectedMedia)) {
+                        allMedia.unshift(selectedMedia);
+                      }
+                      return allMedia.map((img: string, idx: number) => (
                         <button
                           key={idx}
                           onClick={() => setSelectedMedia(img)}
                           className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
-                            (selectedMedia === img || (!selectedMedia && idx === 0))
+                            (selectedMedia === img || (!selectedMedia && img === selectedProperty.images?.[0]))
                               ? 'border-brand-blue ring-2 ring-brand-blue/20'
                               : 'border-transparent hover:border-brand-blue/50'
                           }`}
                         >
                           <img src={img} className="w-full h-full object-cover" alt={`img-${idx}`} />
-                          {(selectedMedia === img || (!selectedMedia && idx === 0)) && (
+                          {(selectedMedia === img || (!selectedMedia && img === selectedProperty.images?.[0])) && (
                             <div className="absolute inset-0 bg-brand-blue/20 flex items-center justify-center">
                               <CheckCircle2 size={16} className="text-white drop-shadow-md" />
                             </div>
                           )}
                         </button>
-                      ))}
-                    </div>
-                  )}
+                      ));
+                    })()}
+                  </div>
 
                   {/* Upload Custom Media */}
                   <div>
