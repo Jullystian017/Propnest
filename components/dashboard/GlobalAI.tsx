@@ -3,12 +3,12 @@
 import { usePathname } from 'next/navigation';
 import NusaEstateAI from '@/components/dashboard/NusaEstateAI';
 
-// Halaman yang punya NusaEstateAI sendiri dengan context khusus
-const PAGES_WITH_OWN_AI = ['/properti/'];
+// Halaman yang tidak menampilkan AI global (karena punya AI sendiri atau untuk estetika)
+const HIDDEN_PAGES = ['/properti/', '/login', '/register', '/onboarding'];
 
 export default function GlobalAI() {
   const pathname = usePathname();
-  const hasOwnAI = PAGES_WITH_OWN_AI.some(p => pathname?.startsWith(p));
-  if (hasOwnAI) return null;
+  const isHidden = HIDDEN_PAGES.some(p => pathname?.startsWith(p));
+  if (isHidden) return null;
   return <NusaEstateAI />;
 }
