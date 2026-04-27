@@ -119,8 +119,8 @@ export default function DashboardLayout({
                 title="Expand Sidebar"
             >
                 {/* Logo Icon - Hidden on Hover */}
-                <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/10 group-hover:opacity-0 group-hover:scale-75 transition-all duration-200 shrink-0">
-                  <span className="text-white-pure font-medium text-sm">P</span>
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center group-hover:opacity-0 group-hover:scale-75 transition-all duration-200 shrink-0">
+                  <img src="/images/nusaestate.png" alt="NusaEstate" className="w-11 h-11 object-contain" />
                 </div>
                 
                 {/* PanelRightOpen Icon - Visible on Hover */}
@@ -130,11 +130,11 @@ export default function DashboardLayout({
             </button>
           ) : (
             <>
-              <Link href="/" className="flex items-center gap-2.5 group overflow-hidden">
-                <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/10 group-hover:scale-105 transition-all shrink-0">
-                  <span className="text-white-pure font-medium text-sm">P</span>
+              <Link href="/" className="flex items-center gap-0 group overflow-hidden">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all shrink-0">
+                  <img src="/images/nusaestate.png" alt="NusaEstate" className="w-12 h-12 object-contain" />
                 </div>
-                <span className="font-display font-medium text-base text-text-dark tracking-tight animate-in fade-in slide-in-from-left-2 duration-300">NusaEstate</span>
+                <span className="font-display font-medium text-base text-text-dark tracking-tight animate-in fade-in slide-in-from-left-2 duration-300 ml-[-6px]">NusaEstate</span>
               </Link>
               <button 
                 suppressHydrationWarning
@@ -208,8 +208,8 @@ export default function DashboardLayout({
             >
               <Menu size={24} />
             </button>
-            <div className="w-8 h-8 bg-brand-blue rounded-xl flex items-center justify-center">
-              <span className="text-white-pure font-medium text-sm">P</span>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+              <img src="/images/nusaestate.png" alt="NusaEstate" className="w-10 h-10 object-contain" />
             </div>
           </div>
 
