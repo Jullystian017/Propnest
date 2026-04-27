@@ -536,15 +536,15 @@ export default function DetailPropertiPage({
 
           <div className="flex-col gap-4 h-full hidden md:flex">
             <div className="relative rounded-[2rem] overflow-hidden group h-[60%] shadow-lg border border-white-pure/20">
-              <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[0] || property.image}')` }}></div>
+              <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[1] || property.image}')` }}></div>
             </div>
 
             <div className="flex gap-4 h-[40%]">
               <div className="relative rounded-[1.5rem] overflow-hidden group flex-1 shadow-lg border border-white-pure/20">
-                <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[1] || property.image}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[2] || property.image}')` }}></div>
               </div>
               <div className="relative rounded-[1.5rem] overflow-hidden group flex-1 shadow-lg border border-white-pure/20">
-                <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[2] || property.image}')` }}></div>
+                <div className="absolute inset-0 bg-cover bg-center hover:scale-110 transition-transform duration-[5s] ease-out" style={{ backgroundImage: `url('${property.gallery?.[3] || property.image}')` }}></div>
                 <div 
                   className="absolute inset-0 bg-black-pure/40 backdrop-blur-[1px] flex items-center justify-center cursor-pointer hover:bg-black-pure/60 transition-all duration-500"
                   onClick={() => setIsGalleryOpen(true)}
@@ -982,10 +982,10 @@ export default function DetailPropertiPage({
                   <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-2 border-brand-blue ring-4 ring-brand-blue/10 mb-3">
                     <img src={property.image} alt="Semua Foto" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute top-2 right-2 bg-white-pure/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded-lg text-brand-blue shadow-sm">
-                      {property.gallery ? property.gallery.length + 1 : 1}
+                      {property.gallery?.length || 0}
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-brand-blue">Fasilitas Lainnya</span>
+                  <span className="text-sm font-semibold text-brand-blue">Semua Foto</span>
                 </button>
               </div>
             </aside>
@@ -993,9 +993,9 @@ export default function DetailPropertiPage({
             {/* Photo Grid */}
             <main className="flex-1 overflow-y-auto p-4 lg:p-8 hide-scrollbar bg-white-pure">
               <div className="max-w-5xl mx-auto">
-                <h3 className="text-lg font-bold text-text-dark mb-6 lg:hidden">Fasilitas Lainnya</h3>
+                <h3 className="text-lg font-bold text-text-dark mb-6 lg:hidden">Semua Foto</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
-                  {[property.image, ...(property.gallery || []), ...Array(6).fill('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800')].slice(0, Math.max(5, (property.gallery?.length || 0) + 1)).map((img, idx) => {
+                  {(property.gallery || []).map((img, idx) => {
                     let colSpan = 'col-span-1 md:col-span-2';
                     let aspect = 'aspect-[4/3] md:aspect-square lg:aspect-[4/3]';
                     
@@ -1039,7 +1039,7 @@ export default function DetailPropertiPage({
           </button>
           <div className="relative w-full max-w-5xl aspect-video mx-4">
             <img 
-              src={[property.image, ...(property.gallery || []), ...Array(6).fill('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800')][activeImageIndex]} 
+              src={(property.gallery || [])[activeImageIndex]} 
               alt="Gallery" 
               className="w-full h-full object-contain rounded-xl"
             />

@@ -197,8 +197,8 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    if (form.images.length + files.length > 5) {
-      setError('Maksimal 5 foto per properti.');
+    if (form.images.length + files.length > 10) {
+      setError('Maksimal 10 foto per properti.');
       return;
     }
 
@@ -227,8 +227,13 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
     e.preventDefault();
     setError(null);
 
-    if (!form.title || !form.price || !form.location) {
-      setError('Judul, harga, dan lokasi wajib diisi.');
+    if (!form.title || !form.price || !form.location || !form.description || form.images.length === 0) {
+      setError('Mohon lengkapi semua data: Judul, Harga, Lokasi, Deskripsi, dan minimal 1 Foto.');
+      return;
+    }
+
+    if (parseInt(form.bedrooms) <= 0 || parseInt(form.bathrooms) <= 0 || parseInt(form.land_area) <= 0 || parseInt(form.building_area) <= 0) {
+      setError('Spesifikasi (Kamar, Kamar Mandi, Luas) harus diisi dengan angka lebih dari 0.');
       return;
     }
 
@@ -321,7 +326,7 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
           {/* Foto */}
           <div>
             <label className="block text-[10px] font-semibold text-text-gray/50 uppercase tracking-widest mb-3">
-              Foto Properti <span className="text-text-gray/30 normal-case">(maks. 5)</span>
+              Foto Properti <span className="text-text-gray/30 normal-case">(maks. 10)</span>
             </label>
             <div className="flex flex-wrap gap-3">
               {form.images.map((url, idx) => (
@@ -336,7 +341,7 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
                   </button>
                 </div>
               ))}
-              {form.images.length < 5 && (
+              {form.images.length < 10 && (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}

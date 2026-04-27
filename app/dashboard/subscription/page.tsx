@@ -13,7 +13,8 @@ import {
   ShieldCheck,
   Building2,
   Users,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
@@ -47,10 +48,10 @@ const PLANS = [
     features: [
       'Hingga 30 Listing Properti',
       '75 AI Caption / bulan',
-      'Featured Listing (Add-on)',
-      'Full AI Platform Access',
-      'Auto Posting IG, FB, TikTok',
-      'CRM Leads Full Pipeline',
+      'Pipeline Management',
+      'Auto Posting (IG + FB)',
+      'Export PDF / Excel',
+      'Multi-User (3 user)',
       'Support WA Business'
     ],
     color: 'text-brand-blue',
@@ -70,10 +71,10 @@ const PLANS = [
       'Listing Properti Unlimited',
       'Unlimited AI Caption',
       'Instant WA Lead Alert',
-      'Auto Posting Semua Platform',
-      'CRM Leads + Analytics',
-      'Professional AI Support',
-      'Manajemen Tim (5 User)',
+      'Auto Posting (Semua Platform)',
+      'Advanced Analytics Dashboard',
+      'Laporan Otomatis Mingguan',
+      'Multi-User (10 user)',
       'Dedicated WA Support'
     ],
     color: 'text-purple-600',
@@ -276,6 +277,69 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
+      {/* Feature Comparison Table */}
+      <div className="space-y-10 py-10">
+        <div className="text-center space-y-3">
+          <h2 className="text-2xl font-display font-bold text-text-dark">Perbandingan Detail Fitur</h2>
+          <p className="text-sm text-text-gray">Bandingkan setiap fitur untuk menemukan paket yang paling tepat bagi bisnis Anda.</p>
+        </div>
+
+        <div className="bg-white-pure rounded-[2.5rem] border border-border-line/20 shadow-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-gray/30">
+                  <th className="p-8 text-sm font-bold text-text-gray uppercase tracking-widest border-b border-border-line/10 w-1/4">Fitur</th>
+                  <th className="p-8 text-sm font-bold text-text-dark border-b border-border-line/10 text-center w-1/4">Basic (Gratis)</th>
+                  <th className="p-8 text-sm font-bold text-brand-blue border-b border-border-line/10 text-center w-1/4">Pro</th>
+                  <th className="p-8 text-sm font-bold text-purple-600 border-b border-border-line/10 text-center w-1/4">Premium</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {[
+                  { name: 'Harga / bulan', basic: 'Rp 0', pro: 'Rp 299.000', premium: 'Rp 999.000' },
+                  { name: 'Jumlah Listing', basic: '5', pro: '30', premium: 'Unlimited' },
+                  { name: 'AI Caption Generator', basic: '10x / bulan', pro: '75x / bulan', premium: 'Unlimited' },
+                  { name: 'CRM List Leads', basic: true, pro: true, premium: true },
+                  { name: 'Pipeline Management', basic: false, pro: true, premium: true },
+                  { name: 'Analytics Dashboard', basic: 'Basic', pro: 'Basic', premium: 'Advanced' },
+                  { name: 'Automation (Auto Post)', basic: false, pro: '✓ (IG + FB)', premium: '✓ (All Platforms)' },
+                  { name: 'Laporan Otomatis', basic: false, pro: false, premium: true },
+                  { name: 'Instant WA Lead Alert', basic: false, pro: false, premium: true },
+                  { name: 'Export PDF / Excel', basic: false, pro: true, premium: true },
+                  { name: 'Multi-User', basic: '1 user', pro: '3 user', premium: '10 user' },
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-surface-gray/20 transition-colors group">
+                    <td className="p-6 font-semibold text-text-dark/80 border-b border-border-line/5 pl-8">{row.name}</td>
+                    <td className="p-6 text-center border-b border-border-line/5">
+                      {typeof row.basic === 'boolean' ? (
+                        row.basic ? <Check className="mx-auto text-emerald-500" size={18} /> : <X className="mx-auto text-text-gray/20" size={18} />
+                      ) : (
+                        <span className="font-medium text-text-gray">{row.basic || '-'}</span>
+                      )}
+                    </td>
+                    <td className="p-6 text-center border-b border-border-line/5">
+                      {typeof row.pro === 'boolean' ? (
+                        row.pro ? <Check className="mx-auto text-brand-blue" size={18} /> : <X className="mx-auto text-text-gray/20" size={18} />
+                      ) : (
+                        <span className="font-bold text-brand-blue">{row.pro || '-'}</span>
+                      )}
+                    </td>
+                    <td className="p-6 text-center border-b border-border-line/5 bg-purple-50/10">
+                      {typeof row.premium === 'boolean' ? (
+                        row.premium ? <Check className="mx-auto text-purple-600" size={18} /> : <X className="mx-auto text-text-gray/20" size={18} />
+                      ) : (
+                        <span className="font-bold text-purple-600">{row.premium || '-'}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       {/* Add-ons Section */}
       <div className="space-y-8">
         <div className="flex items-center gap-4">
@@ -319,22 +383,6 @@ export default function SubscriptionPage() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Trust Banner */}
-      <div className="bg-surface-gray/50 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-border-line/5">
-        <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-white-pure flex items-center justify-center text-brand-blue shadow-lg border border-border-line/5">
-            <Users size={32} />
-          </div>
-          <div>
-            <h4 className="text-lg font-bold text-text-dark">Butuh paket khusus untuk tim besar?</h4>
-            <p className="text-sm text-text-gray">Hubungi Account Manager kami untuk solusi enterprise yang dipersonalisasi.</p>
-          </div>
-        </div>
-        <button className="px-8 py-4 rounded-2xl bg-white-pure border border-border-line/10 font-bold text-sm text-text-dark hover:bg-surface-gray transition-all shadow-sm active:scale-95">
-          Konsultasi Sekarang
-        </button>
       </div>
 
     </div>
