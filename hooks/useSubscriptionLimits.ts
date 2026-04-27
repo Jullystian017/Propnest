@@ -54,7 +54,7 @@ export function useSubscriptionLimits() {
         .eq('feature_type', 'ai_caption')
         .gte('created_at', startOfMonth.toISOString());
 
-      const aiCount = aiLogs?.reduce((acc, log) => acc + log.count, 0) || 0;
+      const aiCount = aiLogs?.reduce((acc: number, log: any) => acc + log.count, 0) || 0;
 
       setUsage({
         listings: listingCount || 0,

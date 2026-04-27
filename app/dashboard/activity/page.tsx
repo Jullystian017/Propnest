@@ -71,7 +71,7 @@ export default function CombinedActivityPage() {
       ]);
 
       const combinedLog: Activity[] = [];
-      (leadsRes.data || []).forEach(l => {
+      (leadsRes.data || []).forEach((l: any) => {
         combinedLog.push({
           id: `lead-${l.id}`,
           type: 'lead',
@@ -83,7 +83,7 @@ export default function CombinedActivityPage() {
           rawDate: l.created_at
         });
       });
-      (propsRes.data || []).forEach(p => {
+      (propsRes.data || []).forEach((p: any) => {
         combinedLog.push({
           id: `prop-${p.id}`,
           type: 'property',
@@ -95,7 +95,7 @@ export default function CombinedActivityPage() {
           rawDate: p.created_at
         });
       });
-      (dealsRes.data || []).forEach(d => {
+      (dealsRes.data || []).forEach((d: any) => {
         combinedLog.push({
           id: `deal-${d.id}`,
           type: 'deal',

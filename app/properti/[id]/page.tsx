@@ -995,7 +995,7 @@ export default function DetailPropertiPage({
               <div className="max-w-5xl mx-auto">
                 <h3 className="text-lg font-bold text-text-dark mb-6 lg:hidden">Semua Foto</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
-                  {(property.gallery || []).map((img, idx) => {
+                  {(property.gallery || []).map((img: any, idx: number) => {
                     let colSpan = 'col-span-1 md:col-span-2';
                     let aspect = 'aspect-[4/3] md:aspect-square lg:aspect-[4/3]';
                     

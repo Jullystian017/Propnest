@@ -72,7 +72,7 @@ export default function DashboardPage() {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'chatbot_clicks' },
-        (payload) => {
+        (payload: any) => {
           setChatbotClicks(prev => [...prev, payload.new]);
         }
       )
@@ -123,7 +123,7 @@ export default function DashboardPage() {
       }).length;
 
       // Count REAL chatbot clicks for this day
-      const clickCount = chatbotClicks.filter(c => {
+      const clickCount = chatbotClicks.filter((c: any) => {
         const cd = new Date(c.clicked_at);
         return cd.getDate() === d.getDate() && cd.getMonth() === d.getMonth();
       }).length;
