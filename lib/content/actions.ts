@@ -167,3 +167,23 @@ export async function publishNow(params: {
   revalidatePath('/dashboard/content');
   return { success: true };
 }
+
+// ---- Log Usage (AI Caption, etc) ----
+export async function logUsage(featureType: string, count: number = 1) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Tidak terautentikasi');
+
+  const { error } = await supabase.from('usage_logs').insert({
+    user_id: user.id,
+    feature_type: featureType,
+    count: count,
+  });
+
+  if (error) {
+    console.error('Error logging usage:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}

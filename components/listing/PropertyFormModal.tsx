@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, Loader2, ImagePlus, Trash2, AlertCircle, Navigation, CheckCircle } from 'lucide-react';
 import { useCreateProperty, useUpdateProperty, uploadPropertyImage, Property } from '@/hooks/useProperties';
 import { createClient } from '@/lib/supabase/client';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
+import Link from 'next/link';
 
 const PROPERTY_TYPES = ['Rumah', 'Vila', 'Ruko', 'Apartemen', 'Kavling', 'Tanah'];
 const STATUSES = ['Aktif', 'Nonaktif'];
@@ -110,8 +112,11 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
 
   const createMutation = useCreateProperty();
   const updateMutation = useUpdateProperty();
+  const { plan, usage, limits, loading: limitsLoading } = useSubscriptionLimits();
+  
   const isLoading = createMutation.isPending || updateMutation.isPending;
   const isEdit = !!editData;
+  const isLimitReached = !isEdit && usage.listings >= limits.listings;
 
   // Populate form when editing
   useEffect(() => {
@@ -227,6 +232,11 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
       return;
     }
 
+    if (isLimitReached) {
+      setError(`Limit listing Anda (${limits.listings}) sudah tercapai. Silakan upgrade paket Anda.`);
+      return;
+    }
+
     const payload = {
       title: form.title.trim(),
       description: form.description.trim() || null,
@@ -285,6 +295,28 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-7 space-y-6">
+
+          {/* Limit Alert */}
+          {isLimitReached && (
+            <div className="p-4 bg-brand-blue/5 border border-brand-blue/20 rounded-[24px] flex items-start gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-brand-blue/10 flex items-center justify-center shrink-0">
+                <AlertCircle size={20} className="text-brand-blue" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-bold text-text-dark">Limit Listing Tercapai</h4>
+                <p className="text-xs text-text-gray/70 mt-1 leading-relaxed">
+                  Paket <strong>{plan.toUpperCase()}</strong> Anda hanya memperbolehkan maksimal {limits.listings} listing. 
+                  Upgrade ke Pro atau Premium untuk menambah lebih banyak properti.
+                </p>
+                <Link 
+                  href="/dashboard/subscription" 
+                  className="inline-flex items-center gap-2 mt-3 text-xs font-bold text-brand-blue hover:underline"
+                >
+                  Lihat Paket Langganan →
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* Foto */}
           <div>
@@ -541,7 +573,7 @@ export default function PropertyFormModal({ isOpen, onClose, editData }: Propert
           </button>
           <button
             type="submit"
-            disabled={isLoading || uploading}
+            disabled={isLoading || uploading || isLimitReached}
             onClick={handleSubmit}
             className="px-7 py-3 bg-brand-blue text-white-pure rounded-2xl text-sm font-semibold shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-deep transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
           >

@@ -12,9 +12,12 @@ import {
   Sparkles,
   ShieldCheck,
   Building2,
-  Users
+  Users,
+  Loader2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
+import Script from 'next/script';
 
 const PLANS = [
   {
@@ -24,8 +27,8 @@ const PLANS = [
     description: 'Cocok untuk developer individu yang baru memulai.',
     features: [
       'Hingga 5 Listing Properti',
-      'AI Caption Generator (Basic)',
-      'CRM Leads Basic',
+      '10 AI Caption / bulan',
+      'Standard CRM Leads',
       'KPR Simulator (Embed)',
       'Support via Email'
     ],
@@ -42,12 +45,12 @@ const PLANS = [
     period: '/bulan',
     description: 'Pilihan terbaik untuk pengembang properti aktif.',
     features: [
-      'Hingga 20 Listing Properti',
-      'AI Caption Semua Platform',
+      'Hingga 30 Listing Properti',
+      '75 AI Caption / bulan',
+      'Featured Listing (Add-on)',
+      'Full AI Platform Access',
       'Auto Posting IG, FB, TikTok',
       'CRM Leads Full Pipeline',
-      'Laporan Otomatis Mingguan',
-      'Manajemen Tim (2 User)',
       'Support WA Business'
     ],
     color: 'text-brand-blue',
@@ -59,17 +62,17 @@ const PLANS = [
   },
   {
     id: 'premium',
-    name: 'Enterprise AI',
-    price: '1.99jt',
+    name: 'Premium Developer',
+    price: '999rb',
     period: '/bulan',
     description: 'Solusi lengkap untuk perusahaan real estate besar.',
     features: [
       'Listing Properti Unlimited',
-      'Auto Posting Semua Platform + WA',
-      'CRM Leads + Advanced Analytics',
-      'KPR Simulator Custom Branded',
-      'A/B Testing Caption',
-      'Laporan Harian & Bulanan',
+      'Unlimited AI Caption',
+      'Instant WA Lead Alert',
+      'Auto Posting Semua Platform',
+      'CRM Leads + Analytics',
+      'Professional AI Support',
       'Manajemen Tim (5 User)',
       'Dedicated WA Support'
     ],
@@ -85,7 +88,8 @@ export default function SubscriptionPage() {
   const supabase = createClient();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isUpdating, startUpdateTransition] = useTransition();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const { plan, usage, limits, refresh: refreshLimits } = useSubscriptionLimits();
 
   useEffect(() => {
     async function loadProfile() {
@@ -105,25 +109,12 @@ export default function SubscriptionPage() {
 
   const handleUpgrade = async (planId: string) => {
     if (planId === profile?.subscription_plan) return;
+    if (planId === 'basic') return;
 
-    startUpdateTransition(async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          subscription_plan: planId,
-          subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() 
-        })
-        .eq('id', user.id);
-
-      if (!error) {
-        setProfile((prev: any) => ({ ...prev, subscription_plan: planId }));
-        // Normally redirect to payment, but for now we just update
-        alert(`Berhasil upgrade ke paket ${planId.toUpperCase()}!`);
-      }
-    });
+    const message = `Halo Admin NusaEstate, saya ingin upgrade akun saya ke paket ${planId.toUpperCase()}. Mohon dibantu prosesnya.`;
+    const waUrl = `https://wa.me/6285798051625?text=${encodeURIComponent(message)}`;
+    
+    window.open(waUrl, '_blank');
   };
 
   if (loading) {
@@ -193,19 +184,25 @@ export default function SubscriptionPage() {
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold">
                   <span>Listing Properti</span>
-                  <span>1 / {profile?.subscription_plan === 'basic' ? '5' : profile?.subscription_plan === 'pro' ? '20' : '∞'}</span>
+                  <span>{usage.listings} / {limits.listings === 999999 ? '∞' : limits.listings}</span>
                 </div>
                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white w-1/5 rounded-full"></div>
+                  <div 
+                    className="h-full bg-white rounded-full transition-all duration-1000" 
+                    style={{ width: `${Math.min(100, (usage.listings / limits.listings) * 100)}%` }}
+                  ></div>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold">
                   <span>AI Generation</span>
-                  <span>12 / 50</span>
+                  <span>{usage.aiCaptions} / {limits.aiCaptions === 999999 ? '∞' : limits.aiCaptions}</span>
                 </div>
                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white w-1/4 rounded-full"></div>
+                  <div 
+                    className="h-full bg-white rounded-full transition-all duration-1000" 
+                    style={{ width: `${Math.min(100, (usage.aiCaptions / limits.aiCaptions) * 100)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -279,6 +276,51 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
+      {/* Add-ons Section */}
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <div className="h-[1px] flex-1 bg-border-line/10"></div>
+          <h2 className="text-xl font-bold text-text-dark/40 uppercase tracking-[0.3em]">Layanan Tambahan</h2>
+          <div className="h-[1px] flex-1 bg-border-line/10"></div>
+        </div>
+
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white-pure rounded-[2.5rem] border border-border-line/20 p-8 flex flex-col md:flex-row items-center justify-between gap-8 hover:shadow-xl transition-all duration-500 group">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 rounded-[1.5rem] bg-brand-blue/5 flex items-center justify-center text-brand-blue group-hover:scale-110 transition-transform duration-500">
+                <Sparkles size={36} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-xl font-bold text-text-dark">Featured Listing</h3>
+                  <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-tighter">BOOST</span>
+                </div>
+                <p className="text-sm text-text-gray max-w-md leading-relaxed">Posisikan properti Anda di bagian teratas hasil pencarian dan halaman utama selama 30 hari.</p>
+              </div>
+            </div>
+            <div className="text-center md:text-right space-y-4 shrink-0">
+              <div>
+                <span className="text-[10px] font-bold text-text-gray uppercase tracking-widest block mb-1">Mulai Dari</span>
+                <div className="flex items-baseline justify-center md:justify-end gap-1">
+                  <span className="text-xs font-medium text-text-gray">Rp</span>
+                  <span className="text-3xl font-display font-bold text-text-dark">50rb</span>
+                  <span className="text-xs font-medium text-text-gray">/unit</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  const message = "Halo Admin NusaEstate, saya ingin membeli Add-on Featured Listing (50rb). Mohon dibantu prosesnya.";
+                  window.open(`https://wa.me/6285798051625?text=${encodeURIComponent(message)}`, '_blank');
+                }}
+                className="px-8 py-3 bg-white-pure border border-brand-blue/20 text-brand-blue rounded-xl font-bold text-sm hover:bg-brand-blue hover:text-white-pure transition-all shadow-sm active:scale-95"
+              >
+                Pesan Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Trust Banner */}
       <div className="bg-surface-gray/50 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-border-line/5">
         <div className="flex items-center gap-6">
@@ -294,6 +336,7 @@ export default function SubscriptionPage() {
           Konsultasi Sekarang
         </button>
       </div>
+
     </div>
   );
 }

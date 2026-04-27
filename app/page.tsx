@@ -63,7 +63,7 @@ export default function HomePage() {
             <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3">Mengapa NusaEstate</p>
             <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Standar Baru dalam Pencarian Properti</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
               <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -72,7 +72,7 @@ export default function HomePage() {
               <h3 className="text-xl font-medium text-text-dark mb-3">AI Property Matcher</h3>
               <p className="text-text-gray text-sm leading-relaxed">Algoritma AI kami menganalisis preferensi Anda untuk menemukan properti yang paling cocok, menghemat waktu pencarian hingga 70%.</p>
             </div>
-            
+
             <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
               <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield size={24} />
@@ -80,7 +80,7 @@ export default function HomePage() {
               <h3 className="text-xl font-medium text-text-dark mb-3">Transaksi Aman</h3>
               <p className="text-text-gray text-sm leading-relaxed">Bekerjasama dengan notaris dan bank terpercaya untuk memastikan setiap transaksi berjalan aman, transparan, dan legal.</p>
             </div>
-            
+
             <div className="p-8 rounded-2xl bg-surface-gray border border-border-line/40 hover:border-brand-blue/30 transition-colors group">
               <div className="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <CheckCircle size={24} />
@@ -91,7 +91,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      
+
       {/* ── PROPERTI UNGGULAN (FEATURED LISTING - WOW UI) ── */}
       <section className="py-24 bg-surface-gray relative overflow-hidden">
         {/* Subtle Background Elements */}
@@ -103,12 +103,12 @@ export default function HomePage() {
         <div className="container-standard relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-[10px] font-bold uppercase tracking-widest mb-4">
-                <Sparkles size={12} />
-                Featured Add-on
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-brand-blue/20 rounded-full mb-6">
+                <Sparkles size={14} className="text-brand-blue" />
+                <span className="text-brand-blue font-bold text-[10px] uppercase tracking-[0.2em]">FEATURED ADD-ON</span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-display font-medium text-text-dark leading-[1.2]">
-                Properti <span className="text-brand-blue italic">Unggulan</span> Minggu Ini
+              <h2 className="text-4xl md:text-6xl font-display font-bold text-text-dark leading-tight">
+                Properti <span className="text-brand-blue italic">Unggulan</span> Minggu <br className="hidden md:block" /> Ini
               </h2>
             </div>
             <p className="text-text-gray text-sm md:text-base max-w-xs md:text-right">
@@ -119,7 +119,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Main Featured Card (Large - Span 2 columns on large screens) */}
             {RECOMMENDATIONS.slice(2, 3).map((item) => (
-              <Link 
+              <Link
                 key={`featured-large-${item.id}`}
                 href={`/properti/${item.id}`}
                 className="group relative h-[450px] md:h-full lg:col-span-2 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-end p-8 transition-transform duration-700 hover:scale-[1.01]"
@@ -127,13 +127,9 @@ export default function HomePage() {
                 {/* Background Image */}
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-[10s] group-hover:scale-110" style={{ backgroundImage: `url(${item.image})` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black-pure via-black-pure/40 to-transparent"></div>
-                
-                {/* Top Badge */}
+
+                {/* Top Badge Removed */}
                 <div className="absolute top-6 left-6 flex gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-brand-blue text-white-pure rounded-full text-xs font-bold shadow-lg shadow-brand-blue/30">
-                    <Star size={14} fill="white" />
-                    FEATURED
-                  </div>
                   <div className="px-4 py-2 bg-white/10 backdrop-blur-md text-white-pure rounded-full text-xs font-medium border border-white/20">
                     {item.location}
                   </div>
@@ -144,7 +140,7 @@ export default function HomePage() {
                   <h3 className="text-3xl md:text-4xl font-display font-medium text-white-pure mb-4 group-hover:text-brand-blue transition-colors">
                     {item.name}
                   </h3>
-                  
+
                   <div className="flex flex-wrap items-center gap-6 mb-6 text-white/70 text-sm">
                     <span className="flex items-center gap-2"><BedDouble size={18} className="text-brand-blue" /> {item.specs.beds} Kamar</span>
                     <span className="flex items-center gap-2"><Bath size={18} className="text-brand-blue" /> {item.specs.baths} Kamar Mandi</span>
@@ -167,7 +163,7 @@ export default function HomePage() {
             {/* Featured Small Items + Promo CTA Grid */}
             <div className="lg:col-span-1 grid grid-cols-1 gap-6">
               {RECOMMENDATIONS.slice(0, 2).map((item) => (
-                <Link 
+                <Link
                   key={`featured-small-${item.id}`}
                   href={`/properti/${item.id}`}
                   className="group relative flex rounded-3xl overflow-hidden bg-white-pure border border-border-line/10 hover:border-brand-blue/30 transition-all duration-500 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_-12px_rgba(13,138,188,0.15)] h-[200px]"
@@ -176,19 +172,12 @@ export default function HomePage() {
                   <div className="relative w-[40%] overflow-hidden">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${item.image})` }}></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-black-pure/10 to-transparent"></div>
-                    
-                    {/* Floating Star Badge */}
-                    <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-brand-blue text-white-pure flex items-center justify-center shadow-lg shadow-brand-blue/30 border border-white/20">
-                      <Star size={14} fill="white" />
-                    </div>
                   </div>
-                  
+
                   {/* Right: Content Area */}
                   <div className="w-[60%] p-6 flex flex-col justify-between relative bg-gradient-to-br from-white-pure to-surface-gray/50">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-bold text-brand-blue uppercase tracking-[0.1em]">Luxury Listing</span>
-                        <div className="w-1 h-1 bg-brand-blue/30 rounded-full"></div>
                         <span className="text-[10px] font-medium text-text-gray">{item.badge}</span>
                       </div>
                       <h4 className="text-lg font-medium text-text-dark mb-1 group-hover:text-brand-blue transition-colors line-clamp-1 leading-tight">{item.name}</h4>
@@ -214,20 +203,20 @@ export default function HomePage() {
                   </div>
                 </Link>
               ))}
-              
+
               {/* Promo Card / Add-on CTA */}
               <div className="relative rounded-2xl overflow-hidden p-6 bg-brand-blue-deep flex flex-col justify-between group cursor-pointer border border-brand-blue/20 h-[180px]">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
                   <Crown size={80} />
                 </div>
-                
+
                 <div>
                   <h4 className="text-white-pure font-medium mb-1">Ingin Properti Anda Di Sini?</h4>
                   <p className="text-white/60 text-[10px] leading-relaxed">
                     Tingkatkan visibilitas listing Anda 10x lipat dengan fitur Featured Listing.
                   </p>
                 </div>
-                
+
                 <Link href="/dashboard/subscription" className="flex items-center gap-2 text-xs font-bold text-brand-blue-light group-hover:text-white-pure transition-colors">
                   PELAJARI SELENGKAPNYA
                   <ArrowRight size={14} />
@@ -238,13 +227,13 @@ export default function HomePage() {
 
           {/* Additional Items - HORIZONTAL SLIDER */}
           <div className="relative mt-12 group/slider">
-            <div 
+            <div
               id="featured-slider"
               className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
             >
               {RECOMMENDATIONS.map((item) => (
-                <Link 
+                <Link
                   key={`featured-slider-${item.id}`}
                   href={`/properti/${item.id}`}
                   className="flex-none w-[320px] md:w-[380px] snap-start group/card relative pb-12"
@@ -252,12 +241,6 @@ export default function HomePage() {
                   {/* Top Image Area */}
                   <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden shadow-xl">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-110" style={{ backgroundImage: `url(${item.image})` }}></div>
-                    
-                    {/* Populer Badge */}
-                    <div className="absolute top-5 left-5 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full flex items-center gap-2 shadow-sm border border-white/20">
-                      <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-                      <span className="text-xs font-bold text-brand-blue tracking-tight">Populer</span>
-                    </div>
                   </div>
 
                   {/* Floating Content Box */}
@@ -300,7 +283,7 @@ export default function HomePage() {
 
             {/* Slider Navigation Buttons */}
             <div className="absolute top-1/2 -left-6 -translate-y-1/2 opacity-0 group-hover/slider:opacity-100 transition-opacity z-20">
-              <button 
+              <button
                 onClick={() => document.getElementById('featured-slider')?.scrollBy({ left: -350, behavior: 'smooth' })}
                 className="w-14 h-14 rounded-full bg-white-pure shadow-premium border border-border-line/20 flex items-center justify-center text-text-dark hover:bg-brand-blue hover:text-white-pure transition-all"
               >
@@ -308,7 +291,7 @@ export default function HomePage() {
               </button>
             </div>
             <div className="absolute top-1/2 -right-6 -translate-y-1/2 opacity-0 group-hover/slider:opacity-100 transition-opacity z-20">
-              <button 
+              <button
                 onClick={() => document.getElementById('featured-slider')?.scrollBy({ left: 350, behavior: 'smooth' })}
                 className="w-14 h-14 rounded-full bg-white-pure shadow-premium border border-border-line/20 flex items-center justify-center text-text-dark hover:bg-brand-blue hover:text-white-pure transition-all"
               >
@@ -327,7 +310,7 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Kategori Properti</h2>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
             <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800')" }}></div>
@@ -342,7 +325,7 @@ export default function HomePage() {
               </div>
             </div>
           </Link>
-          
+
           <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
             <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800')" }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
@@ -356,7 +339,7 @@ export default function HomePage() {
               </div>
             </div>
           </Link>
-          
+
           <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
             <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1582063289852-62e3ba2747f8?auto=format&fit=crop&q=80&w=800')" }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
@@ -370,7 +353,7 @@ export default function HomePage() {
               </div>
             </div>
           </Link>
-          
+
           <Link href="/cari" className="group relative overflow-hidden rounded-2xl aspect-square">
             <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800')" }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black-pure/80 via-black-pure/20 to-transparent"></div>
@@ -465,11 +448,11 @@ export default function HomePage() {
             <p className="text-brand-blue text-xs font-medium tracking-widest uppercase mb-3">Proses Mudah</p>
             <h2 className="text-3xl md:text-4xl font-display font-medium text-text-dark">Cara Kerja NusaEstate</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
             {/* Connecting Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-border-line/60 z-0"></div>
-            
+
             <div className="relative z-10 flex flex-col items-center text-center">
               <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
                 <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">1</span>
@@ -478,7 +461,7 @@ export default function HomePage() {
               <h3 className="text-lg font-medium text-text-dark mb-2">Cari Properti</h3>
               <p className="text-text-gray text-sm">Gunakan AI atau filter pintar kami untuk menemukan properti yang sesuai dengan kebutuhan dan budget Anda.</p>
             </div>
-            
+
             <div className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0">
               <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
                 <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">2</span>
@@ -487,7 +470,7 @@ export default function HomePage() {
               <h3 className="text-lg font-medium text-text-dark mb-2">Kunjungi Lokasi</h3>
               <p className="text-text-gray text-sm">Jadwalkan kunjungan properti secara online. Agen kami akan menemani Anda melihat langsung properti idaman.</p>
             </div>
-            
+
             <div className="relative z-10 flex flex-col items-center text-center mt-8 md:mt-0">
               <div className="w-24 h-24 rounded-full bg-surface-gray border-4 border-white-pure shadow-soft flex items-center justify-center text-brand-blue mb-6 relative">
                 <span className="absolute -top-2 -right-2 w-8 h-8 bg-brand-blue text-white-pure rounded-full flex items-center justify-center font-bold text-sm shadow-md">3</span>
@@ -505,7 +488,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-brand-blue"></div>
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[800px] h-[800px] bg-white-pure/10 rounded-full blur-[100px]"></div>
-        
+
         <div className="container-standard relative z-10 text-center">
           <h2 className="text-3xl md:text-5xl font-display font-medium text-white-pure mb-6 max-w-2xl mx-auto leading-tight">
             Siap Menemukan Rumah Impian Anda Hari Ini?

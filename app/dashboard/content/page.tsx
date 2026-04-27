@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { ContentTemplate, ContentTone, ContentPlatform } from '@/lib/types';
-import { saveToQueue, approvePost, deletePost, getDeveloperProperties, getContentQueue, publishNow } from '@/lib/content/actions';
+import { saveToQueue, approvePost, deletePost, getDeveloperProperties, getContentQueue, publishNow, logUsage } from '@/lib/content/actions';
 import { generatePropertyCaption, generateDailyMarketingTip } from '@/lib/groq';
+import { useSubscriptionLimits } from '@/hooks/useSubscriptionLimits';
 import { createClient } from '@/lib/supabase/client';
 import { uploadPropertyImage } from '@/hooks/useProperties';
 import { 
@@ -66,6 +67,9 @@ export default function ContentStudioPage() {
   const [aiTip, setAiTip] = useState<string>('Memuat saran AI...');
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+
+  const { plan, usage, limits, checkLimit, refresh: refreshLimits } = useSubscriptionLimits();
+  const isAiLimitReached = !checkLimit('aiCaptions');
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -139,6 +143,12 @@ export default function ContentStudioPage() {
       showToast('Pilih properti terlebih dahulu!');
       return;
     }
+
+    if (isAiLimitReached) {
+      showToast(`Limit AI Caption bulanan Anda (${limits.aiCaptions}) sudah habis. Silakan upgrade paket!`);
+      return;
+    }
+
     setIsGenerating(true);
     try {
       // Map real property data to Listing format
@@ -168,6 +178,11 @@ export default function ContentStudioPage() {
       });
       
       setCaptions(result);
+      
+      // Log AI usage
+      await logUsage('ai_caption', 1);
+      refreshLimits(); // Refresh local usage state
+      
       showToast('✨ Caption berhasil digenerate!');
     } catch (error) {
       console.error('Failed to generate:', error);
@@ -301,6 +316,22 @@ export default function ContentStudioPage() {
                 <div>
                   <h3 className="font-bold">Magic Compose</h3>
                   <p className="text-white/60 text-xs">Generator Konten AI</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 pt-4">
+              {/* Usage Stats Mini */}
+              <div className="p-3 bg-surface-gray rounded-2xl border border-border-line/5">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-text-gray uppercase tracking-wider">AI Quota</span>
+                  <span className="text-[10px] font-bold text-brand-blue">{usage.aiCaptions} / {limits.aiCaptions === 999999 ? '∞' : limits.aiCaptions}</span>
+                </div>
+                <div className="w-full h-1.5 bg-white-pure rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-brand-blue transition-all duration-1000" 
+                    style={{ width: `${Math.min(100, (usage.aiCaptions / limits.aiCaptions) * 100)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
